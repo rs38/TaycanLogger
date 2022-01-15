@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static System.FormattableString;
@@ -18,9 +17,11 @@ namespace TaycanLogger
 		//todo
 		//define conversion+ ID Data in parameter format
 		//add SoH
-		// "broadcast"
+		// "broadcast" ??
 		// parse multi-frame data stolpert dabei
-		// BMS hört auf 7E5?
+		// FileLogger auslagern
+
+	
 
 		 TextWriter FileWriter;
 		 TextWriter FileWriterRaw;
@@ -34,14 +35,35 @@ namespace TaycanLogger
 		 Series series2;
 		 Series series3;
 
+		public bool stop=false;
+
+	
+
         public Logger()
         {
-			FileWriter = new StreamWriter($@"c:\temp\OBD Taycan {DateTime.Now:yyMMddHHmmssf}.csv");
-			FileWriterRaw = new StreamWriter($@"c:\temp\OBD Taycan {DateTime.Now:yyMMddHHmmssf} Raw.csv");
-			FileWriterRaw.WriteLine("time;value;unit;cmd;comment");
-			Init();
+       
+            Init();
+        }
+
+        private void InitFiles()
+        {
+            FileWriter = new StreamWriter($@".\OBDTaycan{DateTime.Now:yyMMddHHmmssf}.csv");
+            FileWriterRaw = new StreamWriter($@".\OBDTaycan{DateTime.Now:yyMMddHHmmssf} Raw.csv");
+            FileWriterRaw.WriteLine("time;value;unit;cmd;comment");
+
+			var sb = new StringBuilder();
+
+			foreach (var element in mapping)
+			{
+				lastline[element.Key] = "";
+				sb.Append(element.Value + ",");
+			}
+
+
+			FileWriter.WriteLine(sb.ToString());
 		}
-		public async void LogfromCOM(string COM)
+
+        public async Task LogfromCOM(string COM)
 		{
 			using (conn = new OBD.NET.Desktop.Communication.SerialConnection(COM))
 			{
@@ -56,11 +78,12 @@ namespace TaycanLogger
 			
 				if (conn.IsOpen)
 				{
+					InitFiles();
 					CANInit();
 
 					conn.DataReceived += readdata;
-
-					for (int i = 0; i < 5000; i++)
+					
+					while(!stop)
 					{
 						foreach (var element in mapping)
 						{
@@ -73,16 +96,18 @@ namespace TaycanLogger
 						//hack();
 						FileWriter.Flush();
 						FileWriterRaw.Flush();
-					} //while (true);
+					}
 					
 					Thread.Sleep(1000);
+					FileWriter.Close();
+					FileWriterRaw.Close();
 				}
 			}
-			FileWriter.Close();
-			FileWriterRaw.Close();
+			
 
 		}
 
+		
 		 void hack2a()
 		{
 			return;
@@ -157,14 +182,12 @@ namespace TaycanLogger
 			conn.Write(data);
 
 			if (i == 1)
-				Thread.Sleep(90);//
-								 //	await Task.Delay(90);
+				//Thread.Sleep(90);//
+					 	await Task.Delay(90);
 			else
-				//	await Task.Delay(i);
-				Thread.Sleep(i);
-
+				await Task.Delay(i);
+				//Thread.Sleep(i);
 		}
-
 
 		void readdata(object sender, OBD.NET.Common.Communication.EventArgs.DataReceivedEventArgs e)
 		{
@@ -215,7 +238,7 @@ namespace TaycanLogger
 					f = Convert.ToInt32(res, 16) / 10.0;
 					unit = "V HV Spannung";
 				}
-
+/*
 				if (cmd == "181C" | cmd == "181D")
 				{
 					var res = text.Substring(4, text.Length - 4); //2 Bytes
@@ -306,6 +329,9 @@ namespace TaycanLogger
 					f = Convert.ToInt32(res, 16) * 1.0;
 					unit = "Amp";
 				}
+
+				*/
+
 				writeLogRaw(f, unit, cmd, resp);
 			}
 			else
@@ -356,15 +382,25 @@ namespace TaycanLogger
 
 		void cleanAndWrite()
 		{
-			//initnewline();
-			foreach (var element in newline)
-			{
-				if (element.Value == "")
-					newline[element.Key] = lastline[element.Key];
+            //initnewline();
+
+            try
+            {
+				foreach (var element in newline)
+				{
+					if (element.Value == "")
+						newline[element.Key] = lastline[element.Key];
+				}
 			}
+            catch (Exception)
+            {
+
+            }
+			
 
 			FileWriter.WriteLine(newline.ToCSV());
 			Console.WriteLine(newline.ToCSV());
+		
 			initnewline();
 		}
 
@@ -403,7 +439,7 @@ namespace TaycanLogger
         { "0001","Power" },
         { "1801","HV Volt1" },
         { "1802","Current 1"},
-        { "1E1B","BattlimitChar"},
+   /*     { "1E1B","BattlimitChar"},
         { "1E1C","BattlimDisc"},
         { "028C","Soc gesamt"},
         { "F40D","Veh.Speed"},
@@ -412,14 +448,14 @@ namespace TaycanLogger
 	  //  { "1804","Current 2"},
 	 //	{ "1E0E1E0F","TempBat max"},
      //   { "1E0F","TempBat min"},
-     /*   { "1E0F2","TempBat min #"}
-        { "1E0E2","TempBat max #"}, */
+       { "1E0F2","TempBat min #"}
+        { "1E0E2","TempBat max #"}, 
         { "181C","Cool Inlet"},
         { "181D","Cool Outlet"},
         { "1E10","T Batt Ave"},
-  /*    { "1E3B","CellVoltSum"},  
+     { "1E3B","CellVoltSum"},  
       { "1E2D","SocCell min"},
-		{ "1E2C","SocCell max"}, */
+		{ "1E2C","SocCell max"},
 		{ "08D2","SoC Anzeige"},
         {"475F", "PTC current"},
         {"2608","Outside Temp"},
@@ -452,16 +488,7 @@ RSP0002;19:35:18.655;LL_DashBoardUDS BV_DashBoardUDS EV_DashBoardLGEPO513_004;Be
             initnewline();
 
             //		string[] logline = new string[mapping.Count];
-            var sb = new StringBuilder();
-
-            foreach (var element in mapping)
-            {
-                lastline[element.Key] = "";
-                sb.Append(element.Value + ",");
-            }
-
-
-            FileWriter.WriteLine(sb.ToString());
+         
 
            
         }

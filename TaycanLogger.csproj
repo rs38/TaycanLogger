@@ -4,6 +4,8 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net47</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>XmlToSchema.ico</ApplicationIcon>
+    <AssemblyName>TayCANBusLogger</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

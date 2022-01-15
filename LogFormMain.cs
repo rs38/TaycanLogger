@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -15,7 +10,12 @@ namespace TaycanLogger
     public partial class LogFormMain : Form
     {
         Logger myOBD;
-        string COMport;
+
+       
+        string COMport { 
+            get;
+            set; }
+
 
         public LogFormMain()
         {
@@ -29,26 +29,44 @@ namespace TaycanLogger
 
         }
 
-        private void InitCOMDropbox()
+        void readdata(object sender, OBD.NET.Common.Communication.EventArgs.DataReceivedEventArgs e)
+        { }
+
+            private void InitCOMDropbox()
         {
             for (int i = 1; i < 12; i++)
             {
                 comboBoxCOMPort.Items.Add($"COM{i}");
             }
-            comboBoxCOMPort.SelectedIndex = 1;
-            COMport = "COM2";
+            comboBoxCOMPort.SelectedIndex = 9-1;
+            COMport = "COM9";
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        async void button1_Click(object sender, EventArgs e)
         {
-            myOBD.LogfromCOM(COMport);
+            textBoxDebug.Text = "starting....";
+
+            myOBD.stop = false;
+            await myOBD.LogfromCOM(COMport);
         }
 
       
         private void comboBoxCOMPort_SelectedIndexChanged(object sender, EventArgs e)
         {
-            COMport = $"COM{((ComboBox)sender).SelectedIndex}";
-            Debug.WriteLine($"COM{((ComboBox)sender).SelectedIndex} seleceted");
+            COMport = $"COM{((ComboBox)sender).SelectedIndex+1}";
+            Debug.WriteLine($"COM{((ComboBox)sender).SelectedIndex+1} seleceted");
+            textBoxDebug.Text += $"COM{((ComboBox)sender).SelectedIndex+1} seleceted\n";
+
+        }
+
+         void buttonStop_Click(object sender, EventArgs e)
+        {
+            myOBD.stop = true;
+            textBoxDebug.Text = "stopped....\n";
+        }
+
+        private void LogFormMain_Load(object sender, EventArgs e)
+        {
 
         }
     }
