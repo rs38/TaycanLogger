@@ -498,16 +498,16 @@ namespace TaycanLogger
 
         private void CANInit()
         {
-            writeCAN("ATZ", 300);   //write("ATH1");
-            writeCAN("ATE0", 100); //bringt das was?
+            writeCAN("ATZ", 2000);   //write("ATH1");
+            writeCAN("ATE0", 500); //bringt das was?
 
             /*	writeCAN("AT SP0", 4);  // Set protokoll to 7 - ISO 15765-4 CAN (29 bit ID, 500 kbaud)
 				writeCAN("AT ST16", 4); */
             //	writeCAN("atcp17", 4); //5 msb can header 
             //	writeCAN("atfcsm1",200);
             //	writeCAN("ATSHFC007B", 4); //BMS
-            writeCAN("ATSH7E8", 300); //BMS
-            writeCAN("ATCRA7ED", 300);
+            writeCAN("ATSH7E8", 500); //BMS
+            writeCAN("ATCRA7ED", 500);
 
             /*
 					{0, "ATE0"},	// Echo off

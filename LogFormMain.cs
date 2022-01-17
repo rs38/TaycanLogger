@@ -25,14 +25,14 @@ namespace TaycanLogger
 
         public LogFormMain()
         {
+            Control.CheckForIllegalCrossThreadCalls = false;
+
             InitializeComponent();
 
             InitChart();
             InitCOMDropbox();
             
          
-           // debugwriter = s => textBoxDebug.AppendText(s + "\n\r");
-
             myOBD = new Logger();
             myOBD.LogLineReady += ProcessLogline;
 
@@ -50,21 +50,16 @@ namespace TaycanLogger
                 series3.Points.AddY(e.Voltage);
                 series4.Points.AddY(e.Speed);
             }
-           
-
         }
 
         private void InitChart()
         {
-            
             var ca = new ChartArea("A1");
             var ca2 = new ChartArea("A2");
             var ca3 = new ChartArea("A3");
-            //var ca4 = new ChartArea("A4");
             chart1.ChartAreas.Add(ca);
             chart1.ChartAreas.Add(ca2);
             chart1.ChartAreas.Add(ca3);
-           // chart1.ChartAreas.Add(ca4);
             series1 = new Series("Power") { ChartType = SeriesChartType.Line };
             series1.ChartArea = "A1";
             chart1.Series.Add(series1);
@@ -74,8 +69,6 @@ namespace TaycanLogger
             series3.ChartArea = "A3";
             series4 = new Series("Speed") { ChartType = SeriesChartType.Line };
             series4.ChartArea = "ChartArea1"; //default
-        
-
             chart1.Series.Add(series2);
             chart1.Series.Add(series3);
             chart1.Series.Add(series4);

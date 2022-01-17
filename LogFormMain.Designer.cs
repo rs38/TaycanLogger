@@ -132,7 +132,7 @@ namespace TaycanLogger
             this.Controls.Add(this.button1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "LogFormMain";
-            this.Text = "TayCANBusLog";
+            this.Text = "TayCANBusLog v0.02";
             this.Load += new System.EventHandler(this.LogFormMain_Load);
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             this.ResumeLayout(false);
