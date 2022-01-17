@@ -21,7 +21,8 @@ namespace TaycanLogger
 		// parse multi-frame data stolpert dabei
 		// FileLogger auslagern
 
-	
+
+		LogLineReadyEventArgs Logline;
 
 		 TextWriter FileWriter;
 		 TextWriter FileWriterRaw;
@@ -30,19 +31,22 @@ namespace TaycanLogger
 		 Dictionary<string, string> newline;
 		 Dictionary<string, string> lastline;
 
-		 Chart chart1;
-		 Series series1;
-		 Series series2;
-		 Series series3;
+		
 
 		public bool stop=false;
 
-	
+		public event EventHandler<LogLineReadyEventArgs> LogLineReady;
 
-        public Logger()
+		protected virtual void OnLogLineReady(LogLineReadyEventArgs e)
+		{
+			EventHandler<LogLineReadyEventArgs> handler = LogLineReady;
+			handler?.Invoke(this, e);
+		}
+
+
+		public Logger()
         {
-       
-            Init();
+			            Init();
         }
 
         private void InitFiles()
@@ -357,20 +361,21 @@ namespace TaycanLogger
 
 		 void addDataToFullRow(string cmd, double val)
 		{
+			Logline = new LogLineReadyEventArgs(DateTime.Now);
 			if (newline[cmd] == "")
 			{
 				newline[cmd] = $"{val:00.000}";
-				if (cmd == "F40D") //Speed
+			/*	if (cmd == "F40D") //Speed
 					series3.Points.AddY(val);
 				if (cmd == "1E10") //Batt Temp
-					series2.Points.AddY(val);
+					series2.Points.AddY(val);*/
 			}
 			else //wenn schon beschrieben, wird von einer vollen Zeile ausgegangen
 			{
 				if (Double.TryParse(newline["1801"], out double voltage) & Double.TryParse(newline["1802"], out double current))
 				{
 					newline["0001"] = ($"{voltage * current / 1000.0:00.000}");
-					series1.Points.AddY(voltage * current / 1000.0);
+					Logline.Power =(voltage * current / 1000.0);
 				}
 				else
 					newline["0001"] = "0";
@@ -386,7 +391,7 @@ namespace TaycanLogger
 
             try
             {
-				foreach (var element in newline)
+				foreach (var element in newline) //BUG: element modifies error
 				{
 					if (element.Value == "")
 						newline[element.Key] = lastline[element.Key];
@@ -399,13 +404,23 @@ namespace TaycanLogger
 			
 
 			FileWriter.WriteLine(newline.ToCSV());
-			Console.WriteLine(newline.ToCSV());
-		
+			//Console.WriteLine(newline.ToCSV());
+			Logline.LogLine = newline.ToCSV();
+			OnLogLineReady(Logline); //raise
 			initnewline();
 		}
 
-		 void initnewline()
+		
+		void HandleSomethingHappened(string foo)
 		{
+			//Do some stuff
+		}
+
+		
+
+		void initnewline()
+		{
+			
 			lastline = new Dictionary<string, string>(newline);
 			//newline.Clear();
 			foreach (var element in mapping)
@@ -418,21 +433,7 @@ namespace TaycanLogger
 
 		 void Init()
         {
-            chart1 = new Chart();
-            var ca = new ChartArea();
-            var ca2 = new ChartArea("A2");
-            var ca3 = new ChartArea("A3");
-            chart1.ChartAreas.Add(ca);
-            chart1.ChartAreas.Add(ca2);
-            chart1.ChartAreas.Add(ca3);
-            series1 = new Series("Eins") { ChartType = SeriesChartType.Line };
-            chart1.Series.Add(series1);
-            series2 = new Series("Zwei") { ChartType = SeriesChartType.Line };
-            series2.ChartArea = "A2";
-            series3 = new Series("Drei") { ChartType = SeriesChartType.Line };
-            series3.ChartArea = "A3";
-            chart1.Series.Add(series2);
-            chart1.Series.Add(series3);
+           
             mapping = new Dictionary<string, string>()
      {
         { "0000","time" },
@@ -504,10 +505,9 @@ RSP0002;19:35:18.655;LL_DashBoardUDS BV_DashBoardUDS EV_DashBoardLGEPO513_004;Be
             //	writeCAN("atfcsm1",200);
             //	writeCAN("ATSHFC007B", 4); //BMS
             writeCAN("ATSH7E8", 300); //BMS
+			writeCAN("ATCRA7ED", 300);
 
-
-
-            /*
+			/*
 					{0, "ATE0"},	// Echo off
 					 "ATAT0"}, //	Adaptive timing off
 					{ 0, "ATSTFF"}, //	Set timeout to ff x 4ms
@@ -516,6 +516,18 @@ RSP0002;19:35:18.655;LL_DashBoardUDS BV_DashBoardUDS EV_DashBoardLGEPO513_004;Be
 					{ 0, "ATS0"}, //	Printing of spaces off
 					{ 0, "ATL0"}, //	Linefeeds off
 					{ 0, "ATCSM0"}, //	Silent monitoring off*/
-        }
+		}
     }
+
+	public class LogLineReadyEventArgs : EventArgs
+	{
+        public LogLineReadyEventArgs(DateTime time)
+        {
+			Time = time;
+        }
+		public string LogLine { get; set; }
+        public double Power { get; set; }
+        public DateTime Time { get; set; }
+	}
 }
+

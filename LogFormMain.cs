@@ -12,6 +12,11 @@ namespace TaycanLogger
         Logger myOBD;
 
        
+        Series series1;
+        Series series2;
+        Series series3;
+
+
         string COMport { 
             get;
             set; }
@@ -21,18 +26,48 @@ namespace TaycanLogger
         {
             InitializeComponent();
 
+            InitChart();
             InitCOMDropbox();
+            
+         
+           // debugwriter = s => textBoxDebug.AppendText(s + "\n\r");
 
             myOBD = new Logger();
-
-          
+            myOBD.LogLineReady += ProcessLogline;
 
         }
 
-        void readdata(object sender, OBD.NET.Common.Communication.EventArgs.DataReceivedEventArgs e)
-        { }
+         void ProcessLogline(object sender, LogLineReadyEventArgs e)
+        {
+            textBoxDebug.AppendText(e.Time + e.LogLine);
+            series1.Points.AddY(e.Power);
 
-            private void InitCOMDropbox()
+        }
+
+        private void InitChart()
+        {
+            
+            var ca = new ChartArea();
+            var ca2 = new ChartArea("A2");
+            var ca3 = new ChartArea("A3");
+            chart1.ChartAreas.Add(ca);
+            chart1.ChartAreas.Add(ca2);
+            chart1.ChartAreas.Add(ca3);
+            series1 = new Series("Eins") { ChartType = SeriesChartType.Line };
+            chart1.Series.Add(series1);
+            series2 = new Series("Zwei") { ChartType = SeriesChartType.Line };
+            series2.ChartArea = "A2";
+            series3 = new Series("Drei") { ChartType = SeriesChartType.Line };
+            series3.ChartArea = "A3";
+            chart1.Series.Add(series2);
+            chart1.Series.Add(series3);
+        }
+
+        void HandleSomethingHappened(string foo)
+        {
+            //Do some stuff
+        }
+       private void InitCOMDropbox()
         {
             for (int i = 1; i < 12; i++)
             {
@@ -46,6 +81,7 @@ namespace TaycanLogger
         {
             textBoxDebug.Text = "starting....";
 
+
             myOBD.stop = false;
             await myOBD.LogfromCOM(COMport);
         }
@@ -55,14 +91,14 @@ namespace TaycanLogger
         {
             COMport = $"COM{((ComboBox)sender).SelectedIndex+1}";
             Debug.WriteLine($"COM{((ComboBox)sender).SelectedIndex+1} seleceted");
-            textBoxDebug.Text += $"COM{((ComboBox)sender).SelectedIndex+1} seleceted\n";
+            textBoxDebug.Text += $"COM{((ComboBox)sender).SelectedIndex+1} seleceted\r\n";
 
         }
 
          void buttonStop_Click(object sender, EventArgs e)
         {
             myOBD.stop = true;
-            textBoxDebug.Text = "stopped....\n";
+            textBoxDebug.Text = "stopped....\r\n";
         }
 
         private void LogFormMain_Load(object sender, EventArgs e)
