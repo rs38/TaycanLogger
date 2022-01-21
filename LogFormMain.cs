@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Linq;
 using System.Windows.Forms.DataVisualization.Charting;
 
 namespace TaycanLogger
@@ -11,7 +12,7 @@ namespace TaycanLogger
     {
         Logger myOBD;
 
-       
+
         Series series1;
         Series series2;
         Series series3;
@@ -85,7 +86,8 @@ namespace TaycanLogger
             {
                 comboBoxCOMPort.Items.Add($"COM{i}");
             }
-           // comboBoxCOMPort.SelectedIndex = 9-1;
+            comboBoxCOMPort.SelectedIndex =  -1 + (int)Properties.Settings.Default["COMport"];
+           COMport= "COM"+ Properties.Settings.Default["COMport"].ToString();
         }
 
         async void button1_Click(object sender, EventArgs e)
@@ -103,6 +105,9 @@ namespace TaycanLogger
             COMport = $"COM{((ComboBox)sender).SelectedIndex+1}";
             Debug.WriteLine($"COM{((ComboBox)sender).SelectedIndex+1} seleceted");
             textBoxDebug.Text += $"COM{((ComboBox)sender).SelectedIndex+1} seleceted\r\n";
+
+            Properties.Settings.Default["COMport"] = ((ComboBox)sender).SelectedIndex + 1;
+            Properties.Settings.Default.Save();
 
         }
 
@@ -130,6 +135,11 @@ namespace TaycanLogger
         private void numericUpDownWaitMs_ValueChanged(object sender, EventArgs e)
         {
             myOBD.Delay = (int)numericUpDownWaitMs.Value;
+        }
+
+        private void chart1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -74,7 +74,7 @@ namespace TaycanLogger
 
         public async Task LogfromCOM(string COM)
         {
-            using (conn = new SerialPort("COM4", 38400, Parity.None, 8, StopBits.One))
+            using (conn = new SerialPort(COM, 38400, Parity.None, 8, StopBits.One))
             {
                 conn.RtsEnable = true;
                 conn.NewLine = "\r";
@@ -93,7 +93,7 @@ namespace TaycanLogger
                 {
                     InitFiles();
                     CANInit();
-
+                    Thread.Sleep(1000);
                     while (!stop)
                     {
                         foreach (var element in mapping)
@@ -193,17 +193,24 @@ namespace TaycanLogger
             conn.WriteLine(s);
 
             if (i == 1)
-                Thread.Sleep(90);//
-                                 //await Task.Delay(Delay);
+              //  Thread.Sleep(90);//
+                await Task.Delay(Delay);
             else
-                //    await Task.Delay(i*2);
-                Thread.Sleep(i);
+                    await Task.Delay(i);
+                //Thread.Sleep(i);
         }
 
         void readdata(object sender, SerialDataReceivedEventArgs e)
         {
             string s = ((SerialPort)sender).ReadExisting();
-
+            if (s.Length < 4)
+            {
+                FileWriterRaw.Write($"raw<4:{s.Replace("\r","#CR")}|");
+                return;
+            }
+            
+            FileWriterRaw.Write($"raw:{s}|");
+            
             foreach (string line in s.Split('>'))
             {
                 var resp = line.Trim();
@@ -216,8 +223,12 @@ namespace TaycanLogger
                 }
                 if (resp.Contains("0:")) //abgehacktes Multiframe
                     resp = resp.Substring(7, resp.Length - 7);
-                if (resp.Length > 1 && resp.Substring(0, 2) == "62")
+
+                resp = resp.Replace(" ", "");
+              
+                if (resp.Length > 5 && resp.Substring(0, 2) == "62")
                 {
+                    FileWriterRaw.Write($"OK:{resp}|");
                     resp = (resp.Substring(2, resp.Length - 2));
                     //Console.WriteLine(result);
 
@@ -348,14 +359,13 @@ namespace TaycanLogger
                 }
                 else
                 {
-                    Console.Write($"{resp},");
-                    if (resp != "") return;
-                    if (resp.StartsWith("OK")) return;
-                    if (resp.StartsWith("22")) return;
+                    FileWriterRaw.Write($"ERR:{resp}|");
+                    //if (resp != "") return;
+                    //if (resp.StartsWith("OK")) return;
+                    //if (resp.StartsWith("22")) return;
 
                 }
             }
-
         }
 
         void writeLogRaw(double val, string unit, string cmd, string comment = "")
@@ -397,7 +407,6 @@ namespace TaycanLogger
         void cleanAndWrite()
         {
             //initnewline();
-
             try
             {
                 foreach (var element in newline) //BUG: element modifies error
@@ -493,16 +502,17 @@ namespace TaycanLogger
 
         private void CANInit()
         {
-            writeCAN("ATZ", 1000);   //write("ATH1");
+            writeCAN("ATR", 100);   //write("ATH1");
             writeCAN("ATE0", 200); //bringt das was?
+            writeCAN("ATS0", 200);
+            writeCAN("ATSP6", 200);
 
-            /*	writeCAN("AT SP0", 4);  // Set protokoll to 7 - ISO 15765-4 CAN (29 bit ID, 500 kbaud)
-				writeCAN("AT ST16", 4); */
-            //	writeCAN("atcp17", 4); //5 msb can header 
-            //	writeCAN("atfcsm1",200);
-            //	writeCAN("ATSHFC007B", 4); //BMS
             writeCAN("ATSH7E5", 200); //BMS
-                                      //      writeCAN("ATCRA7ED", 200);
+            writeCAN("ATCRA7ED", 200);
+            writeCAN("ATAL", 200);
+            writeCAN("ATL0", 200);
+            writeCAN("ATST16", 200);
+
 
             /*
 					{0, "ATE0"},	// Echo off
