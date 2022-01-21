@@ -34,6 +34,7 @@ namespace TaycanLogger
             
          
             myOBD = new Logger();
+            myOBD.Delay = 120;
             myOBD.LogLineReady += ProcessLogline;
 
         }
@@ -84,8 +85,7 @@ namespace TaycanLogger
             {
                 comboBoxCOMPort.Items.Add($"COM{i}");
             }
-            comboBoxCOMPort.SelectedIndex = 9-1;
-            COMport = "COM9";
+           // comboBoxCOMPort.SelectedIndex = 9-1;
         }
 
         async void button1_Click(object sender, EventArgs e)
@@ -125,6 +125,11 @@ namespace TaycanLogger
         private void checkBoxIsDebug_CheckedChanged(object sender, EventArgs e)
         {
             myOBD.debug = checkBoxIsDebug.Checked;
+        }
+
+        private void numericUpDownWaitMs_ValueChanged(object sender, EventArgs e)
+        {
+            myOBD.Delay = (int)numericUpDownWaitMs.Value;
         }
     }
 }

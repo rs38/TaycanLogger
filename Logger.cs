@@ -1,7 +1,7 @@
-﻿using OBD.NET.Desktop.Communication;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Ports;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,7 +24,7 @@ namespace TaycanLogger
 
         TextWriter FileWriter;
         TextWriter FileWriterRaw;
-        SerialConnection conn;
+        SerialPort conn;
         Dictionary<string, string> mapping;
         Dictionary<string, string> newline;
         Dictionary<string, string> lastline;
@@ -33,7 +33,8 @@ namespace TaycanLogger
 
         public bool stop = false;
 
-        public bool debug { get;  set; }
+        public bool debug { get; set; }
+        public int Delay { get; internal set; }
 
         public event EventHandler<LogLineReadyEventArgs> LogLineReady;
 
@@ -68,18 +69,20 @@ namespace TaycanLogger
                 lastline[element.Key] = "";
                 sb.Append(element.Value + ",");
             }
-
-
             FileWriter.WriteLine(sb.ToString());
         }
 
         public async Task LogfromCOM(string COM)
         {
-            using (conn = new OBD.NET.Desktop.Communication.SerialConnection(COM))
+            using (conn = new SerialPort("COM4", 38400, Parity.None, 8, StopBits.One))
             {
+                conn.RtsEnable = true;
+                conn.NewLine = "\r";
+
+                conn.DataReceived += new SerialDataReceivedEventHandler(readdata);
                 try
                 {
-                    conn.Connect();
+                    conn.Open();
                 }
                 catch (Exception ex)
                 {
@@ -90,8 +93,6 @@ namespace TaycanLogger
                 {
                     InitFiles();
                     CANInit();
-
-                    conn.DataReceived += readdata;
 
                     while (!stop)
                     {
@@ -187,180 +188,174 @@ namespace TaycanLogger
 
         async Task writeCAN(string s, int i = 1)
         {
-            char term = '\r';
-            var data = Encoding.ASCII.GetBytes(s + term);
-            conn.Write(data);
+
+
+            conn.WriteLine(s);
 
             if (i == 1)
-                //Thread.Sleep(90);//
-                await Task.Delay(90);
+                Thread.Sleep(90);//
+                                 //await Task.Delay(Delay);
             else
-                await Task.Delay(i);
-            //Thread.Sleep(i);
+                //    await Task.Delay(i*2);
+                Thread.Sleep(i);
         }
 
-        void readdata(object sender, OBD.NET.Common.Communication.EventArgs.DataReceivedEventArgs e)
+        void readdata(object sender, SerialDataReceivedEventArgs e)
         {
-            string resp = "";
-            var s = System.Text.Encoding.Default.GetString(e.Data);
+            string s = ((SerialPort)sender).ReadExisting();
 
-
-            for (int i = 0; i < e.Count; i++)
+            foreach (string line in s.Split('>'))
             {
-                char c = (char)e.Data[i];
-                switch (c)
+                var resp = line.Trim();
+                if (debug)
                 {
-                    case '\r':
-                        break;
-                    case '>':  //Console.Write("||");
-                        break;
-                    case '\n':
-                    case (char)0x00:
-                        break; // ignore
-                    default:
-                        resp += c;
-                        break;
+                    FileWriterRaw.Write(resp + "|");
+                    Logline.LogLine = resp + "|";
+                    Logline.textonly = true;
+                    OnLogLineReady(Logline);
+                }
+                if (resp.Contains("0:")) //abgehacktes Multiframe
+                    resp = resp.Substring(7, resp.Length - 7);
+                if (resp.Length > 1 && resp.Substring(0, 2) == "62")
+                {
+                    resp = (resp.Substring(2, resp.Length - 2));
+                    //Console.WriteLine(result);
+
+                    string unit = "";
+                    int i = 0;
+                    double f = 0;
+                    var text = resp.Replace(" ", "");
+
+                    var cmd = text.Substring(0, 4);
+
+                    try
+                    {
+
+                        if (cmd == "1802" | cmd == "1804") //A
+                        {
+                            var res = text.Substring(4, text.Length - 4); //3 Bytes
+                            f = (Convert.ToInt32(res, 16) / 100.0) - 1500;
+                            unit = "A Strom";
+                        }
+
+                        if (cmd == "1801" | cmd == "1E3B")
+                        {
+                            var res = text.Substring(4, text.Length - 4); //2 Bytes
+                            f = Convert.ToInt32(res, 16) / 10.0;
+                            unit = "V HV Spannung";
+                        }
+
+                        if (cmd == "F40D")
+                        {
+                            var res = text.Substring(4, text.Length - 4); //2 Bytes
+                            f = Convert.ToInt32(res, 16) * 1.0;
+                            unit = "km/h Fzg.geschw.";
+                        }
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+
+                    /*
+                                    if (cmd == "181C" | cmd == "181D")
+                                    {
+                                        var res = text.Substring(4, text.Length - 4); //2 Bytes
+                                        f = Convert.ToInt32(res, 16) - 40;
+                                        unit = "C Batt Cooling";
+                                    }
+
+                                    if (cmd == "1E10")
+                                    {
+                                        var res = text.Substring(4, text.Length - 4); //1 Byte
+                                        f = Convert.ToInt32(res, 16) - 100;
+                                        unit = "C Batt Temp";
+                                    }
+                                    if (cmd == "2608" | cmd == "2613")
+                                    {
+                                        var res = text.Substring(4, text.Length - 4); //1 Byte
+                                        f = Convert.ToInt32(res, 16) / 8.0;
+                                        unit = "°C ";
+                                    }
+
+                                    if (cmd == "1E33" | cmd == "1E34")
+                                    {
+                                        var res = text.Substring(4, text.Length - 4); //2 Bytes
+                                        f = Convert.ToInt32(res.Substring(0, 4), 16) / 10000.0;
+                                        unit = "C Cell Volt";
+                                    }
+
+
+
+                                    if (cmd == "1E0E" | cmd == "1E0F") //es kommen zwei werte zurück
+                                    {
+                                        var res = text.Substring(4, text.Length - 4);
+                                        f = Convert.ToInt32(res.Substring(2, 2), 16);
+                                        //writeLogRaw(f,"#",cmd+"2","Number");
+
+                                        f = Convert.ToUInt16(res.Substring(0, 2), 16) - 100;
+                                        unit = "°C";
+                                    }
+
+                                    if (cmd == "1E2D" | cmd == "1E2C") //es kommen zwei werte zurück
+                                    {
+                                        var res = text.Substring(4, text.Length - 4);
+                                        f = Convert.ToUInt16(res.Substring(0, 2), 16);
+                                        //	writeLogRaw(f, "Soc Batt Cell", cmd, res);
+
+                                        //	f = Convert.ToInt32(res.Substring(2, 2), 16);
+                                        unit = "°C Batt Cell";
+                                    }
+
+                                    if (cmd == "028C")
+                                    {
+                                        var res = text.Substring(4, text.Length - 4); //2 Bytes
+                                        f = Convert.ToInt32(res, 16) * 1.0;
+                                        unit = "% Soc ";
+                                    }
+
+
+                                    if (cmd == "08D2") //0x01 Motor
+                                    {
+                                        var res = text.Substring(4, text.Length - 8); //2 Bytes
+                                        f = Convert.ToInt32(res, 16) * 0.01;
+                                        unit = "% Soc Anz. ";
+                                    }
+
+
+                                    if (cmd == "475F") // PTC current
+                                    {
+                                        var res = text.Substring(4, text.Length - 8); //2 Bytes
+                                        f = Convert.ToInt32(res, 16) * 0.25;
+                                        unit = "A PTC current";
+                                    }
+
+                                    if (cmd == "27D6") // Compressor kw
+                                    {
+                                        var res = text.Substring(4, text.Length - 8); //2 Bytes
+                                        f = Convert.ToInt32(res, 16) * 0.25;
+                                        unit = "kW Compressor";
+                                    }
+
+                                    if (cmd == "1E1B" | cmd == "1E1C" | cmd == "")
+                                    {
+                                        var res = text.Substring(4, text.Length - 4);
+                                        f = Convert.ToInt32(res, 16) * 1.0;
+                                        unit = "Amp";
+                                    }     */
+
+                    writeLogRaw(f, unit, cmd, resp);
+                }
+                else
+                {
+                    Console.Write($"{resp},");
+                    if (resp != "") return;
+                    if (resp.StartsWith("OK")) return;
+                    if (resp.StartsWith("22")) return;
+
                 }
             }
 
-            if (debug)
-            {
-                FileWriterRaw.Write(resp + "|");
-                Logline.LogLine = resp + "|";
-                Logline.textonly = true;
-                OnLogLineReady(Logline) ;
-            }
-            if (resp.Contains("0:")) //abgehacktes Multiframe
-                resp = resp.Substring(7, resp.Length - 7);
-            if (resp.Length > 1 && resp.Substring(0, 2) == "62")
-            {
-                resp = (resp.Substring(2, resp.Length - 2));
-                //Console.WriteLine(result);
-
-                string unit = "";
-                int i = 0;
-                double f = 0;
-                var text = resp.Replace(" ", "");
-                var cmd = text.Substring(0, 4);
-                if (cmd == "1802" | cmd == "1804") //A
-                {
-                    var res = text.Substring(4, text.Length - 4); //3 Bytes
-                    f = (Convert.ToInt32(res, 16) / 100.0) - 1500;
-                    unit = "A Strom";
-                }
-
-                if (cmd == "1801" | cmd == "1E3B")
-                {
-                    var res = text.Substring(4, text.Length - 4); //2 Bytes
-                    f = Convert.ToInt32(res, 16) / 10.0;
-                    unit = "V HV Spannung";
-                }
-
-                if (cmd == "F40D")
-                {
-                    var res = text.Substring(4, text.Length - 4); //2 Bytes
-                    f = Convert.ToInt32(res, 16) * 1.0;
-                    unit = "km/h Fzg.geschw.";
-                }
-
-                /*
-                                if (cmd == "181C" | cmd == "181D")
-                                {
-                                    var res = text.Substring(4, text.Length - 4); //2 Bytes
-                                    f = Convert.ToInt32(res, 16) - 40;
-                                    unit = "C Batt Cooling";
-                                }
-
-                                if (cmd == "1E10")
-                                {
-                                    var res = text.Substring(4, text.Length - 4); //1 Byte
-                                    f = Convert.ToInt32(res, 16) - 100;
-                                    unit = "C Batt Temp";
-                                }
-                                if (cmd == "2608" | cmd == "2613")
-                                {
-                                    var res = text.Substring(4, text.Length - 4); //1 Byte
-                                    f = Convert.ToInt32(res, 16) / 8.0;
-                                    unit = "°C ";
-                                }
-
-                                if (cmd == "1E33" | cmd == "1E34")
-                                {
-                                    var res = text.Substring(4, text.Length - 4); //2 Bytes
-                                    f = Convert.ToInt32(res.Substring(0, 4), 16) / 10000.0;
-                                    unit = "C Cell Volt";
-                                }
-
-                              
-
-                                if (cmd == "1E0E" | cmd == "1E0F") //es kommen zwei werte zurück
-                                {
-                                    var res = text.Substring(4, text.Length - 4);
-                                    f = Convert.ToInt32(res.Substring(2, 2), 16);
-                                    //writeLogRaw(f,"#",cmd+"2","Number");
-
-                                    f = Convert.ToUInt16(res.Substring(0, 2), 16) - 100;
-                                    unit = "°C";
-                                }
-
-                                if (cmd == "1E2D" | cmd == "1E2C") //es kommen zwei werte zurück
-                                {
-                                    var res = text.Substring(4, text.Length - 4);
-                                    f = Convert.ToUInt16(res.Substring(0, 2), 16);
-                                    //	writeLogRaw(f, "Soc Batt Cell", cmd, res);
-
-                                    //	f = Convert.ToInt32(res.Substring(2, 2), 16);
-                                    unit = "°C Batt Cell";
-                                }
-
-                                if (cmd == "028C")
-                                {
-                                    var res = text.Substring(4, text.Length - 4); //2 Bytes
-                                    f = Convert.ToInt32(res, 16) * 1.0;
-                                    unit = "% Soc ";
-                                }
-
-
-                                if (cmd == "08D2") //0x01 Motor
-                                {
-                                    var res = text.Substring(4, text.Length - 8); //2 Bytes
-                                    f = Convert.ToInt32(res, 16) * 0.01;
-                                    unit = "% Soc Anz. ";
-                                }
-
-
-                                if (cmd == "475F") // PTC current
-                                {
-                                    var res = text.Substring(4, text.Length - 8); //2 Bytes
-                                    f = Convert.ToInt32(res, 16) * 0.25;
-                                    unit = "A PTC current";
-                                }
-
-                                if (cmd == "27D6") // Compressor kw
-                                {
-                                    var res = text.Substring(4, text.Length - 8); //2 Bytes
-                                    f = Convert.ToInt32(res, 16) * 0.25;
-                                    unit = "kW Compressor";
-                                }
-
-                                if (cmd == "1E1B" | cmd == "1E1C" | cmd == "")
-                                {
-                                    var res = text.Substring(4, text.Length - 4);
-                                    f = Convert.ToInt32(res, 16) * 1.0;
-                                    unit = "Amp";
-                                }
-                                */
-                writeLogRaw(f, unit, cmd, resp);
-            }
-            else
-            {
-                //	 Console.Write($"{resp},");
-                if (resp != "") return;
-                if (resp.StartsWith("OK")) return;
-                if (resp.StartsWith("22")) return;
-
-                //if( !resp.ToUpper().StartsWith("AT")) Console.Write($"{resp},");
-            }
         }
 
         void writeLogRaw(double val, string unit, string cmd, string comment = "")
@@ -378,8 +373,8 @@ namespace TaycanLogger
                 newline[cmd] = $"{val:00.000}";
                 if (cmd == "F40D") //Speed
                     Logline.Speed = val;
-                  /*  if (cmd == "1E10") //Batt Temp
-                        series2.Points.AddY(val);*/
+                /*  if (cmd == "1E10") //Batt Temp
+                      series2.Points.AddY(val);*/
             }
             else //wenn schon beschrieben, wird von einer vollen Zeile ausgegangen
             {
@@ -398,7 +393,7 @@ namespace TaycanLogger
             }
         }
 
-       
+
         void cleanAndWrite()
         {
             //initnewline();
@@ -498,16 +493,16 @@ namespace TaycanLogger
 
         private void CANInit()
         {
-            writeCAN("ATZ", 2000);   //write("ATH1");
-            writeCAN("ATE0", 500); //bringt das was?
+            writeCAN("ATZ", 1000);   //write("ATH1");
+            writeCAN("ATE0", 200); //bringt das was?
 
             /*	writeCAN("AT SP0", 4);  // Set protokoll to 7 - ISO 15765-4 CAN (29 bit ID, 500 kbaud)
 				writeCAN("AT ST16", 4); */
             //	writeCAN("atcp17", 4); //5 msb can header 
             //	writeCAN("atfcsm1",200);
             //	writeCAN("ATSHFC007B", 4); //BMS
-            writeCAN("ATSH7E8", 500); //BMS
-            writeCAN("ATCRA7ED", 500);
+            writeCAN("ATSH7E5", 200); //BMS
+                                      //      writeCAN("ATCRA7ED", 200);
 
             /*
 					{0, "ATE0"},	// Echo off
@@ -528,7 +523,7 @@ namespace TaycanLogger
             {
                 OnLogLineReady(new LogLineReadyEventArgs(DateTime.Now)
                 {
-                   textonly = true,
+                    textonly = true,
                     LogLine = "00 11 22|"
                 });
             }
@@ -561,7 +556,7 @@ namespace TaycanLogger
         public double Current { get; set; }
 
         public DateTime Time { get; set; }
-        public double Speed { get;  set; }
+        public double Speed { get; set; }
 
         public bool textonly { get; set; }
     }

@@ -40,7 +40,10 @@ namespace TaycanLogger
             this.buttonStop = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.checkBoxIsDebug = new System.Windows.Forms.CheckBox();
+            this.numericUpDownWaitMs = new System.Windows.Forms.NumericUpDown();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWaitMs)).BeginInit();
             this.SuspendLayout();
             // 
             // button1
@@ -118,11 +121,45 @@ namespace TaycanLogger
             this.checkBoxIsDebug.UseVisualStyleBackColor = true;
             this.checkBoxIsDebug.CheckedChanged += new System.EventHandler(this.checkBoxIsDebug_CheckedChanged);
             // 
+            // numericUpDownWaitMs
+            // 
+            this.numericUpDownWaitMs.Location = new System.Drawing.Point(71, 708);
+            this.numericUpDownWaitMs.Maximum = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+            this.numericUpDownWaitMs.Minimum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.numericUpDownWaitMs.Name = "numericUpDownWaitMs";
+            this.numericUpDownWaitMs.Size = new System.Drawing.Size(78, 26);
+            this.numericUpDownWaitMs.TabIndex = 9;
+            this.numericUpDownWaitMs.Value = new decimal(new int[] {
+            120,
+            0,
+            0,
+            0});
+            this.numericUpDownWaitMs.ValueChanged += new System.EventHandler(this.numericUpDownWaitMs_ValueChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(154, 714);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(71, 20);
+            this.label1.TabIndex = 10;
+            this.label1.Text = "ms delay";
+            // 
             // LogFormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1747, 862);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.numericUpDownWaitMs);
             this.Controls.Add(this.checkBoxIsDebug);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.buttonStop);
@@ -135,6 +172,7 @@ namespace TaycanLogger
             this.Text = "TayCANBusLog v0.02";
             this.Load += new System.EventHandler(this.LogFormMain_Load);
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWaitMs)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -149,6 +187,8 @@ namespace TaycanLogger
         private System.Windows.Forms.Button buttonStop;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.CheckBox checkBoxIsDebug;
+        private System.Windows.Forms.NumericUpDown numericUpDownWaitMs;
+        private System.Windows.Forms.Label label1;
     }
 }
 
