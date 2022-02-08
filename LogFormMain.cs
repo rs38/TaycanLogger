@@ -5,38 +5,44 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Linq;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.Configuration;
 
 namespace TaycanLogger
 {
     public partial class LogFormMain : Form
     {
-        Logger myOBD;
-
-
+        Logger myLogger;
+        OBD myOBD;
+        
         Series series1;
         Series series2;
         Series series3;
         Series series4;
 
+        Configuration configSettings;
+        KeyValueConfigurationCollection config;
 
-        string COMport { 
-            get;
-            set; }
-
+        string ConnectionName { 
+            get;  set; }
 
         public LogFormMain()
         {
             Control.CheckForIllegalCrossThreadCalls = false;
-
-            InitializeComponent();
-
-            InitChart();
-            InitCOMDropbox();
             
+            InitializeComponent();
+            configSettings = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            configSettings.AppSettings.Settings.Add("DeviceName", "OBDKlein");
+            config = configSettings.AppSettings.Settings;
+            configSettings.Save(ConfigurationSaveMode.Full, true);
+            ConfigurationManager.RefreshSection("appSettings");
+            InitChart();
+          
+            ConnectionName = "ink";
+            myOBD = new OBD(ConnectionName);
+            myLogger = new Logger(myOBD);
          
-            myOBD = new Logger();
-            myOBD.Delay = 120;
-            myOBD.LogLineReady += ProcessLogline;
+            InitCOMDropbox();
+            myLogger.Delay = 120;
 
         }
 
@@ -82,12 +88,13 @@ namespace TaycanLogger
         }
        private void InitCOMDropbox()
         {
-            for (int i = 1; i < 12; i++)
-            {
-                comboBoxCOMPort.Items.Add($"COM{i}");
-            }
-            comboBoxCOMPort.SelectedIndex =  -1 + (int)Properties.Settings.Default["COMport"];
-           COMport= "COM"+ Properties.Settings.Default["COMport"].ToString();
+           var s = myOBD.DiscoverDevices();
+            comboBoxCOMPort.DataSource = s;
+
+            var x = config["DeviceName"].Value;
+          
+            comboBoxCOMPort.SelectedText = x;
+            ConnectionName = x;
         }
 
         async void button1_Click(object sender, EventArgs e)
@@ -95,25 +102,26 @@ namespace TaycanLogger
             textBoxDebug.Text = "starting....";
 
 
-            myOBD.stop = false;
-            await myOBD.LogfromCOM(COMport);
+            myLogger.stop = false;
+            await myLogger.LogfromCOM(ConnectionName);
         }
 
       
         private void comboBoxCOMPort_SelectedIndexChanged(object sender, EventArgs e)
         {
-            COMport = $"COM{((ComboBox)sender).SelectedIndex+1}";
-            Debug.WriteLine($"COM{((ComboBox)sender).SelectedIndex+1} seleceted");
-            textBoxDebug.Text += $"COM{((ComboBox)sender).SelectedIndex+1} seleceted\r\n";
+            ConnectionName = ((ComboBox)sender).SelectedItem.ToString();
+            Debug.WriteLine($"{ConnectionName} seleceted");
+            textBoxDebug.Text += $"{ConnectionName} seleceted\r\n";
 
-            Properties.Settings.Default["COMport"] = ((ComboBox)sender).SelectedIndex + 1;
-            Properties.Settings.Default.Save();
+            config["DeviceName"].Value = ((ComboBox)sender).SelectedValue.ToString();
+            configSettings.Save(ConfigurationSaveMode.Full, true);
+            ConfigurationManager.RefreshSection("appSettings");
 
         }
 
          void buttonStop_Click(object sender, EventArgs e)
         {
-            myOBD.stop = true;
+            myLogger.stop = true;
             textBoxDebug.Text = "stopped....\r\n";
         }
 
@@ -122,19 +130,16 @@ namespace TaycanLogger
 
         }
 
-        private void button2_Click(object sender, EventArgs e)
-        {
-            myOBD.test();
-        }
+      
 
         private void checkBoxIsDebug_CheckedChanged(object sender, EventArgs e)
         {
-            myOBD.debug = checkBoxIsDebug.Checked;
+            myLogger.debug = checkBoxIsDebug.Checked;
         }
 
         private void numericUpDownWaitMs_ValueChanged(object sender, EventArgs e)
         {
-            myOBD.Delay = (int)numericUpDownWaitMs.Value;
+            myLogger.Delay = (int)numericUpDownWaitMs.Value;
         }
 
         private void chart1_Click(object sender, EventArgs e)
