@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Linq;
-using System.Windows.Forms.DataVisualization.Charting;
+//using System.Windows.Forms.DataVisualization.Charting;
 using System.Configuration;
 
 namespace TaycanLogger
@@ -14,10 +14,10 @@ namespace TaycanLogger
         Logger myLogger;
         OBD myOBD;
         
-        Series series1;
+       /* Series series1;
         Series series2;
         Series series3;
-        Series series4;
+        Series series4; */
 
         Configuration configSettings;
         KeyValueConfigurationCollection config;
@@ -35,7 +35,7 @@ namespace TaycanLogger
             config = configSettings.AppSettings.Settings;
             configSettings.Save(ConfigurationSaveMode.Full, true);
             ConfigurationManager.RefreshSection("appSettings");
-            InitChart();
+            //InitChart();
           
             ConnectionName = "ink";
             myOBD = new OBD(ConnectionName);
@@ -46,7 +46,7 @@ namespace TaycanLogger
 
         }
 
-         void ProcessLogline(object sender, LogLineReadyEventArgs e)
+      /*   void ProcessLogline(object sender, LogLineReadyEventArgs e)
         {
             if (e.textonly)
                 textBoxDebug.AppendText(e.LogLine);
@@ -80,7 +80,7 @@ namespace TaycanLogger
             chart1.Series.Add(series2);
             chart1.Series.Add(series3);
             chart1.Series.Add(series4);
-        }
+        }*/
 
         void HandleSomethingHappened(string foo)
         {

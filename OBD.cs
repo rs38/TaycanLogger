@@ -15,7 +15,6 @@ namespace TaycanLogger
         BluetoothClient BTclient;
         BluetoothDeviceInfo device;
 
-        TcpClient NETclient;
         NetworkStream stream;
         byte[] buffer;
         char[] charsToTrim = { '\r', ' ', '>', '\0' };

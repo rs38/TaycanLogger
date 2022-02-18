@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace TaycanLogger
@@ -13,6 +14,11 @@ namespace TaycanLogger
 				sb.Append(element.Value.Replace(',', '.') + ",");
 			}
 			return sb.ToString();
+		}
+
+		public static void Dump(this object dict)
+		{
+			Console.WriteLine(dict.ToString());
 		}
 	}
 
