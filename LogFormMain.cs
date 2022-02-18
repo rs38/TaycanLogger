@@ -4,20 +4,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Linq;
-//using System.Windows.Forms.DataVisualization.Charting;
+using System.Windows.Forms.DataVisualization.Charting;
 using System.Configuration;
 
 namespace TaycanLogger
 {
     public partial class LogFormMain : Form
     {
-        Logger myLogger;
-        OBD myOBD;
+      
+        OBDSession myOBD;
         
-       /* Series series1;
+        Series series1;
         Series series2;
         Series series3;
-        Series series4; */
+        Series series4; 
 
         Configuration configSettings;
         KeyValueConfigurationCollection config;
@@ -38,26 +38,21 @@ namespace TaycanLogger
             //InitChart();
           
             ConnectionName = "ink";
-            myOBD = new OBD(ConnectionName);
-            myLogger = new Logger(myOBD);
+            myOBD = new OBDSession(ConnectionName);
+         
          
             InitCOMDropbox();
-            myLogger.Delay = 120;
-
+         
         }
 
-      /*   void ProcessLogline(object sender, LogLineReadyEventArgs e)
+        void ProcessLogline( )
         {
-            if (e.textonly)
-                textBoxDebug.AppendText(e.LogLine);
-            else
-            {
-                textBoxDebug.AppendText(e.Time + " " + e.LogLine);
-                series1.Points.AddY(e.Power);
-                series2.Points.AddY(e.Current);
-                series3.Points.AddY(e.Voltage);
-                series4.Points.AddY(e.Speed);
-            }
+           
+                series1.Points.AddY();
+                series2.Points.AddY();
+                series3.Points.AddY();
+                series4.Points.AddY();
+            
         }
 
         private void InitChart()
@@ -80,7 +75,7 @@ namespace TaycanLogger
             chart1.Series.Add(series2);
             chart1.Series.Add(series3);
             chart1.Series.Add(series4);
-        }*/
+        }
 
         void HandleSomethingHappened(string foo)
         {
@@ -88,8 +83,7 @@ namespace TaycanLogger
         }
        private void InitCOMDropbox()
         {
-           var s = myOBD.DiscoverDevices();
-            comboBoxCOMPort.DataSource = s;
+            comboBoxCOMPort.DataSource = myOBD.GetPairedDevices();
 
             var x = config["DeviceName"].Value;
           
@@ -101,9 +95,7 @@ namespace TaycanLogger
         {
             textBoxDebug.Text = "starting....";
 
-
-            myLogger.stop = false;
-            await myLogger.LogfromCOM(ConnectionName);
+          //  await myLogger.LogfromCOM(ConnectionName);
         }
 
       
@@ -121,7 +113,7 @@ namespace TaycanLogger
 
          void buttonStop_Click(object sender, EventArgs e)
         {
-            myLogger.stop = true;
+         
             textBoxDebug.Text = "stopped....\r\n";
         }
 
@@ -134,12 +126,12 @@ namespace TaycanLogger
 
         private void checkBoxIsDebug_CheckedChanged(object sender, EventArgs e)
         {
-            myLogger.debug = checkBoxIsDebug.Checked;
+          
         }
 
         private void numericUpDownWaitMs_ValueChanged(object sender, EventArgs e)
         {
-            myLogger.Delay = (int)numericUpDownWaitMs.Value;
+         
         }
 
         private void chart1_Click(object sender, EventArgs e)

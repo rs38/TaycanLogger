@@ -1,95 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Ports;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace TaycanLogger
 {
-    public class Logger
-    {
+   
         //todo
-        //define conversion+ ID Data in parameter format
         //add SoH
         // "broadcast" ??
         // parse multi-frame data stolpert dabei
         // FileLogger auslagern
-        // folge Zeile abwarten, wenn zu klein
         // 0x2A continous
-        // echo off testen im Terminal
         // further ideas: reset ECUs, aktivate passenger screen
 
-
-        LogLineReadyEventArgs Logline;
-
-        TextWriter FileWriter;
-        TextWriter FileWriterRaw;
-
-        OBD run;
-        Dictionary<string, string> mapping;
-        Dictionary<string, string> newline;
-        Dictionary<string, string> lastline;
-
-
-
-        public bool stop = false;
-
-        public bool debug { get; set; }
-        public int Delay { get; internal set; }
-
-      
-
-
-        public Logger(OBD myOBD)
-        {
-            InitMapping();
-            mapping = new Dictionary<string, string>();
-            debug = true;
-            run = myOBD;
-            Logline = new LogLineReadyEventArgs(DateTime.Now)
-            {
-                textonly = true,
-                LogLine = "nur ein Test\r\n"
-            };
-        }
-
-
-        void InitMapping()
-        {
-            mapping = new Dictionary<string, string>()
-           {
-                { "0000","time" },
-                { "0001","Power" },
-                { "1801","HV Volt1" },
-                { "1802","Current 1"},
-                { "F40D","Veh.Speed"},
-                /*     { "1E1B","BattlimitChar"},
-                     { "1E1C","BattlimDisc"},
-                     { "028C","Soc gesamt"},
-
-                 //	{"1E33","CellVoltMax"},
-                 //	{"1E34","CellVoltMin"},
-                   //  { "1804","Current 2"},
-                  //	{ "1E0E1E0F","TempBat max"},
-                  //   { "1E0F","TempBat min"},
-                    { "1E0F2","TempBat min #"}
-                     { "1E0E2","TempBat max #"}, 
+        /*
+                	
                      { "181C","Cool Inlet"},
                      { "181D","Cool Outlet"},
                      { "1E10","T Batt Ave"},
-                  { "1E3B","CellVoltSum"},  
                    { "1E2D","SocCell min"},
                      { "1E2C","SocCell max"},
                      { "08D2","SoC Anzeige"},
                      {"475F", "PTC current"},
                      {"2608","Outside Temp"},
-                     {"2613","Inside Temp"}
-                 /*	{"27D6","Kompressor kW"},
-                     {"0530","Dashboard"}
+                     {"2613","Inside Temp"},
 
-                   { "1E2D2","SocCell min #"},
+                	{"27D6","Kompressor kW"},
+                     {"0530","Dashboard"},
+                { "1E2D2","SocCell min #"},
                      { "1E2C2","SocCell max #"},
                  { "192A","Reqrmt_BMS_CoolLvl"},
                      { "192C","StateBattCoolPump"}, 
@@ -103,323 +41,21 @@ namespace TaycanLogger
                  RSP0002;19:35:18.655;LL_DashBoardUDS BV_DashBoardUDS EV_DashBoardLGEPO513_004;Berechnete, angezeigte Werte Read Data By Identifier ;22 05 30;9982
                  62 05 30 00 22 c1 24 ce 25 a1 80 00 01 dd d0 01 80 00 00 00 05 32 78 1b d8 80 00 46 00 18 00 00 00 00 01 60 23 82 7f 84 c9 a6 00 dc 00 00 00 00 3d b8 01 5d 4c 45 44 38 59 52 4c 45 00 00 00;9981
                 */
-            };
+      
+   
+        
+        //("22F19E"); //VariantIdentificationAndSelection
+        
 
-
-            newline = new Dictionary<string, string>();
-            lastline = new Dictionary<string, string>();
-
-            initnewline();
-        }
-
-
-        private void InitFiles()
-        {
-            FileWriter = new StreamWriter($@".\OBDTaycan{DateTime.Now:yyMMddHHmmssf}.csv");
-            FileWriterRaw = new StreamWriter($@".\OBDTaycan{DateTime.Now:yyMMddHHmmssf} Raw.csv");
-            FileWriterRaw.WriteLine("time;value;unit;cmd;comment");
-
-
-            var sb = new StringBuilder();
-
-            foreach (var element in mapping)
-            {
-                lastline[element.Key] = "";
-                sb.Append(element.Value + ",");
-            }
-            FileWriter.WriteLine(sb.ToString());
-        }
-
-
-        void initELMBench(OBD run)
-        {
-            //run.write("atz");
-            //run.read().Dump();
-
-            run.writeAll(new string[]
-                {"atws","ATSP9",
-        "ate0", "atdp",
-        "atcp00","atst30",
-            "atsh0ffffe",
-            "atcra01000021", //ODBlink
-			//"atcra021", //normal
-			"atcaf0",
-            "ats0",
-            "ath0",
-            "atat1"});
-        }
-        void initELMTaycan(OBD run)
-        {
-            run.writeAll(new string[]
-                {"atr","ATSP6",
-                  "ate0", "atdp",
-	        //	"ATCRA7ED",
-		    	"atsh7e5",
-            "ats0",
-	     //		"ath0",
-			"atat1"});
-
-        }
-        public async Task LogfromCOM(string ConnName)
-        {
-            InitFiles();
-            
-            
-            if (!run.init()) return;
-
-            initELMBench(run);
-;
-            while (!stop)
-            {
-                foreach (var element in mapping)
-                {
-                    if (element.Value == "SoC Anzeige" | element.Value == "kwh/100km" | element.Value == "PTC current"
-                    | element.Value == "Outside Temp" | element.Value == "Inside Temp" | element.Value == "Kompressor kW" | element.Value == "Dashboard") continue; //hack
-
-                    if (Convert.ToUInt32(element.Key, 16) > 2) //sonst ist es custom
-                        await writeCAN("22" + element.Key);
-                }
-                //hack();
-                FileWriter.Flush();
-                FileWriterRaw.Flush();
-            }
-
-            Thread.Sleep(1000);
-            FileWriter.Close();
-            FileWriterRaw.Close();
-        }
-
-
-
-
-
-
-        void hack2a()
-        {
-            return;
-            writeCAN("atz");
-            writeCAN("atsh17fc00b7");
-            writeCAN("atsh17fe00b7");
-            writeCAN("atfcsh17fc00b7");
-            writeCAN("atfcsd300001");
-            writeCAN("atfcsm1");
-            writeCAN("22F19E"); //VariantIdentificationAndSelection
-
-        }
-
-        void hack()
-        {
-
-            writeCAN("atsh7E0", 40); writeCAN("atcra7E8", 30); //0x01 Motor
-            writeCAN("2208D2"); //Soc Anzeige
-
-
-            writeCAN("atsh742", 40); writeCAN("atcra7AC", 40);//Thermo 0xC5
-            writeCAN("22475F"); //heater current
-                                //	writeCAN("2227D6",200); //Compress kw Probleme.
-
-
-            writeCAN("ATSH746", 60); writeCAN("ATCRA7B0", 40); //climate control
-                                                               //writeCAN("222609"); // Outside Temp Sensor 62 26 09 28 x/2-50 °C 40 -40?
-            writeCAN("222608"); // Outside Temp Calc 62 26 09 23 x/2-50 °C  35
-            writeCAN("222613");  // Inside temperature, °C
-
-            /*	writeCAN("ATSH714",40); writeCAN("ATCRA77E",50);  //Kombiinstr,
-                    writeCAN("220530");
-                */
-            writeCAN("ATSH7E5", 40); writeCAN("ATCRA7ED", 50);
-
-        }
-
-        void experiementell()
-        {
+       
             //write("22 F446"); //"Außentemperatur"; ID: F446 x-40
             //write("22 0432"); //"Historiendaten 35 Charge_Power_Limit_Time_TEMP ID: 0432 32bit werte x/10 in Sec.
 
             //write("22 1E32"); // Total accumulated charged and discharge
-
-            //writeCAN("atcra7ac");
-            //	writeCAN("atfcsh742");
-            //writeCAN("atfcsh742");
-            //	writeCAN("atfcsd300001");
-            //		writeCAN("atfcsm1");
-
-            writeCAN("220801");  // PTC air heater inside, ampere
-
-            writeCAN("ATSH 17FC007B"); //BMS
-            writeCAN("ATCRA17FE007B");
-
-            writeCAN("ATSH17FC00C7"); // HVChargBoost
-            writeCAN("ATCRA17FE00C7");
-
-
-
-            writeCAN("ATCRA17 FE 00 B7");  // DCDC Basic
-
             //	charger_coolant_temperature "15E2" Value: 45 
             //17 FE 00 8B Gateway?
 
-        }
-
-        async Task writeCAN(string s, int i = 1)
-        {
-            await run.writeReadAsync(s);
-
-        }
-
-        void readdata()
-        {
-            string s = "";
-            FileWriterRaw.Write($"raw:{s}|");
-
-            foreach (string line in s.Split('>'))
-            {
-
-                if (string.IsNullOrEmpty(line)) continue;
-
-
-                var resp = line.Trim();
-                if (debug)
-                {
-                    FileWriterRaw.Write(resp + "|");
-                    Logline.LogLine = resp + "|";
-                    Logline.textonly = true;
-                 
-                }
-                if (resp.Contains("0:")) //abgehacktes Multiframe
-                    resp = resp.Substring(7, resp.Length - 7);
-
-                resp = resp.Replace(" ", "");
-
-                if (resp.Length > 5 && resp.Substring(0, 2) == "62")
-                {
-                    FileWriterRaw.Write($"OK:{resp}|");
-                    var text = (resp.Substring(2, resp.Length - 2));
-
-                    string unit = "";
-                    int i = 0;
-                    double f = 0;
-                    //                    var text = resp.Replace(" ", "");
-
-                    var cmd = text.Substring(0, 4);
-
-                    try
-                    {
-
-                        if (cmd == "1802" | cmd == "1804") //A
-                        {
-                            var res = text.Substring(4, text.Length - 4); //3 Bytes
-                            f = (Convert.ToInt32(res, 16) / 100.0) - 1500;
-                            unit = "A Strom";
-                        }
-
-                        if (cmd == "1801" | cmd == "1E3B")
-                        {
-                            var res = text.Substring(4, text.Length - 4); //2 Bytes
-                            f = Convert.ToInt32(res, 16) / 10.0;
-                            unit = "V HV Spannung";
-                        }
-
-                        if (cmd == "F40D")
-                        {
-                            var res = text.Substring(4, text.Length - 4); //2 Bytes
-                            f = Convert.ToInt32(res, 16) * 1.0;
-                            unit = "km/h Fzg.geschw.";
-                        }
-                    }
-                    catch (Exception)
-                    {
-
-                    }
-
-                  
-                    writeLogRaw(f, unit, cmd, resp);
-                }
-                else
-                {
-                    FileWriterRaw.Write($"ERR:{resp}|");
-                    //if (resp != "") return;
-                    //if (resp.StartsWith("OK")) return;
-                    //if (resp.StartsWith("22")) return;
-
-                }
-            }
-        }
-
-        void writeLogRaw(double val, string unit, string cmd, string comment = "")
-        {
-            //Console.WriteLine($"{DateTime.Now:yyMMdd HH:mm:ss.ff};{val:00.00};{unit};{cmd};{comment}");
-            FileWriterRaw.WriteLine($"{DateTime.Now:yyMMdd HH:mm:ss.ff};{val:00.00};{unit}; {cmd} ; {comment}");
-            addDataToFullRow(cmd, val);
-        }
-
-        void addDataToFullRow(string cmd, double val)
-        {
-            Logline = new LogLineReadyEventArgs(DateTime.Now);
-            if (newline[cmd] == "")
-            {
-                newline[cmd] = $"{val:00.000}";
-                if (cmd == "F40D") //Speed
-                    Logline.Speed = val;
-                /*  if (cmd == "1E10") //Batt Temp
-                      series2.Points.AddY(val);*/
-            }
-            else //wenn schon beschrieben, wird von einer vollen Zeile ausgegangen
-            {
-                if (Double.TryParse(newline["1801"], out double voltage) & Double.TryParse(newline["1802"], out double current))
-                {
-                    newline["0001"] = ($"{voltage * current / 1000.0:00.000}");
-                    Logline.Power = (voltage * current / 1000.0);
-                    Logline.Voltage = voltage;
-                    Logline.Current = current;
-                }
-                else
-                    newline["0001"] = "0";
-
-                cleanAndWrite();
-                newline[cmd] = ($"{val:0.000}"); //und schon die neue Zeile befüllen
-            }
-        }
-
-
-        void cleanAndWrite()
-        {
-            //initnewline();
-            try
-            {
-                foreach (var element in newline) //BUG: element modifies error
-                {
-                    if (element.Value == "")
-                        newline[element.Key] = lastline[element.Key];
-                }
-            }
-            catch (Exception)
-            {
-            }
-            FileWriter.WriteLine(newline.ToCSV());
-            //Console.WriteLine(newline.ToCSV());
-            Logline.LogLine = newline.ToCSV();
-            Logline.textonly = false;
- 
-            initnewline();
-        }
-
-        void initnewline()
-        {
-
-            lastline = new Dictionary<string, string>(newline);
-            //newline.Clear();
-            foreach (var element in mapping)
-            {
-                newline[element.Key] = "";
-                //	lastline[element.Key] = "";
-            }
-            newline["0000"] = $"{DateTime.Now:HH:mm:ss.ff}";
-        }
-
-
-
-
+        
 
         /*
                 {0, "ATE0"},	// Echo off
@@ -433,23 +69,6 @@ namespace TaycanLogger
 
     }
 
-    public class LogLineReadyEventArgs : EventArgs
-    {
-        public LogLineReadyEventArgs(DateTime time)
-        {
-            Time = time;
-        }
-        public string LogLine { get; set; }
-        public double Power { get; set; }
+   
 
-        public double Voltage { get; set; }
-
-        public double Current { get; set; }
-
-        public DateTime Time { get; set; }
-        public double Speed { get; set; }
-
-        public bool textonly { get; set; }
-    }
-}
 
