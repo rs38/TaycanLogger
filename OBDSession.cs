@@ -20,28 +20,29 @@ namespace TaycanLogger
 	{
 		public List<OBDCommand> cmds;
 		string Devicename;
-		OBDDevice runner;
+		OBDDevice myDevice;
 
 		string[] initSequence;
 
-		public OBDSession(string devicename)
+		public OBDSession()
+        {
+			initCMDsWithConfig();
+			myDevice = new OBDDevice();
+		}
+
+        public void InitDevice(string devicename)
+        {
+            Devicename = devicename;
+       
+            if (!myDevice.init(devicename)) throw new NotSupportedException("Adapter not found");
+           
+            myDevice.writeAll(initSequence);
+        }
+
+        public List<string> GetPairedDevices() => myDevice.GetPairedDevices();
+		void initCMDsWithConfig()
 		{
 			cmds = new List<OBDCommand>();
-			Devicename = devicename;
-			runner = new OBDDevice(devicename);
-			if (!runner.init()) throw new NotSupportedException();
-			cmds = initConfig();
-			runner.writeAll(initSequence);
-		}
-
-		void IDisposable.Dispose()
-		{
-			((IDisposable)runner).Dispose();
-		}
-
-		public List<string> GetPairedDevices() => runner.GetPairedDevices();
-		List<OBDCommand> initConfig()
-		{
 			var config = XDocument.Load(@"C:\Users\Falco\OneDrive\Ablage\Auto\realdash\RealDash-extras\OBD2\obd2_Taycan.xml");
 			//var config = XDocument.Load(@"C:\Users\Falco\OneDrive\Ablage\Auto\realdash\RealDash-extras\OBD2\realdash_obd.xml");
 			var init = config.Elements().Elements("init");
@@ -49,7 +50,7 @@ namespace TaycanLogger
 
 			foreach (var cmd in config.Elements().Elements("rotation").Elements("command"))
 			{
-				var c = new OBDCommand(runner)
+				var c = new OBDCommand(myDevice)
 				{
 					send = cmd.Attribute("send").Value,
 					skipCount = int.Parse(cmd.Attribute("skipCount").Value) + 1,
@@ -61,7 +62,10 @@ namespace TaycanLogger
 				};
 				cmds.Add(c);
 			}
-			return cmds;
+		}
+		void IDisposable.Dispose()
+		{
+			((IDisposable)myDevice).Dispose();
 		}
 	}
 }

@@ -1,0 +1,9 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="TaycanLogger.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="DeviceName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">OBDKlein</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

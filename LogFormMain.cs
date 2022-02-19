@@ -6,21 +6,22 @@ using System.Windows.Forms;
 using System.Linq;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace TaycanLogger
 {
     public partial class LogFormMain : Form
     {
       
-        OBDSession myOBD;
+        OBDSession myOBDSession;
+        OBDWorker myWorker;
         
         Series series1;
         Series series2;
         Series series3;
-        Series series4; 
+        Series series4;
 
-        Configuration configSettings;
-        KeyValueConfigurationCollection config;
+        ILogger logger;
 
         string ConnectionName { 
             get;  set; }
@@ -28,21 +29,41 @@ namespace TaycanLogger
         public LogFormMain()
         {
             Control.CheckForIllegalCrossThreadCalls = false;
-            
+
             InitializeComponent();
-            configSettings = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            configSettings.AppSettings.Settings.Add("DeviceName", "OBDKlein");
-            config = configSettings.AppSettings.Settings;
-            configSettings.Save(ConfigurationSaveMode.Full, true);
-            ConfigurationManager.RefreshSection("appSettings");
-            //InitChart();
-          
-            ConnectionName = "ink";
-            myOBD = new OBDSession(ConnectionName);
+            ReadConfig();
+            CreateLogger();
+
+            InitChart();
+
          
-         
+            myOBDSession = new OBDSession();
+            myWorker = new OBDWorker();
+
             InitCOMDropbox();
-         
+
+        }
+
+        private  void CreateLogger()
+        {
+            var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder
+                    .AddFilter("Microsoft", LogLevel.Warning)
+                    .AddFilter("System", LogLevel.Warning)
+                    .AddFilter("LoggingConsoleApp.Program", LogLevel.Debug)
+                    .AddDebug();
+               
+
+            });
+
+            logger = loggerFactory.CreateLogger<LogFormMain>();
+            logger.LogInformation($"start log at {DateTime.Now}!");
+        }
+
+        private void ReadConfig()
+        {
+          ConnectionName=  Properties.Settings.Default.DeviceName;
         }
 
         void ProcessLogline( )
@@ -57,6 +78,7 @@ namespace TaycanLogger
 
         private void InitChart()
         {
+            chart1 = new Chart();
             var ca = new ChartArea("A1");
             var ca2 = new ChartArea("A2");
             var ca3 = new ChartArea("A3");
@@ -83,19 +105,16 @@ namespace TaycanLogger
         }
        private void InitCOMDropbox()
         {
-            comboBoxCOMPort.DataSource = myOBD.GetPairedDevices();
-
-            var x = config["DeviceName"].Value;
-          
-            comboBoxCOMPort.SelectedText = x;
-            ConnectionName = x;
+            comboBoxCOMPort.DataSource = myOBDSession.GetPairedDevices();
+            comboBoxCOMPort.SelectedText = Properties.Settings.Default.DeviceName;
+           
         }
 
-        async void button1_Click(object sender, EventArgs e)
+        async void ButtonDoLog_Click(object sender, EventArgs e)
         {
             textBoxDebug.Text = "starting....";
-
-          //  await myLogger.LogfromCOM(ConnectionName);
+            myOBDSession.InitDevice(ConnectionName);
+            await myWorker.Work(myOBDSession);
         }
 
       
@@ -104,11 +123,9 @@ namespace TaycanLogger
             ConnectionName = ((ComboBox)sender).SelectedItem.ToString();
             Debug.WriteLine($"{ConnectionName} seleceted");
             textBoxDebug.Text += $"{ConnectionName} seleceted\r\n";
-
-            config["DeviceName"].Value = ((ComboBox)sender).SelectedValue.ToString();
-            configSettings.Save(ConfigurationSaveMode.Full, true);
-            ConfigurationManager.RefreshSection("appSettings");
-
+            
+            Properties.Settings.Default.DeviceName = ((ComboBox)sender).SelectedValue.ToString();
+            Properties.Settings.Default.Save();
         }
 
          void buttonStop_Click(object sender, EventArgs e)
@@ -119,10 +136,7 @@ namespace TaycanLogger
 
         private void LogFormMain_Load(object sender, EventArgs e)
         {
-
         }
-
-      
 
         private void checkBoxIsDebug_CheckedChanged(object sender, EventArgs e)
         {

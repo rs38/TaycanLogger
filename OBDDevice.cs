@@ -21,8 +21,9 @@ namespace TaycanLogger
 		BluetoothClient BTclient;
 		BluetoothDeviceInfo device;
 
-		TcpClient NETclient;
-		NetworkStream stream;
+        public bool IsDebugmode { get; set; }
+
+        NetworkStream stream;
 		byte[] buffer;
 		char[] charsToTrim = { '\r', ' ', '>', '\0' };
 		string dongleName;
@@ -30,45 +31,23 @@ namespace TaycanLogger
 		enum DeviceType { BT, IP, USB }
 		DeviceType devicetype;
 
-		public OBDDevice(string _dongleName)
+		public OBDDevice()
+		{
+			BTclient = new BluetoothClient();
+		}
+
+		public bool init(string _dongleName)
 		{
 			this.dongleName = _dongleName;
 			buffer = new byte[80];
-		}
-
-		public bool init()
-		{
-			if (dongleName.Contains("192"))
-			{
-				devicetype = DeviceType.IP;
-				return initIP(dongleName);
-			}
-			else
-			{
 				devicetype = DeviceType.BT;
-				BTclient = new BluetoothClient();
 				device = getPairedAndroidDongle(dongleName);
 				return initBT();
-			}
 		}
 
 		private void BluetoothClientConnectCallback(IAsyncResult ar)
 		{
 			Console.WriteLine(ar.ToString());
-		}
-
-		bool initIP(string ip)
-		{
-			try
-			{
-				TcpClient client = new TcpClient(ip, 35000);
-				NetworkStream stream = client.GetStream();
-			}
-			catch (Exception ex)
-			{
-				return false;
-			}
-			return true;
 		}
 
 		bool initBT()
@@ -85,6 +64,7 @@ namespace TaycanLogger
 			}
 			catch (Exception ex)
 			{
+				Console.WriteLine(ex.Message);
 				return false;
 			}
 			return true;
@@ -95,9 +75,13 @@ namespace TaycanLogger
 		public async Task<string> WriteReadAsync(string str)
 		{
 			await writeAsync(str);
-			//	Console.Write(str);
 			var temp = await readAsync();
-			//	Console.Write(temp);
+			if (IsDebugmode)
+			{
+				Console.Write(temp);
+				Console.Write(str);
+			}
+
 			return temp;
 		}
 
@@ -135,7 +119,8 @@ namespace TaycanLogger
 			}
 		}
 
-		public List<string> GetPairedDevices() => BTclient.PairedDevices.Select(p => p.DeviceName).ToList();
+		public  List<string> GetPairedDevices() => BTclient.PairedDevices.Select(p => p.DeviceName).ToList();
+
 		BluetoothDeviceInfo getPairedAndroidDongle(string name)
 		{
 			var bts = BTclient.PairedDevices;

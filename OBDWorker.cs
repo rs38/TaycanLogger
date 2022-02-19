@@ -15,12 +15,13 @@ using System.Xml.Linq;
 
 namespace TaycanLogger
 {
-	class LinqPad
+	class OBDWorker
 	{
 
-		async Task Main()
+		public async Task Work(OBDSession executor)
 		{
-			using (var executor = new OBDSession("ink"))
+
+			using ( executor)
 			{
 				var sw = new Stopwatch();
 				sw.Start();

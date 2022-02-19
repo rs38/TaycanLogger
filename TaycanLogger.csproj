@@ -9,9 +9,42 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="model\UDS.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Logger.info.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Logger.info.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="model\UDS.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="InTheHand.BluetoothLE" Version="4.0.22" />
     <PackageReference Include="InTheHand.Net.Bluetooth" Version="4.0.26" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
     <PackageReference Include="System.Windows.Forms.DataVisualization" Version="1.0.0-prerelease.19212.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 
 </Project>
