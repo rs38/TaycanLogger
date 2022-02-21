@@ -74,10 +74,10 @@ namespace TaycanLogger
 		public async Task<string> WriteReadAsync(string str)
 		{
 			await writeAsync(str);
-			var temp = await readAsync();
-			Debug.WriteLine($"send {str}:received{temp}");
+			var value = await readAsync();
+			Debug.WriteLine($"send:{str},received:{value}");
 			
-			return temp;
+			return value;
 		}
 
 		public async Task writeAsync(string str)

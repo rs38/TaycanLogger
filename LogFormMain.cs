@@ -70,11 +70,9 @@ namespace TaycanLogger
 
         async void ButtonDoLog_Click(object sender, EventArgs e)
         {
-           
             await myOBDSession.DoLogAsync(UIDeviceName);
         }
-
-      
+              
         private void comboBoxCOMPort_SelectedIndexChanged(object sender, EventArgs e)
         {
             UIDeviceName = ((ComboBox)sender).SelectedItem.ToString();

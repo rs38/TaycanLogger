@@ -21,7 +21,7 @@ namespace TaycanLogger
 
         public OBDSession()
         {
-            initCMDsWithConfig();
+           
             myDevice = new OBDDevice();
 
         }
@@ -37,7 +37,7 @@ namespace TaycanLogger
         void initCMDsWithConfig()
         {
             cmds = new List<OBDCommand>();
-            var config = XDocument.Load(@"C:\Users\Falco\OneDrive\Ablage\Auto\realdash\RealDash-extras\OBD2\obd2_Taycan.xml");
+            var config = XDocument.Load(@"C:\Users\Falco\OneDrive\Ablage\Auto\realdash\RealDash-extras\OBD2\obd2_GW.xml");
             //var config = XDocument.Load(@"C:\Users\Falco\OneDrive\Ablage\Auto\realdash\RealDash-extras\OBD2\realdash_obd.xml");
             var init = config.Elements().Elements("init");
             initSequence = init.Elements().Attributes("send").Select(s => s.Value).ToArray();
@@ -64,8 +64,9 @@ namespace TaycanLogger
 
         internal async Task DoLogAsync(string devicename)
         {
+           
+            initCMDsWithConfig();
             InitDevice(devicename);
-
             var sw = new Stopwatch();
             sw.Start();
             Console.WriteLine("go!");
@@ -75,7 +76,6 @@ namespace TaycanLogger
             //using var FileWriterRaw = new StreamWriter(@$"c:\temp\OBD Taycan {DateTime.Now:yyMMddHHmmssf} Raw.csv");
             using (var FileWriter = new StreamWriter(@$"c:\temp\OBD Taycan {DateTime.Now:yyMMddHHmmssf}.csv"))
             {
-
                 String.Join(";", cmds.Select(c => c.name)).Dump();
                 FileWriter.WriteLine("time," + String.Join(",", cmds.Select(c => c.name)));
                 do
@@ -85,9 +85,8 @@ namespace TaycanLogger
                     {
                         if (!cmd.IsSkipped(lineNr))
                         {
-
                             await cmd.DoExec();
-                            if (!cmd.IsValidResponse)
+                            if (!cmd.IsValidResponse())
                             {
                                 errorCounter++;
                                 //	cmd.Response.Dump("Err:");
