@@ -1,79 +1,37 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Linq;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace TaycanLogger
 {
     public partial class LogFormMain : Form
     {
-      
         OBDSession myOBDSession;
-        OBDWorker myWorker;
         
         Series series1;
         Series series2;
         Series series3;
         Series series4;
 
-        ILogger logger;
-
-        string ConnectionName { 
-            get;  set; }
+        string UIDeviceName { 
+            get; 
+            set; }
 
         public LogFormMain()
         {
             Control.CheckForIllegalCrossThreadCalls = false;
 
             InitializeComponent();
-            ReadConfig();
-            CreateLogger();
+            UIDeviceName = Properties.Settings.Default.DeviceName;
+            Debug.WriteLine($"start log at {DateTime.Now}!");
 
             InitChart();
 
-         
             myOBDSession = new OBDSession();
-            myWorker = new OBDWorker();
-
             InitCOMDropbox();
-
-        }
-
-        private  void CreateLogger()
-        {
-            var loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder
-                    .AddFilter("Microsoft", LogLevel.Warning)
-                    .AddFilter("System", LogLevel.Warning)
-                    .AddFilter("LoggingConsoleApp.Program", LogLevel.Debug)
-                    .AddDebug();
-               
-
-            });
-
-            logger = loggerFactory.CreateLogger<LogFormMain>();
-            logger.LogInformation($"start log at {DateTime.Now}!");
-        }
-
-        private void ReadConfig()
-        {
-          ConnectionName=  Properties.Settings.Default.DeviceName;
-        }
-
-        void ProcessLogline( )
-        {
-           
-                series1.Points.AddY();
-                series2.Points.AddY();
-                series3.Points.AddY();
-                series4.Points.AddY();
-            
         }
 
         private void InitChart()
@@ -99,32 +57,31 @@ namespace TaycanLogger
             chart1.Series.Add(series4);
         }
 
-        void HandleSomethingHappened(string foo)
-        {
-            //Do some stuff
-        }
        private void InitCOMDropbox()
         {
-            comboBoxCOMPort.DataSource = myOBDSession.GetPairedDevices();
-            comboBoxCOMPort.SelectedText = Properties.Settings.Default.DeviceName;
-           
+          
+           var list = myOBDSession.GetPairedDevices();
+            comboBoxCOMPort.ValueMember = UIDeviceName;
+            comboBoxCOMPort.DataSource = list;
+            Debug.WriteLine("init device drop box, default: "+UIDeviceName);
+            if (list.Contains(UIDeviceName)) 
+                comboBoxCOMPort.SelectedItem = UIDeviceName;
         }
 
         async void ButtonDoLog_Click(object sender, EventArgs e)
         {
-            textBoxDebug.Text = "starting....";
-            myOBDSession.InitDevice(ConnectionName);
-            await myWorker.Work(myOBDSession);
+           
+            await myOBDSession.DoLogAsync(UIDeviceName);
         }
 
       
         private void comboBoxCOMPort_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ConnectionName = ((ComboBox)sender).SelectedItem.ToString();
-            Debug.WriteLine($"{ConnectionName} seleceted");
-            textBoxDebug.Text += $"{ConnectionName} seleceted\r\n";
+            UIDeviceName = ((ComboBox)sender).SelectedItem.ToString();
+            Debug.WriteLine($"{UIDeviceName} seleceted");
+            textBoxDebug.Text += $"{UIDeviceName} seleceted\r\n";
             
-            Properties.Settings.Default.DeviceName = ((ComboBox)sender).SelectedValue.ToString();
+            Properties.Settings.Default.DeviceName = ((ComboBox)sender).SelectedItem.ToString();
             Properties.Settings.Default.Save();
         }
 
@@ -136,11 +93,6 @@ namespace TaycanLogger
 
         private void LogFormMain_Load(object sender, EventArgs e)
         {
-        }
-
-        private void checkBoxIsDebug_CheckedChanged(object sender, EventArgs e)
-        {
-          
         }
 
         private void numericUpDownWaitMs_ValueChanged(object sender, EventArgs e)

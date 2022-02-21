@@ -35,7 +35,6 @@ namespace TaycanLogger
             this.textBoxDebug = new System.Windows.Forms.TextBox();
             this.buttonStop = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.checkBoxIsDebug = new System.Windows.Forms.CheckBox();
             this.numericUpDownWaitMs = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWaitMs)).BeginInit();
@@ -93,20 +92,6 @@ namespace TaycanLogger
             this.button2.Text = "test";
             this.button2.UseVisualStyleBackColor = true;
             // 
-            // checkBoxIsDebug
-            // 
-            this.checkBoxIsDebug.AutoSize = true;
-            this.checkBoxIsDebug.Checked = true;
-            this.checkBoxIsDebug.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxIsDebug.Location = new System.Drawing.Point(14, 964);
-            this.checkBoxIsDebug.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.checkBoxIsDebug.Name = "checkBoxIsDebug";
-            this.checkBoxIsDebug.Size = new System.Drawing.Size(90, 29);
-            this.checkBoxIsDebug.TabIndex = 7;
-            this.checkBoxIsDebug.Text = "debug";
-            this.checkBoxIsDebug.UseVisualStyleBackColor = true;
-            this.checkBoxIsDebug.CheckedChanged += new System.EventHandler(this.checkBoxIsDebug_CheckedChanged);
-            // 
             // numericUpDownWaitMs
             // 
             this.numericUpDownWaitMs.Location = new System.Drawing.Point(79, 885);
@@ -147,7 +132,6 @@ namespace TaycanLogger
             this.ClientSize = new System.Drawing.Size(1941, 1078);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.numericUpDownWaitMs);
-            this.Controls.Add(this.checkBoxIsDebug);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.buttonStop);
             this.Controls.Add(this.textBoxDebug);
@@ -172,7 +156,6 @@ namespace TaycanLogger
         private System.Windows.Forms.TextBox textBoxDebug;
         private System.Windows.Forms.Button buttonStop;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.CheckBox checkBoxIsDebug;
         private System.Windows.Forms.NumericUpDown numericUpDownWaitMs;
         private System.Windows.Forms.Label label1;
     }

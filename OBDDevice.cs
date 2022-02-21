@@ -21,7 +21,6 @@ namespace TaycanLogger
 		BluetoothClient BTclient;
 		BluetoothDeviceInfo device;
 
-        public bool IsDebugmode { get; set; }
 
         NetworkStream stream;
 		byte[] buffer;
@@ -55,7 +54,7 @@ namespace TaycanLogger
 			try
 			{
 				//device.Refresh();
-				System.Diagnostics.Debug.WriteLine(device.Authenticated);
+				Debug.WriteLine($"device auth:{device.Authenticated}");
 				if (!BTclient.Connected)
 					BTclient.Connect(device.DeviceAddress, BluetoothService.SerialPort);
 
@@ -76,12 +75,8 @@ namespace TaycanLogger
 		{
 			await writeAsync(str);
 			var temp = await readAsync();
-			if (IsDebugmode)
-			{
-				Console.Write(temp);
-				Console.Write(str);
-			}
-
+			Debug.WriteLine($"send {str}:received{temp}");
+			
 			return temp;
 		}
 
@@ -115,7 +110,7 @@ namespace TaycanLogger
 		{
 			foreach (var d in Bluetooth.GetPairedDevicesAsync().Result)
 			{
-				Debug.WriteLine($"{d.Id} {d.Name}");
+				Debug.WriteLine($"paired device:{d.Id} {d.Name}");
 			}
 		}
 

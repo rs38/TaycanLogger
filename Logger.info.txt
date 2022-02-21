@@ -70,5 +70,93 @@ namespace TaycanLogger
     }
 
    
+   ecu INFO 1:
+   >22 F1 7C
+01A 
+0: 62 F1 7C 53 4A 38 <\r>
+1: 2D 46 53 54 31 35 2E <\r>
+2: 31 32 2E 31 34 31 30 <\r>
+3: 38 30 31 36 39 37 AA <\r>
 
+   ñ|SJ8-FST15.12.1410801697
+
+Advanced Identification
+       22 F1 7C
+     Identification: SJ8-FST
+     Revision: --------
+     Date: 15.12.14
+     Manufacturer number: 1080
+     Test stand number: 1697
+    
+
+     22 F1 91 
+     Hardware number: 5Q0 907 530 K
+     22 F1 AA 
+     Workshop System Name: J533
+   
+     22 F1 A1
+     Dataset Version: 2010
+     22 F1 9E
+     ASAM Dataset: EV_GatewConti
+     22 F1 90
+     Chassis Number: WVWZZZAUZFP065538
+
+
+
+>19 02 ae  DTC lesen
+0: 59 02 19 01 04 05 <\r>
+1: 08 03 02 37 09 AA AA <\r>
+
+DTC1: 01 04 05 (08)
+DTC2:  03 02 37 (09)
+
+19 06 01 04 05 FF DTC Environment lesen
+
+
+0: 59 06 01 04 05 08 <\r>
+1: 01 01 01 02 EF 02 6C <\r> 026C05 = km Stand
+2: 05 00 00 56 D8 B6 44 <\r>
+3: 70 75 00 00 00 00 00 <\r>
+
+19 06 03 02 37 FF <\r> DTC Environment lesen
+
+0: 59 06 03 02 37 09 <\r>
+1: 01 02 9D 02 C7 02 6C <\r>  026C05 = km Stand
+2: 05 00 00 56 D8 B4 43 <\r>
+3: 70 80 00 00 00 00 00 <\r>
+
+
+2 Faults Found:
+
+66565 - Diagnostic Databus 
+          U1202 00 [008] - Malfunction
+          [New feature! Extended UDS fault detail is only supported by current gen. interfaces]
+          Intermittent - Confirmed - Tested Since Memory Clear
+             Freeze Frame:
+                    Fault Status: 00000001
+                    Fault Priority: 1
+                    Fault Frequency: 1
+                    Reset counter: 239
+                    Mileage: 158725 km
+                    Date: 2021.11.12
+                    Time: 11:25:04
+
+                    Terminal 30 power supply: 11.7 V
+                    Terminal 15: OFF
+
+197175 - Control unit for battery monitoring 
+          U1050 00 [009] - No Communication
+          [New feature! Extended UDS fault detail is only supported by current gen. interfaces]
+          Confirmed - Tested Since Memory Clear
+             Freeze Frame:
+                    Fault Status: 00000001
+                    Fault Priority: 2
+                    Fault Frequency: 157
+                    Reset counter: 199
+                    Mileage: 158725 km
+                    Date: 2021.11.12
+                    Time: 11:17:03
+
+                    Terminal 30 power supply: 12.8 V
+                    Terminal 15: OFF
 
