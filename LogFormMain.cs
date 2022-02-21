@@ -85,8 +85,7 @@ namespace TaycanLogger
 
          void buttonStop_Click(object sender, EventArgs e)
         {
-         
-            textBoxDebug.Text = "stopped....\r\n";
+             textBoxDebug.Text = "stopped....\r\n";
         }
 
         private void LogFormMain_Load(object sender, EventArgs e)

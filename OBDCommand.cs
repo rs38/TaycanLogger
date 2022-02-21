@@ -26,14 +26,12 @@ namespace TaycanLogger
             get;
             set;
         }
-
         public OBDCommand(OBDDevice run)
         {
             ResponseString = "";
             runner = run;
             dt = new DataTable();
         }
-
 
         public string Response
         {
@@ -89,7 +87,7 @@ namespace TaycanLogger
         public bool IsValidResponse()
         {
             bool valid = (!ResponseString.Contains("NO DATA") && !ResponseString.StartsWith("7F"));
-            Debug.Write($":Resp valid:{valid},");
+            Debug.WriteLine($":Resp valid:{valid},");
             return valid;
         }
 

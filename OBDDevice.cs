@@ -38,7 +38,7 @@ namespace TaycanLogger
 		public bool init(string _dongleName)
 		{
 			this.dongleName = _dongleName;
-			buffer = new byte[80];
+			buffer = new byte[800];
 				devicetype = DeviceType.BT;
 				device = getPairedAndroidDongle(dongleName);
 				return initBT();
@@ -75,7 +75,7 @@ namespace TaycanLogger
 		{
 			await writeAsync(str);
 			var value = await readAsync();
-			Debug.WriteLine($"send:{str},received:{value}");
+			Debug.Write($"send:{str},received:{value}");
 			
 			return value;
 		}
@@ -103,6 +103,19 @@ namespace TaycanLogger
 				answer += System.Text.Encoding.UTF8.GetString(buffer, 0, x.Result);
 			} while (!answer.Contains('>'));
 
+			return answer.Trim(charsToTrim); //hack
+		}
+
+		public async Task<string> readAsyncNew()
+		{
+			string answer = "";
+			Task<int> receivedBytes = stream.ReadAsync(buffer, 0, 80);
+			while (!buffer.Contains((byte)'>'))
+			{
+				receivedBytes = stream.ReadAsync(buffer, receivedBytes.Result, 80);
+
+			}
+			answer += System.Text.Encoding.UTF8.GetString(buffer, 0, receivedBytes.Result);
 			return answer.Trim(charsToTrim); //hack
 		}
 
