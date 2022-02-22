@@ -21,7 +21,7 @@ namespace TaycanLogger
         public string units;
         public bool IsSkipped(uint i) => (i % skipCount != 0);
         string ResponseString;
-        decimal ResponseValue
+        public decimal ResponseValue
         {
             get;
             set;
@@ -91,7 +91,7 @@ namespace TaycanLogger
             return valid;
         }
 
-        internal async Task DoExec()
+        internal async Task DoExecAsync()
         {
             if (!String.IsNullOrEmpty(header))
                 await runner.WriteReadAsync(header);

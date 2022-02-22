@@ -4,6 +4,8 @@ using System.Windows.Forms;
 using System.Linq;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Configuration;
+using System.Threading;
+using System.Collections.Generic;
 
 namespace TaycanLogger
 {
@@ -16,6 +18,7 @@ namespace TaycanLogger
         Series series3;
         Series series4;
 
+        CancellationTokenSource cancel;
         string UIDeviceName { 
             get; 
             set; }
@@ -70,9 +73,23 @@ namespace TaycanLogger
 
         async void ButtonDoLog_Click(object sender, EventArgs e)
         {
-            await myOBDSession.DoLogAsync(UIDeviceName);
+            var progressData = new Progress<OBDCommandViewModel>();
+
+            progressData.ProgressChanged += (_, value) => 
+                    textBoxDebug.AppendText(value.logline + Environment.NewLine);
+
+            progressData.ProgressChanged += OnDataChanged;
+           cancel = new CancellationTokenSource();
+            await myOBDSession.DoLogAsync(UIDeviceName,progressData,cancel.Token);
         }
-              
+
+        private void OnDataChanged(object sender, OBDCommandViewModel e)
+        {
+            series1.Points.AddY(e.DataList[0].ResponseValue);
+        }
+
+      
+                     
         private void comboBoxCOMPort_SelectedIndexChanged(object sender, EventArgs e)
         {
             UIDeviceName = ((ComboBox)sender).SelectedItem.ToString();
@@ -85,7 +102,8 @@ namespace TaycanLogger
 
          void buttonStop_Click(object sender, EventArgs e)
         {
-             textBoxDebug.Text = "stopped....\r\n";
+            textBoxDebug.AppendText( "stopped....\r\n");
+            cancel.Cancel();
         }
 
         private void LogFormMain_Load(object sender, EventArgs e)
@@ -101,5 +119,13 @@ namespace TaycanLogger
         {
 
         }
+
+    }
+
+    class OBDCommandViewModel
+    {
+       public string logline;
+       public List<OBDCommand> DataList; 
+
     }
 }

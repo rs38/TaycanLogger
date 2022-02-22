@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -62,7 +63,7 @@ namespace TaycanLogger
             ((IDisposable)myDevice).Dispose();
         }
 
-        internal async Task DoLogAsync(string devicename)
+        internal async Task DoLogAsync(string devicename, IProgress<OBDCommandViewModel> progress, CancellationToken token)
         {
            
             initCMDsWithConfig();
@@ -73,6 +74,7 @@ namespace TaycanLogger
             UInt32 max = 10_100;
             UInt32 errorCounter = 0;
             uint lineNr = 0;
+            var progressData = new OBDCommandViewModel();
             //using var FileWriterRaw = new StreamWriter(@$"c:\temp\OBD Taycan {DateTime.Now:yyMMddHHmmssf} Raw.csv");
             using (var FileWriter = new StreamWriter(@$"c:\temp\OBD Taycan {DateTime.Now:yyMMddHHmmssf}.csv"))
             {
@@ -85,7 +87,7 @@ namespace TaycanLogger
                     {
                         if (!cmd.IsSkipped(lineNr))
                         {
-                            await cmd.DoExec();
+                            await cmd.DoExecAsync();
                             if (!cmd.IsValidResponse())
                             {
                                 errorCounter++;
@@ -95,7 +97,9 @@ namespace TaycanLogger
                         }
                     }
                     var LineString = $"{DateTime.Now:HH:mm:ss.ff},{ String.Join(",", cmds.Select(c => c.Response))}";
-                    Console.WriteLine(LineString + "," + errorCounter);
+                    progressData.logline = LineString + "," + errorCounter;
+                    progressData.DataList = cmds;
+                    progress.Report(progressData);
                     FileWriter.WriteLine(LineString);
 
                     if (lineNr % 100 == 0)
@@ -103,11 +107,11 @@ namespace TaycanLogger
                         Console.WriteLine(sw.ElapsedMilliseconds.ToString("0000ms|") + (errorCounter));
                         FileWriter.Flush();
                     }
+                    if (token.IsCancellationRequested) break;
                 } while (lineNr < max);
-                "okay".Dump();
-                (sw.ElapsedMilliseconds / max).Dump();
-                (errorCounter * 1.0F / max).Dump();
-                errorCounter.Dump();
+                progressData.logline = $"ms/line: {sw.ElapsedMilliseconds / lineNr} ErrQ: {errorCounter * 1.0F / lineNr} ErrSum{errorCounter}";
+               // progress.Report(progressData);
+                
             }
         }
     }
