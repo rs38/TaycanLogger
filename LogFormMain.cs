@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Windows.Forms;
 using System.Linq;
-using System.Windows.Forms.DataVisualization.Charting;
 using System.Configuration;
 using System.Threading;
 using System.Collections.Generic;
+using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace TaycanLogger
 {
@@ -122,13 +122,6 @@ namespace TaycanLogger
         {
 
         }
-
-    }
-
-    class OBDCommandViewModel
-    {
-       public string logline;
-       public List<OBDCommand> DataList; 
 
     }
 }

@@ -29,20 +29,12 @@ namespace TaycanLogger
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogFormMain));
-            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.buttonDoLog = new System.Windows.Forms.Button();
             this.comboBoxCOMPort = new System.Windows.Forms.ComboBox();
             this.textBoxDebug = new System.Windows.Forms.TextBox();
             this.buttonStop = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.numericUpDownWaitMs = new System.Windows.Forms.NumericUpDown();
-            this.label1 = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWaitMs)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonDoLog
@@ -66,20 +58,6 @@ namespace TaycanLogger
             this.comboBoxCOMPort.TabIndex = 2;
             this.comboBoxCOMPort.Text = "COM1";
             this.comboBoxCOMPort.SelectedIndexChanged += new System.EventHandler(this.comboBoxCOMPort_SelectedIndexChanged);
-
-            chartArea1.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.chart1.Legends.Add(legend1);
-            this.chart1.Location = new System.Drawing.Point(28, 12);
-            this.chart1.Name = "chart1";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.chart1.Series.Add(series1);
-            this.chart1.Size = new System.Drawing.Size(1681, 464);
-            this.chart1.TabIndex = 1;
-            this.chart1.Text = "chart1";
             // 
             // textBoxDebug
             // 
@@ -111,46 +89,11 @@ namespace TaycanLogger
             this.button2.Text = "test";
             this.button2.UseVisualStyleBackColor = true;
             // 
-            // numericUpDownWaitMs
-            // 
-            this.numericUpDownWaitMs.Location = new System.Drawing.Point(79, 885);
-            this.numericUpDownWaitMs.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.numericUpDownWaitMs.Maximum = new decimal(new int[] {
-            500,
-            0,
-            0,
-            0});
-            this.numericUpDownWaitMs.Minimum = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-            this.numericUpDownWaitMs.Name = "numericUpDownWaitMs";
-            this.numericUpDownWaitMs.Size = new System.Drawing.Size(87, 31);
-            this.numericUpDownWaitMs.TabIndex = 9;
-            this.numericUpDownWaitMs.Value = new decimal(new int[] {
-            120,
-            0,
-            0,
-            0});
-            this.numericUpDownWaitMs.ValueChanged += new System.EventHandler(this.numericUpDownWaitMs_ValueChanged);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(171, 892);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(83, 25);
-            this.label1.TabIndex = 10;
-            this.label1.Text = "ms delay";
-            // 
             // LogFormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1941, 1078);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.numericUpDownWaitMs);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.buttonStop);
             this.Controls.Add(this.textBoxDebug);
@@ -161,7 +104,6 @@ namespace TaycanLogger
             this.Name = "LogFormMain";
             this.Text = "TayCANBusLog v0.03";
             this.Load += new System.EventHandler(this.LogFormMain_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWaitMs)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -175,8 +117,6 @@ namespace TaycanLogger
         private System.Windows.Forms.TextBox textBoxDebug;
         private System.Windows.Forms.Button buttonStop;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.NumericUpDown numericUpDownWaitMs;
-        private System.Windows.Forms.Label label1;
     }
 }
 
