@@ -18,6 +18,7 @@ namespace TaycanLogger
         Series series3;
         Series series4;
 
+        Progress<OBDCommandViewModel> progressData;
         CancellationTokenSource cancel;
         string UIDeviceName { 
             get; 
@@ -73,19 +74,20 @@ namespace TaycanLogger
 
         async void ButtonDoLog_Click(object sender, EventArgs e)
         {
-            var progressData = new Progress<OBDCommandViewModel>();
-
-            progressData.ProgressChanged += (_, value) => 
-                    textBoxDebug.AppendText(value.logline + Environment.NewLine);
+            progressData = new Progress<OBDCommandViewModel>();
 
             progressData.ProgressChanged += OnDataChanged;
+
            cancel = new CancellationTokenSource();
             await myOBDSession.DoLogAsync(UIDeviceName,progressData,cancel.Token);
         }
 
         private void OnDataChanged(object sender, OBDCommandViewModel e)
         {
+            textBoxDebug.AppendText(e.logline + Environment.NewLine);
+
             series1.Points.AddY(e.DataList[0].ResponseValue);
+            series2.Points.AddY(e.DataList[1].ResponseValue);
         }
 
       
@@ -103,6 +105,7 @@ namespace TaycanLogger
          void buttonStop_Click(object sender, EventArgs e)
         {
             textBoxDebug.AppendText( "stopped....\r\n");
+           // progressData.ProgressChanged
             cancel.Cancel();
         }
 

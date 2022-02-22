@@ -29,7 +29,11 @@ namespace TaycanLogger
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogFormMain));
+            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.buttonDoLog = new System.Windows.Forms.Button();
             this.comboBoxCOMPort = new System.Windows.Forms.ComboBox();
             this.textBoxDebug = new System.Windows.Forms.TextBox();
@@ -37,6 +41,7 @@ namespace TaycanLogger
             this.button2 = new System.Windows.Forms.Button();
             this.numericUpDownWaitMs = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWaitMs)).BeginInit();
             this.SuspendLayout();
             // 
@@ -61,6 +66,20 @@ namespace TaycanLogger
             this.comboBoxCOMPort.TabIndex = 2;
             this.comboBoxCOMPort.Text = "COM1";
             this.comboBoxCOMPort.SelectedIndexChanged += new System.EventHandler(this.comboBoxCOMPort_SelectedIndexChanged);
+
+            chartArea1.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.chart1.Legends.Add(legend1);
+            this.chart1.Location = new System.Drawing.Point(28, 12);
+            this.chart1.Name = "chart1";
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.chart1.Series.Add(series1);
+            this.chart1.Size = new System.Drawing.Size(1681, 464);
+            this.chart1.TabIndex = 1;
+            this.chart1.Text = "chart1";
             // 
             // textBoxDebug
             // 
