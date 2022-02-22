@@ -86,7 +86,7 @@ namespace TaycanLogger
 
         public bool IsValidResponse()
         {
-            bool valid = (!ResponseString.Contains("NO DATA") && !ResponseString.StartsWith("7F"));
+            bool valid = (!ResponseString.Contains("NO DATA") && !ResponseString.StartsWith("7F") && !ResponseString.Contains("STOPPED"));
             Debug.WriteLine($":Resp valid:{valid},");
             return valid;
         }
@@ -94,9 +94,9 @@ namespace TaycanLogger
         internal async Task DoExec()
         {
             if (!String.IsNullOrEmpty(header))
-                Task.WaitAll(runner.WriteReadAsync(header));
+                await runner.WriteReadAsync(header);
             if (!String.IsNullOrEmpty(headerResp))
-                Task.WaitAll(runner.WriteReadAsync(headerResp));
+                await  runner.WriteReadAsync(headerResp);
             var x = await runner.WriteReadAsync(send);
             if (x.Contains(":"))
                 x = x.Split(':')[1].Trim();

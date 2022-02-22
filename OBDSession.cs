@@ -26,11 +26,11 @@ namespace TaycanLogger
 
         }
 
-        void InitDevice(string devicename)
+        async Task InitDevice(string devicename)
         {
             Devicename = devicename;
             if (!myDevice.init(devicename)) throw new NotSupportedException("Adapter not found");
-            myDevice.writeAll(initSequence);
+            await myDevice.writeAll(initSequence);
         }
 
         public List<string> GetPairedDevices() => myDevice.GetPairedDevices();
@@ -66,7 +66,7 @@ namespace TaycanLogger
         {
            
             initCMDsWithConfig();
-            InitDevice(devicename);
+            await InitDevice(devicename);
             var sw = new Stopwatch();
             sw.Start();
             Console.WriteLine("go!");

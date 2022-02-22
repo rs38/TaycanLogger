@@ -8,164 +8,192 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
-using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace TaycanLogger
 {
 
-	public class OBDDevice : IDisposable
-	{
-		BluetoothClient BTclient;
-		BluetoothDeviceInfo device;
+    public class OBDDevice : IDisposable
+    {
+        BluetoothClient BTclient;
+        BluetoothDeviceInfo device;
+
+        int IO_BUFFER_SIZE = 400;
+        NetworkStream myStream;
+        byte[] buffer;
+        char[] charsToTrim = { '\r', ' ', '>', '\0' };
+        string dongleName;
+
+        enum DeviceType { BT, IP, USB }
+        DeviceType devicetype;
+
+        public OBDDevice()
+        {
+            BTclient = new BluetoothClient();
+        }
+
+        public bool init(string _dongleName)
+        {
+            this.dongleName = _dongleName;
+            buffer = new byte[800];
+            devicetype = DeviceType.BT;
+            device = getPairedAndroidDongle(dongleName);
+            return initBT();
+        }
+
+        private void BluetoothClientConnectCallback(IAsyncResult ar)
+        {
+            Console.WriteLine(ar.ToString());
+        }
+
+        bool initBT()
+        {
+            try
+            {
+                //device.Refresh();
+                Debug.WriteLine($"device auth:{device.Authenticated}");
+                if (!BTclient.Connected)
+                    BTclient.Connect(device.DeviceAddress, BluetoothService.SerialPort);
 
 
-        NetworkStream stream;
-		byte[] buffer;
-		char[] charsToTrim = { '\r', ' ', '>', '\0' };
-		string dongleName;
-
-		enum DeviceType { BT, IP, USB }
-		DeviceType devicetype;
-
-		public OBDDevice()
-		{
-			BTclient = new BluetoothClient();
-		}
-
-		public bool init(string _dongleName)
-		{
-			this.dongleName = _dongleName;
-			buffer = new byte[800];
-				devicetype = DeviceType.BT;
-				device = getPairedAndroidDongle(dongleName);
-				return initBT();
-		}
-
-		private void BluetoothClientConnectCallback(IAsyncResult ar)
-		{
-			Console.WriteLine(ar.ToString());
-		}
-
-		bool initBT()
-		{
-			try
-			{
-				//device.Refresh();
-				Debug.WriteLine($"device auth:{device.Authenticated}");
-				if (!BTclient.Connected)
-					BTclient.Connect(device.DeviceAddress, BluetoothService.SerialPort);
-
-
-				stream = BTclient.GetStream();
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex.Message);
-				return false;
-			}
-			return true;
-		}
+                myStream = BTclient.GetStream();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+            return true;
+        }
 
 
 
-		public async Task<string> WriteReadAsync(string str)
-		{
-			await writeAsync(str);
-			var value = await readAsync();
-			Debug.Write($"send:{str},received:{value}");
-			
-			return value;
-		}
+        public async Task<string> WriteReadAsync(string str)
+        {
+            Debug.Write($"send:{str},");
+            await writeAsync(str);
+            var value = await readAsync();
+            Debug.Write($"received:{value}");
 
-		public async Task writeAsync(string str)
-		{
-			await stream.WriteAsync(Encoding.ASCII.GetBytes(str + '\r'), 0, str.Length + 1);
-			// stream.FlushAsync();
-		}
+            return value;
+        }
+       
+        public async Task writeAsync(string str)
+        {
+            await myStream.WriteAsync(Encoding.ASCII.GetBytes(str + '\r'), 0, str.Length + 1);
+            // stream.FlushAsync();
+        }
 
-		public void writeAll(string[] array)
-		{
-			foreach (var str in array)
-			{
-				Console.Write(WriteReadAsync(str).Result + "|");
-			}
-		}
+        public async Task writeAll(string[] array)
+        {
+            foreach (var str in array)
+            {
+                Console.Write( await WriteReadAsync(str) + "|");
+            }
+        }
 
-		public async Task<string> readAsync()
-		{
-			string answer = "";
-			do
-			{
-				var x = stream.ReadAsync(buffer, 0, 40);
-				answer += System.Text.Encoding.UTF8.GetString(buffer, 0, x.Result);
-			} while (!answer.Contains('>'));
+        public async Task<string> readAsyncOld()
+        {
+            string answer = "";
+            do
+            {
+                var x = myStream.ReadAsync(buffer, 0, 40);
+                var temp = System.Text.Encoding.UTF8.GetString(buffer, 0, x.Result);
+                Debug.Write($"buffer:{temp},len:{x.Result} ");
+                answer += temp;
+            } while (!answer.Contains('>'));
 
-			return answer.Trim(charsToTrim); //hack
-		}
+            return answer.Trim(charsToTrim); //hack
+        }
 
-		public async Task<string> readAsyncNew()
-		{
-			string answer = "";
-			Task<int> receivedBytes = stream.ReadAsync(buffer, 0, 80);
-			while (!buffer.Contains((byte)'>'))
-			{
-				receivedBytes = stream.ReadAsync(buffer, receivedBytes.Result, 80);
+         async Task<byte[]> ReadBufferFromStreamAsync(NetworkStream stream)
+        {
+            var totalRead = 0;
+            byte[] buffer = new byte[IO_BUFFER_SIZE];
+          
+            Debug.Write("try read from stream,");
+          
+            while (!buffer.Contains((byte)'>'))
+            {
+                var read = await stream.ReadAsync(buffer, totalRead, buffer.Length - totalRead);
+                totalRead += read;
 
-			}
-			answer += System.Text.Encoding.UTF8.GetString(buffer, 0, receivedBytes.Result);
-			return answer.Trim(charsToTrim); //hack
-		}
+                Debug.Write($"got buffer of {read} bytes,");
+            }
 
-		static void getpairedLE()
-		{
-			foreach (var d in Bluetooth.GetPairedDevicesAsync().Result)
-			{
-				Debug.WriteLine($"paired device:{d.Id} {d.Name}");
-			}
-		}
+            Debug.Write($"got total buffer of {totalRead} bytes,");
+            return buffer;
+        }
 
-		public  List<string> GetPairedDevices() => BTclient.PairedDevices.Select(p => p.DeviceName).ToList();
+         async Task<string> readAsync()
+        {
+            string answer = System.Text.Encoding.UTF8.GetString(await ReadBufferFromStreamAsync(myStream));
+            Debug.Write(answer);
+            //while (!answer.Contains('>'));
+            return answer.Trim(charsToTrim); 
+        }
 
-		BluetoothDeviceInfo getPairedAndroidDongle(string name)
-		{
-			var bts = BTclient.PairedDevices;
-			bts.Select(b => b.DeviceName).Dump();
-			var devs = bts.Where(b => b.DeviceName.Contains(name));//.Where(b => b.DeviceAddress.ToString()=="asd");
-			var dev = devs.FirstOrDefault();
-			//dev.Dump();
-			if (dev == null)
-				//dev = discover(name);
+        public async Task<string> readAsyncNew()
+        {
+            string answer = "";
+            Task<int> receivedBytes = myStream.ReadAsync(buffer, 0, 80);
+            while (!buffer.Contains((byte)'>'))
+            {
+                receivedBytes = myStream.ReadAsync(buffer, receivedBytes.Result, 80);
+
+            }
+            answer += System.Text.Encoding.UTF8.GetString(buffer, 0, receivedBytes.Result);
+            return answer.Trim(charsToTrim); //hack
+        }
+
+        static void getpairedLE()
+        {
+            foreach (var d in Bluetooth.GetPairedDevicesAsync().Result)
+            {
+                Debug.WriteLine($"paired device:{d.Id} {d.Name}");
+            }
+        }
+
+        public List<string> GetPairedDevices() => BTclient.PairedDevices.Select(p => p.DeviceName).ToList();
+
+        BluetoothDeviceInfo getPairedAndroidDongle(string name)
+        {
+            var bts = BTclient.PairedDevices;
+            bts.Select(b => b.DeviceName).Dump();
+            var devs = bts.Where(b => b.DeviceName.Contains(name));//.Where(b => b.DeviceAddress.ToString()=="asd");
+            var dev = devs.FirstOrDefault();
+            //dev.Dump();
+            if (dev == null)
+                //dev = discover(name);
 
 
-				if (!dev.Authenticated)
-				{
-					BluetoothSecurity.PairRequest(dev.DeviceAddress, "1234");
-				}
-			return dev;
-		}
+                if (!dev.Authenticated)
+                {
+                    BluetoothSecurity.PairRequest(dev.DeviceAddress, "1234");
+                }
+            return dev;
+        }
 
-		BluetoothDeviceInfo discover(string name)
-		{
-			foreach (var dev in BTclient.DiscoverDevices())
-			{
-				if (dev.DeviceName.Contains(name))
-				{
-					device = dev;
-					break;
-				}
-			}
-			return device;
-		}
+        BluetoothDeviceInfo discover(string name)
+        {
+            foreach (var dev in BTclient.DiscoverDevices())
+            {
+                if (dev.DeviceName.Contains(name))
+                {
+                    device = dev;
+                    break;
+                }
+            }
+            return device;
+        }
 
-		public void Dispose()
-		{
-			stream.Close();
-			if (devicetype == DeviceType.BT)
-				BTclient.Close();
-		}
-	}
+        public void Dispose()
+        {
+            myStream.Close();
+            if (devicetype == DeviceType.BT)
+                BTclient.Close();
+        }
+    }
 }
 
