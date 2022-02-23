@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="DeviceName" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">UniCarScan</Value>
     </Setting>
   </Settings>
 </SettingsFile>

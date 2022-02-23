@@ -23,7 +23,7 @@
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
             <TabControl x:Name="TabControlMain" TabStripPlacement="Top" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" SelectionChanged="OnTabChange">
@@ -99,10 +99,9 @@
 
 
                     <Label Margin="20,0,3,0" VerticalAlignment="Center" >device</Label>
-                    <ComboBox x:Name="DeviceDropBox" SelectedIndex="2"  VerticalAlignment="Center" HorizontalAlignment="Left" SelectionChanged="Device_SelectionChanged" DropDownClosed="Device_DropDownClosed" >
-                        <TextBlock>Bluetooth1</TextBlock>
-                        <TextBlock>BT2</TextBlock>
-                    </ComboBox>
+                    <ComboBox x:Name="DeviceDropBox" SelectedIndex="2"  VerticalAlignment="Center" HorizontalAlignment="Left" SelectionChanged="Device_SelectionChanged" DropDownClosed="Device_DropDownClosed" />
+
+
 
                 </DockPanel>
 
@@ -130,7 +129,7 @@
 
                 </Border>
 
-                <Border Name="PLWerte" Grid.ColumnSpan="3" Grid.Column="1" Grid.Row="2"  BorderBrush="DarkGray" BorderThickness="1" Margin="3">
+                <Border Name="PLWerte" Grid.ColumnSpan="1" Grid.Column="3" Grid.Row="2"  BorderBrush="DarkGray" BorderThickness="1" Margin="3">
 
                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"  IsEnabled="False">
                         <Label VerticalAlignment="Center">Ah:</Label>
@@ -145,12 +144,11 @@
 
 
                 </Border>
-                <DockPanel  Grid.Column="1" Grid.Row="3"  Grid.ColumnSpan="2" Margin="4">
-                  
-
-                    <ScrollViewer  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-         ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
-                        <TextBox x:Name="TextboxInformation" TextWrapping="Wrap"  HorizontalAlignment="Stretch" IsReadOnly="True" VerticalAlignment="Stretch" ></TextBox>
+                <DockPanel   Grid.Column="1" Grid.Row="2" Grid.RowSpan="2"  Grid.ColumnSpan="2" Margin="4"
+                             >
+                    <ScrollViewer  HorizontalScrollBarVisibility="Disabled" 
+                                VerticalScrollBarVisibility="Auto" CanContentScroll="True">
+                        <TextBox x:Name="TextboxInformation" TextWrapping="Wrap"   ScrollViewer.HorizontalScrollBarVisibility="Disabled" TextChanged="TextboxInformation_TextChanged"  HorizontalAlignment="Stretch" IsReadOnly="True"  ></TextBox>
                     </ScrollViewer>
 
                 </DockPanel>

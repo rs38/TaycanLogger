@@ -101,7 +101,6 @@ namespace TaycanLogger
             if (x.Contains(":"))
                 x = x.Split(':')[1].Trim();
             Response = x;
-
         }
 
         void IDisposable.Dispose() => runner.Dispose();

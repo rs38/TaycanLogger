@@ -49,13 +49,11 @@ namespace TaycanLogger
 
         private void InitCOMDropbox()
         {
-
-            var list = myOBDSession.GetPairedDevices();
-            DeviceDropBox.DataContext = list;  //.ValueMember = UIDeviceName;
-           
+           var list = myOBDSession.GetPairedDevices();
+            DeviceDropBox.ItemsSource = list; 
             Debug.WriteLine("init device drop box, default: " + UIDeviceName);
             if (list.Contains(UIDeviceName))
-                DeviceDropBox.SelectedItem = UIDeviceName;
+                  DeviceDropBox.SelectedItem = UIDeviceName;
         }
         private void OnTabChange(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
@@ -66,6 +64,7 @@ namespace TaycanLogger
         private void OnDataChanged(object sender, OBDCommandViewModel e)
         {
             TextboxInformation.AppendText(e.logline + Environment.NewLine);
+         
 
             //   series1.Points.AddY(e.DataList[0].ResponseValue);
             // series2.Points.AddY(e.DataList[1].ResponseValue);
@@ -95,17 +94,27 @@ namespace TaycanLogger
 
         private void Device_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            UIDeviceName = ((ComboBox)sender).SelectedItem.ToString();
+
+            UIDeviceName = e.AddedItems[0].ToString();
             Debug.WriteLine($"{UIDeviceName} seleceted");
             TextboxInformation.Text += $"{UIDeviceName} seleceted\r\n";
 
-            Properties.Settings.Default.DeviceName = ((ComboBox)sender).SelectedItem.ToString();
+            Properties.Settings.Default.DeviceName = UIDeviceName;
             Properties.Settings.Default.Save();
         }
 
         private void Device_DropDownClosed(object sender, EventArgs e)
         {
 
+        }
+
+        private void TextboxInformation_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox tb = sender as TextBox;
+            // set selection to end of document
+            tb.Focus();
+            tb.CaretIndex = tb.Text.Length;
+           // tb.ScrollToEnd();
         }
     }
 
