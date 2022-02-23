@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -7,14 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using TaycanLogger;
+
 
 namespace TaycanLogger
 {
@@ -27,6 +21,8 @@ namespace TaycanLogger
 
         Progress<OBDCommandViewModel> progressData;
         CancellationTokenSource cancel;
+        public ObservableCollection<KeyValuePair<DateTime, double>> DataChart1 { get; private set; }
+
         string UIDeviceName
         {
             get;
@@ -38,14 +34,23 @@ namespace TaycanLogger
         public TaycanLogWPF()
         {
             InitializeComponent();
+            this.DataContext = this;
+            
             UIDeviceName = Properties.Settings.Default.DeviceName;
             Debug.WriteLine($"start log at {DateTime.Now}!");
 
-         
+            DataChart1 = new ObservableCollection<KeyValuePair<DateTime, double>>();
+
+            DataChart1.Add(new KeyValuePair<DateTime, double>(DateTime.Now, 10.1));
 
             myOBDSession = new OBDSession();
             InitCOMDropbox();
+         
         }
+
+       
+
+      
 
         private void InitCOMDropbox()
         {
@@ -64,8 +69,8 @@ namespace TaycanLogger
         private void OnDataChanged(object sender, OBDCommandViewModel e)
         {
             TextboxInformation.AppendText(e.logline + Environment.NewLine);
-         
-
+            DataChart1.Add(new KeyValuePair<DateTime, double>(DateTime.Now, Convert.ToDouble(e.DataList[1].ResponseValue)));
+            C1.DataContext = DataChart1;
             //   series1.Points.AddY(e.DataList[0].ResponseValue);
             // series2.Points.AddY(e.DataList[1].ResponseValue);
         }
