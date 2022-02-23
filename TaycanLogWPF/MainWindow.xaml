@@ -1,0 +1,162 @@
+﻿<Window x:Class="TaycanLogWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TaycanLogWPF"
+        mc:Ignorable="d"
+        Title="TayCANLogger v0.1" Height="890" Width="1260"
+    WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style TargetType="DataGridCell">
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
+    </Window.Resources>
+    <Border x:Name="LayoutRoot" Padding="5"
+            BorderBrush="{StaticResource ApplicationForeground}" BorderThickness="2" 
+            Background="{StaticResource ApplicationBackground}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TabControl x:Name="TabControlMain" TabStripPlacement="Top" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" SelectionChanged="OnTabChange">
+                <TabItem x:Name="TabKomplett" Header="LogBMS">
+                    <DataGrid x:Name="dataGrid1"  ScrollViewer.VerticalScrollBarVisibility="Visible" IsReadOnly="True" />
+
+                </TabItem>
+
+                <TabItem x:Name="TabPL" Header="LogMot1" Height="24" Margin="-2,-2,-2,0" VerticalAlignment="Top">
+                    <DataGrid x:Name="dataGridPL"  ScrollViewer.VerticalScrollBarVisibility="Visible" IsReadOnly="True">
+                    </DataGrid>
+                </TabItem>
+
+                <TabItem x:Name="TabNeu" Header="LogKlima">
+                    <DataGrid x:Name="dataGridNeue"  ScrollViewer.VerticalScrollBarVisibility="Visible" IsReadOnly="True">
+                    </DataGrid>
+                </TabItem>
+
+                <TabItem x:Name="TabWeiterhin" Header="LogKombi" Height="22" Margin="-2,-2,-2,0" VerticalAlignment="Top">
+                    <DataGrid x:Name="dataGridWeiterhinzuTeuer"  ScrollViewer.VerticalScrollBarVisibility="Visible" IsReadOnly="True">
+                    </DataGrid>
+                </TabItem>
+            </TabControl>
+
+            <!--inner grid-->
+            <Grid Name ="GridForTextboxes" Grid.Column="0"   Grid.Row="1" Grid.RowSpan="4" Grid.ColumnSpan="2" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*" />
+                    <RowDefinition x:Name="_2ndRow" Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="80" />
+
+                </Grid.RowDefinitions>
+
+                <!-- Gesamtliste -->
+                <Button x:Name="CustomButton" Grid.Column="0" Grid.Row="1" Margin="25"
+                            Content="Pause"
+                            Click="CustomButton_Click"
+                            IsEnabled="true"
+                           />
+                    <!--    "{StaticResource GoButtonStyle}"/>
+                -->
+              
+
+                <!-- PL Fetch Panel -->
+                <Button x:Name="StopButton" Grid.Row="2" Margin="3"
+                            Content=" Stop log"
+                            Click="StopButton_Click"
+                            Style="{StaticResource ClearButtonStyle}"/>
+
+                <!-- scheibe neues CSV -->
+                <Button x:Name="StartButton"
+                            Grid.Column="0" Grid.Row="3"
+                            FontSize="16" Padding="3" Margin="3"
+                            Content="Start Log"
+                            Style="{StaticResource GoButtonStyle}"
+                            Click="StartButton_Click"/>
+
+                <DockPanel  Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="5" >
+
+                    <Label VerticalAlignment="Center">aktiv:</Label>
+                    <TextBox x:Name="textAnzahl" VerticalAlignment="Center" Text="Anzahl" HorizontalAlignment="Left" Width="70" />
+
+
+
+
+                    <Label Margin="20,0,3,0" VerticalAlignment="Center" >device</Label>
+                    <ComboBox x:Name="Device" SelectedIndex="2"  VerticalAlignment="Center" HorizontalAlignment="Left" SelectionChanged="Device_SelectionChanged" DropDownClosed="Device_DropDownClosed" >
+                        <TextBlock>Bluetooth1</TextBlock>
+                        <TextBlock>BT2</TextBlock>
+                    </ComboBox>
+
+                </DockPanel>
+
+                <Border  Grid.Column="1" Grid.Row="1"  BorderBrush="DarkGray" BorderThickness="1" Margin="3">
+                    <StackPanel IsEnabled="False">
+
+                        <Label>max. P</Label>
+                        <StackPanel  VerticalAlignment="Top" Orientation="Horizontal">
+
+                            <Slider x:Name="slider" HorizontalAlignment="Left"  Width="80" Value="5" Minimum="0" Maximum="50"  TickPlacement="BottomRight" TickFrequency="5" />
+                            <TextBox x:Name="TextBoxMaxPreissenkung" VerticalAlignment="Center" Width="30" Text="{Binding ElementName=slider,Path=Value, StringFormat=0.00  }"/>
+                            <Label>kW</Label>
+                        </StackPanel >
+                        <StackPanel>
+                            <Label>P1:</Label>
+                            <StackPanel Grid.Row="1" Orientation="Horizontal">
+                                <RadioButton x:Name="radioButton00" Content="0"  Margin="2,1,0,0"  GroupName="Ziel"/>
+                                <RadioButton x:Name="radioButton01" Content="0,01"  Margin="20,1,8,0" IsChecked="True" GroupName="Ziel" />
+
+                            </StackPanel>
+                        </StackPanel>
+
+                    </StackPanel>
+
+
+                </Border>
+
+                <Border Name="PLWerte" Grid.ColumnSpan="3" Grid.Column="1" Grid.Row="2"  BorderBrush="DarkGray" BorderThickness="1" Margin="3">
+
+                    <StackPanel Orientation="Horizontal"  HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"  IsEnabled="False">
+                        <Label VerticalAlignment="Center">Ah:</Label>
+                        <TextBox x:Name="TextboxAh" VerticalAlignment="Center" Width="60" HorizontalContentAlignment="Right" Text=""/>
+
+                        <Label VerticalAlignment="Center">V:</Label>
+                        <TextBox x:Name="textBoxnachAnpassungTeuer" HorizontalAlignment="Left" Width="60" VerticalAlignment="Center" Text="....."/>
+                        <Label Margin="20,0,0,0" VerticalAlignment="Center">2:</Label>
+                        <TextBox x:Name="textBoxnachAnpassungPlatz1" HorizontalAlignment="Left" Width="60" VerticalAlignment="Center" Text="....."/>
+
+                    </StackPanel>
+
+
+                </Border>
+                <DockPanel  Grid.Column="1" Grid.Row="3"  Grid.ColumnSpan="2" Margin="4">
+                  
+
+                    <ScrollViewer  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+         ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True">
+                        <TextBox x:Name="TextboxInformation" TextWrapping="Wrap"  HorizontalAlignment="Stretch" IsReadOnly="True" VerticalAlignment="Stretch" ></TextBox>
+                    </ScrollViewer>
+
+                </DockPanel>
+
+            </Grid>
+
+        </Grid>
+    </Border>
+</Window>

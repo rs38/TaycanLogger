@@ -30,23 +30,27 @@ namespace TaycanLogger
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogFormMain));
-            this.buttonDoLog = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.comboBoxCOMPort = new System.Windows.Forms.ComboBox();
             this.textBoxDebug = new System.Windows.Forms.TextBox();
             this.buttonStop = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.checkBoxIsDebug = new System.Windows.Forms.CheckBox();
+            this.numericUpDownWaitMs = new System.Windows.Forms.NumericUpDown();
+            this.label1 = new System.Windows.Forms.Label();
+            this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWaitMs)).BeginInit();
             this.SuspendLayout();
             // 
-            // buttonDoLog
+            // button1
             // 
-            this.buttonDoLog.Location = new System.Drawing.Point(1642, 852);
-            this.buttonDoLog.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.buttonDoLog.Name = "buttonDoLog";
-            this.buttonDoLog.Size = new System.Drawing.Size(252, 142);
-            this.buttonDoLog.TabIndex = 0;
-            this.buttonDoLog.Text = "Log!";
-            this.buttonDoLog.UseVisualStyleBackColor = true;
-            this.buttonDoLog.Click += new System.EventHandler(this.ButtonDoLog_Click);
+            this.button1.Location = new System.Drawing.Point(1642, 852);
+            this.button1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(252, 142);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "Log!";
+            this.button1.UseVisualStyleBackColor = true;
             // 
             // comboBoxCOMPort
             // 
@@ -89,21 +93,80 @@ namespace TaycanLogger
             this.button2.Text = "test";
             this.button2.UseVisualStyleBackColor = true;
             // 
+            // checkBoxIsDebug
+            // 
+            this.checkBoxIsDebug.AutoSize = true;
+            this.checkBoxIsDebug.Checked = true;
+            this.checkBoxIsDebug.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxIsDebug.Location = new System.Drawing.Point(14, 964);
+            this.checkBoxIsDebug.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.checkBoxIsDebug.Name = "checkBoxIsDebug";
+            this.checkBoxIsDebug.Size = new System.Drawing.Size(90, 29);
+            this.checkBoxIsDebug.TabIndex = 7;
+            this.checkBoxIsDebug.Text = "debug";
+            this.checkBoxIsDebug.UseVisualStyleBackColor = true;
+            // 
+            // numericUpDownWaitMs
+            // 
+            this.numericUpDownWaitMs.Location = new System.Drawing.Point(79, 885);
+            this.numericUpDownWaitMs.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.numericUpDownWaitMs.Maximum = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+            this.numericUpDownWaitMs.Minimum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.numericUpDownWaitMs.Name = "numericUpDownWaitMs";
+            this.numericUpDownWaitMs.Size = new System.Drawing.Size(87, 31);
+            this.numericUpDownWaitMs.TabIndex = 9;
+            this.numericUpDownWaitMs.Value = new decimal(new int[] {
+            120,
+            0,
+            0,
+            0});
+            this.numericUpDownWaitMs.ValueChanged += new System.EventHandler(this.numericUpDownWaitMs_ValueChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(171, 892);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(83, 25);
+            this.label1.TabIndex = 10;
+            this.label1.Text = "ms delay";
+            // 
+            // checkedListBox1
+            // 
+            this.checkedListBox1.FormattingEnabled = true;
+            this.checkedListBox1.Location = new System.Drawing.Point(1318, 956);
+            this.checkedListBox1.Name = "checkedListBox1";
+            this.checkedListBox1.Size = new System.Drawing.Size(8, 4);
+            this.checkedListBox1.TabIndex = 11;
+            // 
             // LogFormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1941, 1078);
+            this.Controls.Add(this.checkedListBox1);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.numericUpDownWaitMs);
+            this.Controls.Add(this.checkBoxIsDebug);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.buttonStop);
             this.Controls.Add(this.textBoxDebug);
             this.Controls.Add(this.comboBoxCOMPort);
-            this.Controls.Add(this.buttonDoLog);
+            this.Controls.Add(this.button1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "LogFormMain";
             this.Text = "TayCANBusLog v0.03";
             this.Load += new System.EventHandler(this.LogFormMain_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownWaitMs)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -111,12 +174,16 @@ namespace TaycanLogger
 
         #endregion
 
-        private System.Windows.Forms.Button buttonDoLog;
-        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
+        private System.Windows.Forms.Button button1;
+    
         private System.Windows.Forms.ComboBox comboBoxCOMPort;
         private System.Windows.Forms.TextBox textBoxDebug;
         private System.Windows.Forms.Button buttonStop;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.CheckBox checkBoxIsDebug;
+        private System.Windows.Forms.NumericUpDown numericUpDownWaitMs;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.CheckedListBox checkedListBox1;
     }
 }
 
