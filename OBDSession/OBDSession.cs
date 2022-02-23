@@ -27,11 +27,16 @@ namespace TaycanLogger
 
         }
 
-        async Task InitDevice(string devicename)
+        async Task<bool> InitDevice(string devicename)
         {
             Devicename = devicename;
-            if (!myDevice.init(devicename)) throw new NotSupportedException("Adapter not found");
+            if (!myDevice.init(devicename))
+            {
+                Debug.WriteLine($"Adapter {devicename} not found");
+                return false;
+            }
             await myDevice.writeAll(initSequence);
+            return true;
         }
 
         public List<string> GetPairedDevices() => myDevice.GetPairedDevices();
@@ -65,16 +70,21 @@ namespace TaycanLogger
 
         public async Task DoLogAsync(string devicename, IProgress<OBDCommandViewModel> progress, CancellationToken token)
         {
-           
+            var progressData = new OBDCommandViewModel();
             initCMDsWithConfig();
-            await InitDevice(devicename);
+            if(! await InitDevice(devicename))
+            {
+                progressData.logline = $"Could not start adapter {devicename} ";
+                progress.Report(progressData);
+                return;
+            }
             var sw = new Stopwatch();
             sw.Start();
             Console.WriteLine("go!");
             UInt32 max = 10_100;
             UInt32 errorCounter = 0;
             uint lineNr = 0;
-            var progressData = new OBDCommandViewModel();
+            
             //using var FileWriterRaw = new StreamWriter(@$"c:\temp\OBD Taycan {DateTime.Now:yyMMddHHmmssf} Raw.csv");
             using (var FileWriter = new StreamWriter(@$"c:\temp\OBD Taycan {DateTime.Now:yyMMddHHmmssf}.csv"))
             {

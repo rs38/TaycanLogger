@@ -62,7 +62,7 @@
                     <RowDefinition Height="1*" />
                     <RowDefinition x:Name="_2ndRow" Height="1*" />
                     <RowDefinition Height="1*" />
-                    <RowDefinition Height="80" />
+                    <RowDefinition Height="2*" />
 
                 </Grid.RowDefinitions>
 

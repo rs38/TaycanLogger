@@ -38,13 +38,13 @@ namespace TaycanLogger
             get => ConversionFormula == "" ? ResponseString : ResponseValue.ToString();
             private set
             {
-                //if (value.Contains("27D6"))		Console.WriteLine(value);
                 if (BigInteger.TryParse(value, System.Globalization.NumberStyles.HexNumber, null, out var myInt) &&
                     !(ConversionFormula == "") &&
                     (value.Length % 2 == 0)) //valid HEX String?
                 {
-                    ResponseValue = calcConversion(Convert.FromHexString(value));
                     ResponseString = value;
+                    ResponseValue = calcConversion(Convert.FromHexString(value));
+                  
                 }
                 else
                 {
@@ -70,7 +70,7 @@ namespace TaycanLogger
             }
             catch 
             {
-                throw new ArgumentException(ResponseString);
+                Debug.WriteLine($"{name} did not init conversion '{conversion}' error with '{ResponseString}'" );
             }
             decimal temp;
             try
@@ -79,7 +79,8 @@ namespace TaycanLogger
             }
             catch 
             {
-                throw new IndexOutOfRangeException(Convert.ToHexString(bytes) + name);
+                Debug.WriteLine($"{name} conversion '{conversion}' error with {Convert.ToHexString(bytes)} ");
+                return ResponseValue;
             }
             return temp;
         }
