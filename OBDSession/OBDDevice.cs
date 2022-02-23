@@ -1,4 +1,4 @@
-﻿using InTheHand.Bluetooth;
+﻿
 using InTheHand.Net.Bluetooth;
 using InTheHand.Net.Sockets;
 using System;
@@ -122,11 +122,11 @@ namespace TaycanLogger
             return answer.Trim(charsToTrim); 
         }
 
-        static void getpairedLE()
+         void getpairedLE()
         {
-            foreach (var d in Bluetooth.GetPairedDevicesAsync().Result)
+            foreach (var d in BTclient.PairedDevices)
             {
-                Debug.WriteLine($"paired device:{d.Id} {d.Name}");
+                Debug.WriteLine($"paired device:{d.DeviceAddress} {d.DeviceName}");
             }
         }
 
