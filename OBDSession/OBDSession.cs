@@ -32,7 +32,7 @@ namespace TaycanLogger
             Devicename = devicename;
             if (!myDevice.init(devicename))
             {
-                Debug.WriteLine($"Adapter {devicename} not found");
+                Trace.WriteLine($"Adapter {devicename} not found");
                 return false;
             }
             await myDevice.writeAll(initSequence);

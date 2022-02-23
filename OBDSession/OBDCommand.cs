@@ -70,7 +70,7 @@ namespace TaycanLogger
             }
             catch 
             {
-                Debug.WriteLine($"{name} did not init conversion '{conversion}' error with '{ResponseString}'" );
+                Trace.WriteLine($"{name} did not init conversion '{conversion}' error with '{ResponseString}'" );
             }
             decimal temp;
             try
@@ -79,7 +79,7 @@ namespace TaycanLogger
             }
             catch 
             {
-                Debug.WriteLine($"{name} conversion '{conversion}' error with {Convert.ToHexString(bytes)} ");
+                Trace.WriteLine($"{name} conversion '{conversion}' error with {Convert.ToHexString(bytes)} ");
                 return ResponseValue;
             }
             return temp;
@@ -88,7 +88,7 @@ namespace TaycanLogger
         public bool IsValidResponse()
         {
             bool valid = (!ResponseString.Contains("NO DATA") && !ResponseString.StartsWith("7F") && !ResponseString.Contains("STOPPED"));
-            Debug.WriteLine($":Resp valid:{valid},");
+            Trace.WriteLine($":Resp valid:{valid},");
             return valid;
         }
 

@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TaycanLogger"
+        xmlns:local="clr-namespace:TaycanLogger" xmlns:dataVisualisation="clr-namespace:System.Windows.Controls.Samples.DataVisualisation"
         mc:Ignorable="d"
         Title="TayCANLogger v0.1" Height="890" Width="1260"
     WindowStartupLocation="CenterScreen">
@@ -22,7 +22,7 @@
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
+                <RowDefinition Height="2*" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
@@ -33,8 +33,7 @@
                 </TabItem>
 
                 <TabItem x:Name="TabPL" Header="LogMot1" Height="24" Margin="-2,-2,-2,0" VerticalAlignment="Top">
-                    <DataGrid x:Name="dataGridPL"  ScrollViewer.VerticalScrollBarVisibility="Visible" IsReadOnly="True">
-                    </DataGrid>
+                    <dataVisualisation:DataVisualisationSample />
                 </TabItem>
 
                 <TabItem x:Name="TabNeu" Header="LogKlima">
@@ -49,35 +48,30 @@
             </TabControl>
 
             <!--inner grid-->
-            <Grid Name ="GridForTextboxes" Grid.Column="0"   Grid.Row="1" Grid.RowSpan="4" Grid.ColumnSpan="2" >
+            <Grid Name ="GridForTextboxes" Grid.Column="0"   Grid.Row="1" Grid.RowSpan="4" Grid.ColumnSpan="3" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="250" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
-
                 </Grid.ColumnDefinitions>
-
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />
-                    <RowDefinition x:Name="_2ndRow" Height="1*" />
-                    <RowDefinition Height="1*" />
                     <RowDefinition Height="2*" />
-
                 </Grid.RowDefinitions>
 
                 <!-- Gesamtliste -->
-                <Button x:Name="CustomButton" Grid.Column="0" Grid.Row="1" Margin="25"
+                <Button x:Name="CustomButton" Grid.Column="1" Grid.Row="0" Margin="25"
                             Content="Pause"
                             Click="CustomButton_Click"
                             IsEnabled="true"
                            />
-                    <!--    "{StaticResource GoButtonStyle}"/>
+                <!--    "{StaticResource GoButtonStyle}"/>
                 -->
-              
+
 
                 <!-- PL Fetch Panel -->
-                <Button x:Name="StopButton" Grid.Row="2" Margin="3"
+                <Button x:Name="StopButton" Grid.Row="0" Margin="3"
                             Content=" Stop log"
                             Click="StopButton_Click"
                             Style="{StaticResource ClearButtonStyle}"/>
@@ -90,34 +84,25 @@
                             Style="{StaticResource GoButtonStyle}"
                             Click="StartButton_Click"/>
 
-                <DockPanel  Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="5" >
-
+                <DockPanel  Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="5" >
                     <Label VerticalAlignment="Center">aktiv:</Label>
                     <TextBox x:Name="textAnzahl" VerticalAlignment="Center" Text="Anzahl" HorizontalAlignment="Left" Width="70" />
-
-
-
-
                     <Label Margin="20,0,3,0" VerticalAlignment="Center" >device</Label>
                     <ComboBox x:Name="DeviceDropBox" SelectedIndex="2"  VerticalAlignment="Center" HorizontalAlignment="Left" SelectionChanged="Device_SelectionChanged" DropDownClosed="Device_DropDownClosed" />
-
-
-
                 </DockPanel>
 
-                <Border  Grid.Column="1" Grid.Row="1"  BorderBrush="DarkGray" BorderThickness="1" Margin="3">
+                <Border  Grid.Column="3" Grid.Row="0" Grid.RowSpan="1" BorderBrush="DarkGray" BorderThickness="1" Margin="3">
                     <StackPanel IsEnabled="False">
-
                         <Label>max. P</Label>
                         <StackPanel  VerticalAlignment="Top" Orientation="Horizontal">
-
                             <Slider x:Name="slider" HorizontalAlignment="Left"  Width="80" Value="5" Minimum="0" Maximum="50"  TickPlacement="BottomRight" TickFrequency="5" />
                             <TextBox x:Name="TextBoxMaxPreissenkung" VerticalAlignment="Center" Width="30" Text="{Binding ElementName=slider,Path=Value, StringFormat=0.00  }"/>
                             <Label>kW</Label>
                         </StackPanel >
                         <StackPanel>
-                            <Label>P1:</Label>
+
                             <StackPanel Grid.Row="1" Orientation="Horizontal">
+                                <Label>P1:</Label>
                                 <RadioButton x:Name="radioButton00" Content="0"  Margin="2,1,0,0"  GroupName="Ziel"/>
                                 <RadioButton x:Name="radioButton01" Content="0,01"  Margin="20,1,8,0" IsChecked="True" GroupName="Ziel" />
 
@@ -129,7 +114,7 @@
 
                 </Border>
 
-                <Border Name="PLWerte" Grid.ColumnSpan="1" Grid.Column="3" Grid.Row="2"  BorderBrush="DarkGray" BorderThickness="1" Margin="3">
+                <Border Name="PLWerte" Grid.ColumnSpan="2" Grid.Column="3" Grid.Row="2"  BorderBrush="DarkGray" BorderThickness="1" Margin="3">
 
                     <StackPanel Orientation="Horizontal"  HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"  IsEnabled="False">
                         <Label VerticalAlignment="Center">Ah:</Label>

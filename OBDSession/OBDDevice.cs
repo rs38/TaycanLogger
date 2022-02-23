@@ -52,7 +52,7 @@ namespace TaycanLogger
             try
             {
                 //device.Refresh();
-                Debug.WriteLine($"device auth:{device.Authenticated}");
+                Trace.WriteLine($"device auth:{device.Authenticated}");
                 if (!BTclient.Connected)
                     BTclient.Connect(device.DeviceAddress, BluetoothService.SerialPort);
 
@@ -71,10 +71,10 @@ namespace TaycanLogger
 
         public async Task<string> WriteReadAsync(string str)
         {
-            Debug.Write($"send:{str},");
+            Trace.Write($"send:{str},");
             await writeAsync(str);
             var value = await readAsync();
-            Debug.Write($"received:{value}");
+            Trace.Write($"received:{value}");
 
             return value;
         }
@@ -100,24 +100,24 @@ namespace TaycanLogger
             var totalRead = 0;
             byte[] buffer = new byte[IO_BUFFER_SIZE];
           
-            Debug.Write("try read from stream,");
+            Trace.Write("try read from stream,");
           
             while (!buffer.Contains((byte)'>'))
             {
                 var read = await stream.ReadAsync(buffer, totalRead, buffer.Length - totalRead);
                 totalRead += read;
 
-                Debug.Write($"got buffer of {read} bytes,");
+                Trace.Write($"got buffer of {read} bytes,");
             }
 
-            Debug.Write($"got total buffer of {totalRead} bytes,");
+            Trace.Write($"got total buffer of {totalRead} bytes,");
             return buffer;
         }
 
          async Task<string> readAsync()
         {
             string answer = System.Text.Encoding.UTF8.GetString(await ReadBufferFromStreamAsync(myStream));
-            Debug.Write(answer);
+            Trace.Write(answer);
             //while (!answer.Contains('>'));
             return answer.Trim(charsToTrim); 
         }
@@ -126,7 +126,7 @@ namespace TaycanLogger
         {
             foreach (var d in BTclient.PairedDevices)
             {
-                Debug.WriteLine($"paired device:{d.DeviceAddress} {d.DeviceName}");
+                Trace.WriteLine($"paired device:{d.DeviceAddress} {d.DeviceName}");
             }
         }
 
