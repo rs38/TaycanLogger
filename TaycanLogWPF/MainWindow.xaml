@@ -32,8 +32,16 @@
 
             <TabControl x:Name="TabControlMain" TabStripPlacement="Top" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" SelectionChanged="OnTabChange">
                 <TabItem x:Name="TabKomplett" Header="LogBMS">
-                    <DataGrid x:Name="dataGrid1"  ScrollViewer.VerticalScrollBarVisibility="Visible" IsReadOnly="True" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
 
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+                        <DataGrid x:Name="dataGrid1"   ScrollViewer.VerticalScrollBarVisibility="Visible" IsReadOnly="True" />
+                        <local:OxyplotControl  x:Name="PlotExtern" Grid.Row="0" Grid.Column="1"/>
+
+                    </Grid>
                 </TabItem>
 
                 <TabItem x:Name="TabPL" Header="LogMot1" Height="24" Margin="-2,-2,-2,0" VerticalAlignment="Top">

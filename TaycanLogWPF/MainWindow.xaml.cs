@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-
+using OxyPlot;
+using OxyPlot.Axes;
+using OxyPlot.Series;
 
 namespace TaycanLogger
 {
@@ -17,20 +17,21 @@ namespace TaycanLogger
     /// </summary>
     public partial class TaycanLogWPF : Window
     {
-        OBDSession myOBDSession { get;  set; }
+        OBDSession myOBDSession { get; set; }
         string UIDeviceName;
         string ConfigFilename;
         Progress<OBDCommandViewModel> progressData;
+        LineSeries lineSeries;
         CancellationTokenSource cancel;
         public ObservableCollection<KeyValuePair<DateTime, double>> DataChart1 { get; private set; }
 
+        List<LogitemViewModel> LoglineGrid;
 
 
         public TaycanLogWPF()
         {
             InitializeComponent();
             this.DataContext = this;
-            cancel = new CancellationTokenSource();
 
             UIDeviceName = Properties.Settings.Default.DeviceName;
             ConfigFilename = Properties.Settings.Default.ConfigFilename;
@@ -42,6 +43,12 @@ namespace TaycanLogger
             myOBDSession = new OBDSession(ConfigFilename, UIDeviceName);
 
             InitCOMDropbox();
+            progressData = new Progress<OBDCommandViewModel>();
+            progressData.ProgressChanged += OnDataChanged;
+
+            LoglineGrid = new List<LogitemViewModel>();
+            dataGrid1.ItemsSource = LoglineGrid;
+            InitPlot();
 
         }
 
@@ -71,17 +78,37 @@ namespace TaycanLogger
         private void OnDataChanged(object sender, OBDCommandViewModel e)
         {
             TextboxInformation.AppendText(e.logline + Environment.NewLine);
-            DataChart1.Add(new KeyValuePair<DateTime, double>(DateTime.Now, Convert.ToDouble(e.DataList[1].ResponseValue)));
-            C1.DataContext = DataChart1;
+
+            //quick and dirty
+
+            var currentItem = new LogitemViewModel
+            {
+                Time = DateTime.Now,
+                Voltage = Convert.ToDouble(e.DataList[0].ResponseValue),
+                Current = Convert.ToDouble(e.DataList[1].ResponseValue)
+            };
+            LoglineGrid.Add(currentItem);
+            dataGrid1.Items.Refresh();
+
+            var r = new Random(314);
+
+
+            lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), currentItem.Voltage*r.NextDouble()));
+   
+            // PlotExtern.Plot1.Model = PlotViewModel.MyModel;
+      
+            PlotExtern.Plot1.Model.InvalidatePlot(true);
+            
+
+            // DataChart1.Add(new KeyValuePair<DateTime, double>(DateTime.Now, Convert.ToDouble(e.DataList[1].ResponseValue)));
+           // C1.DataContext = DataChart1;
             //   series1.Points.AddY(e.DataList[0].ResponseValue);
             // series2.Points.AddY(e.DataList[1].ResponseValue);
         }
 
         async private void StartButton_Click(object sender, RoutedEventArgs e)
         {
-            progressData = new Progress<OBDCommandViewModel>();
-            progressData.ProgressChanged += OnDataChanged;
-
+            cancel = new CancellationTokenSource();
             if (!await myOBDSession.InitDevice())
             {
                 TextboxInformation.AppendText("errors while reading config/init" + Environment.NewLine);
@@ -115,6 +142,11 @@ namespace TaycanLogger
 
         private void Device_DropDownClosed(object sender, EventArgs e)
         {
+          
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
             InitCOMDropbox();
         }
 
@@ -127,8 +159,33 @@ namespace TaycanLogger
             // tb.ScrollToEnd();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+         private void InitPlot()
         {
+            PlotViewModel.MyModel = new PlotModel { Title = "Voltage" };
+            lineSeries = new LineSeries ();
+
+
+
+            var startDate = DateTime.Now;
+            var endDate = DateTime.Now.AddMinutes(2);
+
+            var minValue = DateTimeAxis.ToDouble(startDate);
+            var maxValue = DateTimeAxis.ToDouble(endDate);
+
+            PlotViewModel.MyModel.Axes.Add(new DateTimeAxis { Position = AxisPosition.Bottom , Minimum = minValue, Maximum=maxValue});
+
+
+            var r = new Random(314);
+            for (int i = 0; i < 100; i++)
+            {
+                var y = r.NextDouble() * 100;
+                lineSeries.Points.Add(new DataPoint(minValue+i, y));
+            }
+
+            PlotViewModel.MyModel.Series.Add(lineSeries);
+
+            PlotExtern.Plot1.Model = PlotViewModel.MyModel;
+            PlotExtern.Plot1.Model.InvalidatePlot(true);
 
         }
     }

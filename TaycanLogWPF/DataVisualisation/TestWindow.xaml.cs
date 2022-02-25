@@ -30,15 +30,15 @@ namespace TaycanLogger
 
             PlotViewModel.MyModel.Series.Add(lineSeries);
 
-            PlotExtern.Plot1.Model = PlotViewModel.MyModel;
-            PlotExtern.Plot1.Model.InvalidatePlot(true);
+            PlotExtern2.Plot1.Model = PlotViewModel.MyModel;
+            PlotExtern2.Plot1.Model.InvalidatePlot(true);
 
             for (int i = 10; i < 100; i++)
             {
                 var y = r.NextDouble() * 100;
                 lineSeries.Points.Add(new DataPoint(i, y));
                 await Task.Delay(500);
-                PlotExtern.Plot1.Model.InvalidatePlot(true);
+                PlotExtern2.Plot1.Model.InvalidatePlot(true);
             }
         }
     }

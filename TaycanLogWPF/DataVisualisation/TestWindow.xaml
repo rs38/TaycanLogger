@@ -15,10 +15,8 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-
-        <local:OxyplotControl x:Name="PlotExtern" Grid.Row="0" Grid.Column="1">
+        <local:OxyplotControl x:Name="PlotExtern2" Grid.Row="0" Grid.Column="1">
         </local:OxyplotControl>
-        
         <Button Content="Button" HorizontalAlignment="Left" Margin="85,109,0,0" Grid.Row="1" VerticalAlignment="Top" Click="Button_ClickAsync" Height="42" Width="70"/>
     </Grid>
 
