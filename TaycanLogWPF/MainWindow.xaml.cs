@@ -90,13 +90,14 @@ namespace TaycanLogger
             LoglineGrid.Add(currentItem);
             dataGrid1.Items.Refresh();
 
-            var r = new Random(314);
+            var r = new Random();
 
+            var value = currentItem.Current + ( r.NextDouble()*50);
 
-            lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), currentItem.Voltage*r.NextDouble()));
-   
+            lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), value));
+
             // PlotExtern.Plot1.Model = PlotViewModel.MyModel;
-      
+            PlotViewModel.MyModel.Axes[0].Minimum = DateTimeAxis.ToDouble(DateTime.Now.AddMinutes(-2));
             PlotExtern.Plot1.Model.InvalidatePlot(true);
             
 
@@ -135,7 +136,7 @@ namespace TaycanLogger
             UIDeviceName = e.AddedItems[0].ToString();
             Debug.WriteLine($"{UIDeviceName} seleceted");
             TextboxInformation.Text += $"{UIDeviceName} seleceted\r\n";
-
+            myOBDSession.Devicename = UIDeviceName;
             Properties.Settings.Default.DeviceName = UIDeviceName;
             Properties.Settings.Default.Save();
         }
@@ -167,20 +168,20 @@ namespace TaycanLogger
 
 
             var startDate = DateTime.Now;
-            var endDate = DateTime.Now.AddMinutes(2);
+            var endDate = DateTime.Now.AddMinutes(1);
 
             var minValue = DateTimeAxis.ToDouble(startDate);
             var maxValue = DateTimeAxis.ToDouble(endDate);
 
-            PlotViewModel.MyModel.Axes.Add(new DateTimeAxis { Position = AxisPosition.Bottom , Minimum = minValue, Maximum=maxValue});
+            PlotViewModel.MyModel.Axes.Add(new DateTimeAxis { Position = AxisPosition.Bottom , Minimum = minValue});
 
 
-            var r = new Random(314);
-            for (int i = 0; i < 100; i++)
-            {
-                var y = r.NextDouble() * 100;
-                lineSeries.Points.Add(new DataPoint(minValue+i, y));
-            }
+            //var r = new Random(314);
+            //for (int i = 0; i < 100; i++)
+            //{
+            //    var y = r.NextDouble() * 100;
+            //    lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now.AddSeconds(i*1)), y));
+            //}
 
             PlotViewModel.MyModel.Series.Add(lineSeries);
 

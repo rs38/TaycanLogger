@@ -15,7 +15,7 @@ namespace TaycanLogger
     public class OBDSession : IDisposable
     {
         public List<OBDCommand> cmds;
-        string Devicename;
+        public string Devicename;
         OBDDevice myDevice;
 
         string[] initSequence;
