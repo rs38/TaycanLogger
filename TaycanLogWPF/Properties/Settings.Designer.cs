@@ -37,7 +37,7 @@ namespace TaycanLogger.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Falco\\OneDrive\\Ablage\\Auto\\realdash\\RealDash-extras\\OBD2\\obd2_GW.xml")]
+        [global::System.Configuration.DefaultSettingValueAttribute("obd2_GW.xml")]
         public string ConfigFilename {
             get {
                 return ((string)(this["ConfigFilename"]));

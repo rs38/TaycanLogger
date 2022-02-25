@@ -87,7 +87,7 @@ namespace TaycanLogger
             // stream.FlushAsync();
         }
 
-        public async Task writeAll(string[] array)
+        public async Task writeAllAsync(string[] array)
         {
             foreach (var str in array)
             {

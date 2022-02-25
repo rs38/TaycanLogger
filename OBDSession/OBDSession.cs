@@ -27,22 +27,32 @@ namespace TaycanLogger
             myDevice = new OBDDevice();
             configFilename = configfile;
             Devicename = devicename;
+
         }
 
-        async Task<bool> InitDevice()
+        public async Task<bool> InitDevice()
         {
-            
+            if (!hasValidConfig())
+            {
+                Trace.WriteLine($"config data {configFilename} not valid or found");
+
+                return false;
+            }
+
             if (!myDevice.init(Devicename))
             {
                 Trace.WriteLine($"Adapter {Devicename} not found");
                 return false;
             }
-            await myDevice.writeAll(initSequence);
+            await myDevice.writeAllAsync(initSequence);
             return true;
         }
 
+
         public List<string> GetPairedDevices() => myDevice.GetPairedDevices();
-        bool initCMDsWithConfig()
+
+
+        public bool hasValidConfig()
         {
             cmds = new List<OBDCommand>();
             try
@@ -82,12 +92,7 @@ namespace TaycanLogger
         {
             var progressData = new OBDCommandViewModel();
 
-            if (!initCMDsWithConfig() && !await InitDevice())
-            {
-                progressData.logline = $"Could not start adapter {devicename} ";
-                progress.Report(progressData);
-                return;
-            }
+
             var sw = new Stopwatch();
             sw.Start();
             Console.WriteLine("go!");

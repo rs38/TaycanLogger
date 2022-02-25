@@ -17,7 +17,7 @@ namespace TaycanLogger
     /// </summary>
     public partial class TaycanLogWPF : Window
     {
-        OBDSession myOBDSession;
+        OBDSession myOBDSession { get;  set; }
         string UIDeviceName;
         string ConfigFilename;
         Progress<OBDCommandViewModel> progressData;
@@ -82,7 +82,11 @@ namespace TaycanLogger
             progressData = new Progress<OBDCommandViewModel>();
             progressData.ProgressChanged += OnDataChanged;
 
-
+            if (!await myOBDSession.InitDevice())
+            {
+                TextboxInformation.AppendText("errors while reading config/init" + Environment.NewLine);
+                return;
+            }
             await myOBDSession.DoLogAsync(UIDeviceName, progressData, cancel.Token);
         }
 
