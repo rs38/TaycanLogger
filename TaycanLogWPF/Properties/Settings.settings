@@ -5,5 +5,8 @@
     <Setting Name="DeviceName" Type="System.String" Scope="User">
       <Value Profile="(Default)">UniCarScan</Value>
     </Setting>
+    <Setting Name="ConfigFilename" Type="System.String" Scope="User">
+      <Value Profile="(Default)">obd2_GW.xml</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
