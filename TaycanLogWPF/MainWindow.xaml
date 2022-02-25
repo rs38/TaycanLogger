@@ -11,7 +11,6 @@
         WindowStartupLocation="CenterScreen">
    
     <Window.Resources>
-       
         <Style TargetType="DataGridCell">
             <Setter Property="HorizontalAlignment" Value="Right" />
         </Style>

@@ -29,8 +29,6 @@ namespace TaycanLogger
             set;
         }
 
-
-
         public TaycanLogWPF()
         {
             InitializeComponent();
