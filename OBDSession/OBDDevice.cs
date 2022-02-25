@@ -39,6 +39,8 @@ namespace TaycanLogger
             buffer = new byte[800];
             devicetype = DeviceType.BT;
             device = getPairedAndroidDongle(dongleName);
+            if (device == null) return false;
+
             return initBT();
         }
 
@@ -78,7 +80,7 @@ namespace TaycanLogger
 
             return value;
         }
-       
+
         public async Task writeAsync(string str)
         {
             await myStream.WriteAsync(Encoding.ASCII.GetBytes(str + '\r'), 0, str.Length + 1);
@@ -89,19 +91,19 @@ namespace TaycanLogger
         {
             foreach (var str in array)
             {
-                Console.Write( await WriteReadAsync(str) + "|");
+                Console.Write(await WriteReadAsync(str) + "|");
             }
         }
 
-     
 
-         async Task<byte[]> ReadBufferFromStreamAsync(NetworkStream stream)
+
+        async Task<byte[]> ReadBufferFromStreamAsync(NetworkStream stream)
         {
             var totalRead = 0;
             byte[] buffer = new byte[IO_BUFFER_SIZE];
-          
+
             Trace.Write("try read from stream,");
-          
+
             while (!buffer.Contains((byte)'>'))
             {
                 var read = await stream.ReadAsync(buffer, totalRead, buffer.Length - totalRead);
@@ -114,15 +116,15 @@ namespace TaycanLogger
             return buffer;
         }
 
-         async Task<string> readAsync()
+        async Task<string> readAsync()
         {
             string answer = System.Text.Encoding.UTF8.GetString(await ReadBufferFromStreamAsync(myStream));
             Trace.Write(answer);
             //while (!answer.Contains('>'));
-            return answer.Trim(charsToTrim); 
+            return answer.Trim(charsToTrim);
         }
 
-         void getpairedLE()
+        void getpairedLE()
         {
             foreach (var d in BTclient.PairedDevices)
             {
@@ -136,17 +138,16 @@ namespace TaycanLogger
         {
             var bts = BTclient.PairedDevices;
             bts.Select(b => b.DeviceName).Dump();
-            var devs = bts.Where(b => b.DeviceName.Contains(name));//.Where(b => b.DeviceAddress.ToString()=="asd");
+            var devs = bts.Where(b => b.DeviceName.Contains(name));//.Where(b => b.DeviceAddress.ToString()=="123");
             var dev = devs.FirstOrDefault();
             //dev.Dump();
             if (dev == null)
-                //dev = discover(name);
+                return null;
 
-
-                if (!dev.Authenticated)
-                {
-                    BluetoothSecurity.PairRequest(dev.DeviceAddress, "1234");
-                }
+            if (!dev.Authenticated)
+            {
+                BluetoothSecurity.PairRequest(dev.DeviceAddress, "1234");
+            }
             return dev;
         }
 

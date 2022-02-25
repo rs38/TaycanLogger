@@ -18,16 +18,11 @@ namespace TaycanLogger
     public partial class TaycanLogWPF : Window
     {
         OBDSession myOBDSession;
-
+        string UIDeviceName;
+        string ConfigFilename;
         Progress<OBDCommandViewModel> progressData;
         CancellationTokenSource cancel;
         public ObservableCollection<KeyValuePair<DateTime, double>> DataChart1 { get; private set; }
-
-        string UIDeviceName
-        {
-            get;
-            set;
-        }
 
 
 
@@ -35,34 +30,41 @@ namespace TaycanLogger
         {
             InitializeComponent();
             this.DataContext = this;
-            
+            cancel = new CancellationTokenSource();
+
             UIDeviceName = Properties.Settings.Default.DeviceName;
+            ConfigFilename = Properties.Settings.Default.ConfigFilename;
             Debug.WriteLine($"start log at {DateTime.Now}!");
 
             DataChart1 = new ObservableCollection<KeyValuePair<DateTime, double>>();
-
             DataChart1.Add(new KeyValuePair<DateTime, double>(DateTime.Now, 10.1));
 
-            myOBDSession = new OBDSession();
+            myOBDSession = new OBDSession(ConfigFilename, UIDeviceName);
+
             InitCOMDropbox();
-         
+
         }
-
-       
-
-      
 
         private void InitCOMDropbox()
         {
-           var list = myOBDSession.GetPairedDevices();
-            DeviceDropBox.ItemsSource = list; 
-            Debug.WriteLine("init device drop box, default: " + UIDeviceName);
-            if (list.Contains(UIDeviceName))
-                  DeviceDropBox.SelectedItem = UIDeviceName;
+            var list = myOBDSession.GetPairedDevices();
+            DeviceDropBox.ItemsSource = list;
+            if (list.Count == 0)
+            {
+                TextboxInformation.AppendText("no paired device found");
+                Debug.WriteLine("no paired device found");
+                StartButton.IsEnabled = false;
+            }
+            else
+            {
+                Debug.WriteLine("init device drop box, default: " + UIDeviceName);
+                StartButton.IsEnabled = true;
+                if (list.Contains(UIDeviceName))
+                    DeviceDropBox.SelectedItem = UIDeviceName;
+            }
         }
         private void OnTabChange(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-
 
         }
 
@@ -78,10 +80,9 @@ namespace TaycanLogger
         async private void StartButton_Click(object sender, RoutedEventArgs e)
         {
             progressData = new Progress<OBDCommandViewModel>();
-
             progressData.ProgressChanged += OnDataChanged;
 
-            cancel = new CancellationTokenSource();
+
             await myOBDSession.DoLogAsync(UIDeviceName, progressData, cancel.Token);
         }
 
@@ -110,7 +111,7 @@ namespace TaycanLogger
 
         private void Device_DropDownClosed(object sender, EventArgs e)
         {
-
+            InitCOMDropbox();
         }
 
         private void TextboxInformation_TextChanged(object sender, TextChangedEventArgs e)
@@ -119,7 +120,12 @@ namespace TaycanLogger
             // set selection to end of document
             tb.Focus();
             tb.CaretIndex = tb.Text.Length;
-           // tb.ScrollToEnd();
+            // tb.ScrollToEnd();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 

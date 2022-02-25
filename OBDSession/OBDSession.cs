@@ -20,19 +20,21 @@ namespace TaycanLogger
 
         string[] initSequence;
 
-        public OBDSession()
-        {
-           
-            myDevice = new OBDDevice();
+        string configFilename;
 
+        public OBDSession(string configfile, string devicename)
+        {
+            myDevice = new OBDDevice();
+            configFilename = configfile;
+            Devicename = devicename;
         }
 
-        async Task<bool> InitDevice(string devicename)
+        async Task<bool> InitDevice()
         {
-            Devicename = devicename;
-            if (!myDevice.init(devicename))
+            
+            if (!myDevice.init(Devicename))
             {
-                Trace.WriteLine($"Adapter {devicename} not found");
+                Trace.WriteLine($"Adapter {Devicename} not found");
                 return false;
             }
             await myDevice.writeAll(initSequence);
@@ -40,28 +42,36 @@ namespace TaycanLogger
         }
 
         public List<string> GetPairedDevices() => myDevice.GetPairedDevices();
-        void initCMDsWithConfig()
+        bool initCMDsWithConfig()
         {
             cmds = new List<OBDCommand>();
-            var config = XDocument.Load(@"C:\Users\Falco\OneDrive\Ablage\Auto\realdash\RealDash-extras\OBD2\obd2_GW.xml");
-            //var config = XDocument.Load(@"C:\Users\Falco\OneDrive\Ablage\Auto\realdash\RealDash-extras\OBD2\realdash_obd.xml");
-            var init = config.Elements().Elements("init");
-            initSequence = init.Elements().Attributes("send").Select(s => s.Value).ToArray();
-
-            foreach (var cmd in config.Elements().Elements("rotation").Elements("command"))
+            try
             {
-                var c = new OBDCommand(myDevice)
+                var config = XDocument.Load(configFilename);
+                var init = config.Elements().Elements("init");
+                initSequence = init.Elements().Attributes("send").Select(s => s.Value).ToArray();
+
+                foreach (var cmd in config.Elements().Elements("rotation").Elements("command"))
                 {
-                    send = cmd.Attribute("send").Value,
-                    skipCount = int.Parse(cmd.Attribute("skipCount").Value) + 1,
-                    header = cmd.Attribute("header")?.Value,
-                    headerResp = cmd.Attribute("headerresp")?.Value,
-                    name = cmd.Attribute("name")?.Value ?? "",
-                    ConversionFormula = cmd.Attribute("conversion")?.Value?.ToUpper() ?? "",
-                    units = cmd.Attribute("units")?.Value ?? ""
-                };
-                cmds.Add(c);
+                    var c = new OBDCommand(myDevice)
+                    {
+                        send = cmd.Attribute("send").Value,
+                        skipCount = int.Parse(cmd.Attribute("skipCount").Value) + 1,
+                        header = cmd.Attribute("header")?.Value,
+                        headerResp = cmd.Attribute("headerresp")?.Value,
+                        name = cmd.Attribute("name")?.Value ?? "",
+                        ConversionFormula = cmd.Attribute("conversion")?.Value?.ToUpper() ?? "",
+                        units = cmd.Attribute("units")?.Value ?? ""
+                    };
+                    cmds.Add(c);
+                }
             }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.Message);
+                return false;
+            }
+            return true;
         }
         void IDisposable.Dispose()
         {
@@ -71,8 +81,8 @@ namespace TaycanLogger
         public async Task DoLogAsync(string devicename, IProgress<OBDCommandViewModel> progress, CancellationToken token)
         {
             var progressData = new OBDCommandViewModel();
-            initCMDsWithConfig();
-            if(! await InitDevice(devicename))
+
+            if (!initCMDsWithConfig() && !await InitDevice())
             {
                 progressData.logline = $"Could not start adapter {devicename} ";
                 progress.Report(progressData);
@@ -84,7 +94,7 @@ namespace TaycanLogger
             UInt32 max = 10_100;
             UInt32 errorCounter = 0;
             uint lineNr = 0;
-            
+
             //using var FileWriterRaw = new StreamWriter(@$"c:\temp\OBD Taycan {DateTime.Now:yyMMddHHmmssf} Raw.csv");
             using (var FileWriter = new StreamWriter(@$"c:\temp\OBD Taycan {DateTime.Now:yyMMddHHmmssf}.csv"))
             {
@@ -120,8 +130,8 @@ namespace TaycanLogger
                     if (token.IsCancellationRequested) break;
                 } while (lineNr < max);
                 progressData.logline = $"ms/line: {sw.ElapsedMilliseconds / lineNr} ErrQ: {errorCounter * 1.0F / lineNr} ErrSum{errorCounter}";
-               // progress.Report(progressData);
-                
+                // progress.Report(progressData);
+
             }
         }
     }
