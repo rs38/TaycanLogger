@@ -21,7 +21,7 @@ namespace TaycanLogger
         public string units;
         public bool IsSkipped(uint i) => (i % skipCount != 0);
         string ResponseString;
-        public decimal ResponseValue
+        public double ResponseValue
         {
             get;
             set;
@@ -53,7 +53,7 @@ namespace TaycanLogger
             }
         }
 
-        decimal calcConversion(byte[] bytes)
+        double calcConversion(byte[] bytes)
         {
             string conversion = ConversionFormula;
             try
@@ -72,10 +72,10 @@ namespace TaycanLogger
             {
                 Trace.WriteLine($"{name} did not init conversion '{conversion}' error with '{ResponseString}'" );
             }
-            decimal temp;
+            double temp;
             try
             {
-                temp = decimal.Parse(dt.Compute(conversion, null).ToString());
+                temp = double.Parse(dt.Compute(conversion, null).ToString());
             }
             catch 
             {

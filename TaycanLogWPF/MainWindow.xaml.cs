@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,7 +26,7 @@ namespace TaycanLogger
         CancellationTokenSource cancel;
         public ObservableCollection<KeyValuePair<DateTime, double>> DataChart1 { get; private set; }
 
-        List<LogitemViewModel> LoglineGrid;
+        LogitemViewModel LoglineGrid;
 
 
         public TaycanLogWPF()
@@ -46,7 +47,7 @@ namespace TaycanLogger
             progressData = new Progress<OBDCommandViewModel>();
             progressData.ProgressChanged += OnDataChanged;
 
-            LoglineGrid = new List<LogitemViewModel>();
+            LoglineGrid = new LogitemViewModel();
             dataGrid1.ItemsSource = LoglineGrid;
             InitPlot();
 
@@ -81,22 +82,21 @@ namespace TaycanLogger
 
             //quick and dirty
 
-            var currentItem = new LogitemViewModel
-            {
-                Time = DateTime.Now,
+            LoglineGrid.Add(new Logitem { 
                 Voltage = Convert.ToDouble(e.DataList[0].ResponseValue),
                 Current = Convert.ToDouble(e.DataList[1].ResponseValue)
-            };
-            LoglineGrid.Add(currentItem);
-            dataGrid1.Items.Refresh();
+            });
+
+          
+          //  dataGrid1.Items.Refresh();
 
             var r = new Random();
 
-            var value = currentItem.Current + ( r.NextDouble()*50);
+            var value = e.DataList.Where(d => d.name == "VoltTerm").First().ResponseValue + ( r.NextDouble()*50);
 
             lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), value));
 
-            // PlotExtern.Plot1.Model = PlotViewModel.MyModel;
+            //moving time axis
             PlotViewModel.MyModel.Axes[0].Minimum = DateTimeAxis.ToDouble(DateTime.Now.AddMinutes(-2));
             PlotExtern.Plot1.Model.InvalidatePlot(true);
             
