@@ -6,7 +6,7 @@
       <Value Profile="(Default)">UniCarScan</Value>
     </Setting>
     <Setting Name="ConfigFilename" Type="System.String" Scope="User">
-      <Value Profile="(Default)">obd2_GW.xml</Value>
+      <Value Profile="(Default)">obd2_Taycan.xml</Value>
     </Setting>
   </Settings>
 </SettingsFile>

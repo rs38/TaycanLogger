@@ -83,8 +83,8 @@ namespace TaycanLogger
             //quick and dirty
 
             LoglineGrid.Add(new Logitem { 
-                Voltage = Convert.ToDouble(e.DataList[0].ResponseValue),
-                Current = Convert.ToDouble(e.DataList[1].ResponseValue)
+                Voltage = Convert.ToDouble(e.DataList[1].ResponseValue),
+                Current = Convert.ToDouble(e.DataList[0].ResponseValue)
             });
 
           
@@ -92,7 +92,7 @@ namespace TaycanLogger
 
             var r = new Random();
 
-            var value = e.DataList.Where(d => d.name == "VoltTerm").First().ResponseValue + ( r.NextDouble()*50);
+            var value = e.DataList.Where(d => d.name == "Amp").First().ResponseValue;// + ( r.NextDouble()*50);
 
             lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), value));
 
