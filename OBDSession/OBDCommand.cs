@@ -1,24 +1,27 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Numerics;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace TaycanLogger
 {
 
-    public class OBDCommand : IDisposable
+    public class OBDCommand : OBDBase, IDisposable
     {
         DataTable dt;
-        OBDDevice runner;
+        IOBDDevice runner;
 
+        public List<OBDBase> Subcommands;
+        public bool HasSubCommands;
         public string send;
         public int skipCount;
-        public string name;
         public string header;
-        public string headerResp;
-        public string ConversionFormula;
-        public string units;
+        char[] charsToTrim = { '\r', ' ', '>', '\0' };
+        //public string headerResp;
+
         public bool IsSkipped(uint i) => (i % skipCount != 0);
         string ResponseString;
         public double ResponseValue
@@ -26,7 +29,7 @@ namespace TaycanLogger
             get;
             set;
         }
-        public OBDCommand(OBDDevice run)
+        public OBDCommand(IOBDDevice run)
         {
             ResponseString = "";
             runner = run;
@@ -44,7 +47,6 @@ namespace TaycanLogger
                 {
                     ResponseString = value;
                     ResponseValue = calcConversion(Convert.FromHexString(value));
-                  
                 }
                 else
                 {
@@ -68,16 +70,16 @@ namespace TaycanLogger
                     i++;
                 }
             }
-            catch 
+            catch
             {
-                Trace.WriteLine($"{name} did not init conversion '{conversion}' error with '{ResponseString}'" );
+                Trace.WriteLine($"{name} did not init conversion '{conversion}' error with '{ResponseString}'");
             }
             double temp;
             try
             {
                 temp = double.Parse(dt.Compute(conversion, null).ToString());
             }
-            catch 
+            catch
             {
                 Trace.WriteLine($"{name} conversion '{conversion}' error with {Convert.ToHexString(bytes)} ");
                 return ResponseValue;
@@ -96,15 +98,43 @@ namespace TaycanLogger
         {
             if (!String.IsNullOrEmpty(header))
                 await runner.WriteReadAsync(header);
-            if (!String.IsNullOrEmpty(headerResp))
-                await  runner.WriteReadAsync(headerResp);
-            var x = await runner.WriteReadAsync(send);
-            if (x.Contains(":"))
-                x = x.Split(':')[1].Trim();
-            Response = x;
+
+            Response = processRawAnswer(await runner.WriteReadAsync(send));
+            ProcessMultipleSubValues();
+
+        }
+
+        private void ProcessMultipleSubValues()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string processRawAnswer(string a)
+        {
+            if (a.Contains(":"))
+            {
+                var sb = new StringBuilder();
+
+                var lines = a.Split(':');
+                for (int i = 1; i < lines.Length; i++)
+                {
+                    int cr = lines[i].IndexOf("\r\n");
+                    sb.Append(lines[i].Substring(0, cr > 0 ? cr : lines.Length).Trim(charsToTrim));
+                }
+                a = sb.ToString();
+            }
+
+            return a.Replace(" ","");
+
         }
 
         void IDisposable.Dispose() => runner.Dispose();
     }
 }
 
+public class OBDBase
+{
+    public string name;
+    public string ConversionFormula;
+    public string units;
+}

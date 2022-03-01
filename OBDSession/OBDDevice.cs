@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace TaycanLogger
 {
 
-    public class OBDDevice : IDisposable
+    public class OBDDevice : IDisposable, IOBDDevice
     {
         BluetoothClient BTclient;
         BluetoothDeviceInfo device;
@@ -22,7 +22,7 @@ namespace TaycanLogger
         int IO_BUFFER_SIZE = 400;
         NetworkStream myStream;
         byte[] buffer;
-        char[] charsToTrim = { '\r', ' ', '>', '\0' };
+     
         string dongleName;
 
         enum DeviceType { BT, IP, USB }
@@ -76,8 +76,7 @@ namespace TaycanLogger
             Trace.Write($"send:{str},");
             await writeAsync(str);
             var value = await readAsync();
-            Trace.Write($"received:{value}");
-
+            Trace.Write($"received raw:{value}");
             return value;
         }
 
@@ -116,14 +115,9 @@ namespace TaycanLogger
             return buffer;
         }
 
-        async Task<string> readAsync()
-        {
-            string answer = System.Text.Encoding.UTF8.GetString(await ReadBufferFromStreamAsync(myStream));
-            Trace.Write(answer);
-            //while (!answer.Contains('>'));
-            return answer.Trim(charsToTrim);
-        }
-
+        internal async Task<string> readAsync()
+                  => System.Text.Encoding.UTF8.GetString(await ReadBufferFromStreamAsync(myStream));
+      
         void getpairedLE()
         {
             foreach (var d in BTclient.PairedDevices)

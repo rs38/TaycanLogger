@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="OBD2">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="init">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="command">
+                <xs:complexType>
+                  <xs:attribute name="send" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="rotation">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="command">
+                <xs:complexType>
+                  <xs:sequence minOccurs="0">
+                    <xs:element name="values">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element maxOccurs="unbounded" name="value">
+                            <xs:complexType>
+                              <xs:attribute name="name" type="xs:string" use="required" />
+                              <xs:attribute name="conversion" type="xs:string" use="required" />
+                              <xs:attribute name="units" type="xs:string" use="required" />
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="send" type="xs:string" use="required" />
+                  <xs:attribute name="skipCount" type="xs:unsignedByte" use="required" />
+                  <xs:attribute name="name" type="xs:string" use="optional" />
+                  <xs:attribute name="conversion" type="xs:string" use="optional" />
+                  <xs:attribute name="units" type="xs:string" use="optional" />
+                  <xs:attribute name="header" type="xs:string" use="optional" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

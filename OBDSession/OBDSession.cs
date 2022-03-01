@@ -52,7 +52,9 @@ namespace TaycanLogger
         public List<string> GetPairedDevices() => myDevice.GetPairedDevices();
 
 
-        public bool hasValidConfig()
+        public bool hasValidConfig() => readConfig();
+
+        bool readConfig()
         {
             cmds = new List<OBDCommand>();
             try
@@ -63,16 +65,43 @@ namespace TaycanLogger
 
                 foreach (var cmd in config.Elements().Elements("rotation").Elements("command"))
                 {
-                    var c = new OBDCommand(myDevice)
+                    OBDCommand c;
+                    if ((cmd.Attribute("units") == null) && (cmd.Descendants("value").Count() > 0))
                     {
-                        send = cmd.Attribute("send").Value,
-                        skipCount = int.Parse(cmd.Attribute("skipCount").Value) + 1,
-                        header = cmd.Attribute("header")?.Value,
-                        headerResp = cmd.Attribute("headerresp")?.Value,
-                        name = cmd.Attribute("name")?.Value ?? "",
-                        ConversionFormula = cmd.Attribute("conversion")?.Value?.ToUpper() ?? "",
-                        units = cmd.Attribute("units")?.Value ?? ""
-                    };
+                        c = new OBDCommand(myDevice)
+                        {
+                            send = cmd.Attribute("send").Value,
+                            skipCount = int.Parse(cmd.Attribute("skipCount").Value) + 1,
+                            header = cmd.Attribute("header")?.Value,
+                            // headerResp = cmd.Attribute("headerresp")?.Value,
+                            name = cmd.Attribute("name")?.Value ?? "",
+                            HasSubCommands = true
+                        };
+
+                        foreach (var element in (cmd.Descendants("value")))
+                        {
+                            c.Subcommands = new List<OBDBase>();
+                            var s = new OBDBase()
+                            {
+                                name = element.Attribute("name")?.Value ?? "",
+                                ConversionFormula = element.Attribute("conversion")?.Value?.ToUpper() ?? "",
+                                units = element.Attribute("units")?.Value ?? ""
+                            };
+                            c.Subcommands.Add(s);
+                        }
+                    }
+                    else
+                    {
+                        c = new OBDCommand(myDevice)
+                        {
+                            send = cmd.Attribute("send").Value,
+                            skipCount = int.Parse(cmd.Attribute("skipCount").Value) + 1,
+                            header = cmd.Attribute("header")?.Value,
+                            name = cmd.Attribute("name")?.Value ?? "",
+                            ConversionFormula = cmd.Attribute("conversion")?.Value?.ToUpper() ?? "",
+                            units = cmd.Attribute("units")?.Value ?? ""
+                        };
+                    }
                     cmds.Add(c);
                 }
             }

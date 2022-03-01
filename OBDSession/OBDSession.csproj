@@ -5,8 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-   <!-- <PackageReference Include="InTheHand.BluetoothLE" Version="4.0.22" /> -->
+   <!-- <PackageReference Include="InTheHand.BluetoothLE" Version="4.0.22" />
+   
+      <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />-->
     <PackageReference Include="InTheHand.Net.Bluetooth" Version="4.0.27" />
+
+    <InternalsVisibleTo Include="$(AssemblyName).Tests" />
+ 
   </ItemGroup>
   
 </Project>
