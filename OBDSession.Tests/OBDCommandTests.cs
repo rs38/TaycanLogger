@@ -10,7 +10,7 @@ namespace TaycanLogger.Tests
     public class OBDCommandTests
     {
 
-        OBDCommand c;
+        List<OBDCommand> cmds;
 
         Mock<IOBDDevice> deviceMock = new Mock<IOBDDevice>();
 
@@ -18,7 +18,9 @@ namespace TaycanLogger.Tests
         public OBDCommandTests()
         {
             string query = "22 0286 2a07 f17c";
-            c = new OBDCommand(deviceMock.Object)
+            cmds = new List<OBDCommand>();
+           
+            var c = new OBDCommand(deviceMock.Object)
             {
                 send = query,
                 skipCount = 0,
@@ -40,6 +42,8 @@ namespace TaycanLogger.Tests
                 units = "v"
             };
             c.Values.Add(s);
+            cmds.Add(c);
+
         }
 
         [TestMethod()]
@@ -55,11 +59,10 @@ namespace TaycanLogger.Tests
             deviceMock.Setup(d => d.WriteReadAsync(query))
                 .ReturnsAsync(answer);
 
-            await c.DoExecAsync();
-
-            var res = c.Values.First().Value;
-            Assert.IsTrue(res == 160);
-            Assert.AreEqual(c.Values[1].Value, 3283.95, 0.1);
+            await cmds[0].DoExecAsync();
+            var x =  cmds.SelectMany(values => values.Values).Select(v => v.Value);
+            Assert.AreEqual(x.First(), 160);
+            Assert.AreEqual(x.Skip(1).First(), 3283.95, 0.1);
         }
     }
 

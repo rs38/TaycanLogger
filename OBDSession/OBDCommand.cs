@@ -12,16 +12,13 @@ namespace TaycanLogger
 
     public class OBDCommand : IDisposable
     {
-
         IOBDDevice runner;
-
         public List<OBDValue> Values;
         public bool HasSingleValue => Values.Count == 1;
         public string send;
         public int skipCount;
         public string header;
         char[] charsToTrim = { '\r', ' ', '>', '\0' };
-        //public string headerResp;
 
         public bool IsSkipped(uint i) => (i % skipCount != 0);
         internal string CommonResponseString;
@@ -30,12 +27,10 @@ namespace TaycanLogger
             get;
             set;
         }
-
         public OBDCommand(IOBDDevice run)
         {
             CommonResponseString = "";
             runner = run;
-
         }
         public bool IsValidResponse()
         {
@@ -56,7 +51,6 @@ namespace TaycanLogger
             {
                 value.calcConversion();
             }
-
         }
 
         public string encodeRawAnswer(string a)
@@ -79,20 +73,16 @@ namespace TaycanLogger
         bool isvalid(string h)
         {
             if (BigInteger.TryParse(h, System.Globalization.NumberStyles.HexNumber, null, out var myInt) &&
-
                  (h.Length % 2 == 0)) //valid HEX String?
             {
                 CommonResponseString = h;
-
             }
             else
             {
                 CommonResponseString = h;
             }
-
             return true;
         }
-
         void IDisposable.Dispose() => runner.Dispose();
     }
 }
@@ -138,8 +128,7 @@ public class OBDValue
                 i++;
             }
         }
-        catch
-        {
+        catch   {
             Trace.WriteLine($"{name} did not init conversion '{conversion}' error with '{cmd.CommonResponseString}'");
         }
 
@@ -147,11 +136,8 @@ public class OBDValue
         {
             Value = double.Parse(dt.Compute(conversion, null).ToString());
         }
-        catch
-        {
+        catch  {
             Trace.WriteLine($"{name} conversion '{conversion}' error with {Convert.ToHexString(cmd.CommonResponseBytes)} ");
-
         }
-
     }
 }

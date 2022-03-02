@@ -139,6 +139,8 @@ namespace TaycanLogger
                 var OBDvalues = from cmd in cmds
                                 from Values in cmd.Values
                                 select Values;
+                //LINQ expression alternative:
+               var x= cmds.SelectMany(values => values.Values);
 
                 String.Join(";",OBDvalues.Select(v => v.name)).Dump();
                 FileWriter.WriteLine("time," + String.Join(",", OBDvalues.Select(v => v.name)));
@@ -160,7 +162,7 @@ namespace TaycanLogger
                     }
                     var LineString = $"{DateTime.Now:HH:mm:ss.ff},{ String.Join(",", OBDvalues.Select(v => v.Response))}";
                     progressData.logline = LineString + "," + errorCounter;
-                    progressData.DataList = cmds;
+                    progressData.DataList = x.ToList();
                     progress.Report(progressData);
                     FileWriter.WriteLine(LineString);
 
