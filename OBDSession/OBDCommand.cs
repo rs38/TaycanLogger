@@ -63,7 +63,7 @@ namespace TaycanLogger
                 for (int i = 1; i < lines.Length; i++)
                 {
                     int cr = lines[i].IndexOf("\r\n");
-                    sb.Append(lines[i].Substring(0, cr > 0 ? cr : lines.Length).Trim(charsToTrim));
+                    sb.Append(lines[i].Substring(0, cr > 0 ? cr : lines[i].Length).Trim(charsToTrim));
                 }
                 a = sb.ToString();
             }
