@@ -72,22 +72,21 @@ namespace TaycanLogger
                         {
                             send = cmd.Attribute("send").Value,
                             skipCount = int.Parse(cmd.Attribute("skipCount").Value) + 1,
-                            header = cmd.Attribute("header")?.Value,
+                            header = cmd.Attribute("header")?.Value
                             // headerResp = cmd.Attribute("headerresp")?.Value,
-                            name = cmd.Attribute("name")?.Value ?? "",
-                            HasSubCommands = true
+                            
                         };
 
                         foreach (var element in (cmd.Descendants("value")))
                         {
-                            c.Subcommands = new List<OBDBase>();
-                            var s = new OBDBase()
+                            c.Values = new List<OBDValue>();
+                            var s = new OBDValue(c)
                             {
                                 name = element.Attribute("name")?.Value ?? "",
                                 ConversionFormula = element.Attribute("conversion")?.Value?.ToUpper() ?? "",
                                 units = element.Attribute("units")?.Value ?? ""
                             };
-                            c.Subcommands.Add(s);
+                            c.Values.Add(s);
                         }
                     }
                     else
@@ -97,10 +96,15 @@ namespace TaycanLogger
                             send = cmd.Attribute("send").Value,
                             skipCount = int.Parse(cmd.Attribute("skipCount").Value) + 1,
                             header = cmd.Attribute("header")?.Value,
+                        };
+                        c.Values = new List<OBDValue>();
+                        var s = new OBDValue(c)
+                        {
                             name = cmd.Attribute("name")?.Value ?? "",
                             ConversionFormula = cmd.Attribute("conversion")?.Value?.ToUpper() ?? "",
                             units = cmd.Attribute("units")?.Value ?? ""
                         };
+                        c.Values.Add(s);
                     }
                     cmds.Add(c);
                 }
@@ -132,8 +136,12 @@ namespace TaycanLogger
             //using var FileWriterRaw = new StreamWriter(@$"c:\temp\OBD Taycan {DateTime.Now:yyMMddHHmmssf} Raw.csv");
             using (var FileWriter = new StreamWriter(@$"c:\temp\OBD Taycan {DateTime.Now:yyMMddHHmmssf}.csv"))
             {
-                String.Join(";", cmds.Select(c => c.name)).Dump();
-                FileWriter.WriteLine("time," + String.Join(",", cmds.Select(c => c.name)));
+                var OBDvalues = from cmd in cmds
+                                from Values in cmd.Values
+                                select Values;
+
+                String.Join(";",OBDvalues.Select(v => v.name)).Dump();
+                FileWriter.WriteLine("time," + String.Join(",", OBDvalues.Select(v => v.name)));
                 do
                 {
                     lineNr++;
@@ -150,7 +158,7 @@ namespace TaycanLogger
                             //Console.Write($"{cmd.name}:{cmd.ResponseValue} {cmd.units}, ");
                         }
                     }
-                    var LineString = $"{DateTime.Now:HH:mm:ss.ff},{ String.Join(",", cmds.Select(c => c.Response))}";
+                    var LineString = $"{DateTime.Now:HH:mm:ss.ff},{ String.Join(",", OBDvalues.Select(v => v.Response))}";
                     progressData.logline = LineString + "," + errorCounter;
                     progressData.DataList = cmds;
                     progress.Report(progressData);

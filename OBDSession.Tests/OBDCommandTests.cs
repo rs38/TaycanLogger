@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace TaycanLogger.Tests
@@ -19,25 +20,27 @@ namespace TaycanLogger.Tests
             string query = "22 0286 2a07 f17c";
             c = new OBDCommand(deviceMock.Object)
             {
-
                 send = query,
                 skipCount = 0,
-                header = "",
-                name = "Test",
-                HasSubCommands = true
+                header = ""
             };
 
-            c.Subcommands = new List<OBDBase>();
-            var s = new OBDBase()
+            c.Values = new List<OBDValue>();
+            var s = new OBDValue(c)
             {
                 name = "v1",
                 ConversionFormula = "B3+B4",
                 units = "v"
             };
-            c.Subcommands.Add(s);
+            c.Values.Add(s);
+            s = new OBDValue(c)
+            {
+                name = "v2",
+                ConversionFormula = "B8*B9/9.1",
+                units = "v"
+            };
+            c.Values.Add(s);
         }
-
-
 
         [TestMethod()]
         public async Task processRawAnswerTest()
@@ -52,10 +55,11 @@ namespace TaycanLogger.Tests
             deviceMock.Setup(d => d.WriteReadAsync(query))
                 .ReturnsAsync(answer);
 
-           await c.DoExecAsync();
+            await c.DoExecAsync();
 
-            var res =  c.ResponseValue;
-            Assert.IsTrue(res == 0.1);
+            var res = c.Values.First().Value;
+            Assert.IsTrue(res == 160);
+            Assert.AreEqual(c.Values[1].Value, 3283.95, 0.1);
         }
     }
 
