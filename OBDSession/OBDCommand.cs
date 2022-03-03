@@ -34,7 +34,7 @@ namespace TaycanLogger
         }
         public bool IsValidResponse()
         {
-            bool valid = (!CommonResponseString.Contains("NO DATA") && !CommonResponseString.StartsWith("7F") && !CommonResponseString.Contains("STOPPED"));
+            bool valid = (!CommonResponseString.Contains("DATA") && !CommonResponseString.EndsWith("V") && !CommonResponseString.StartsWith("7F") && !CommonResponseString.Contains("STOPPED"));
             Trace.WriteLine($":Resp valid:{valid},");
             return valid;
         }
@@ -45,7 +45,8 @@ namespace TaycanLogger
                 await runner.WriteReadAsync(header);
 
             CommonResponseString = encodeRawAnswer(await runner.WriteReadAsync(send));
-            CommonResponseBytes = Convert.FromHexString(CommonResponseString);
+            if (IsValidResponse())  
+                  CommonResponseBytes = Convert.FromHexString(CommonResponseString);
 
             foreach (var value in Values)
             {
@@ -62,12 +63,12 @@ namespace TaycanLogger
                 var lines = a.Split(':');
                 for (int i = 1; i < lines.Length; i++)
                 {
-                    int cr = lines[i].IndexOf("\r\n");
+                    int cr = lines[i].IndexOf("\r");
                     sb.Append(lines[i].Substring(0, cr > 0 ? cr : lines[i].Length).Trim(charsToTrim));
                 }
                 a = sb.ToString();
             }
-            return a.Replace(" ", "");
+            return a.Replace(" ", "").Trim(charsToTrim);
         }
 
         bool isvalid(string h)

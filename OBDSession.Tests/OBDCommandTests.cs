@@ -48,7 +48,7 @@ namespace TaycanLogger.Tests
         }
 
         [TestMethod()]
-        public async Task processRawAnswerTest()
+        public async Task processRawAnswerTestMultiframe5()
         {
             string query = "22 0286 2a07 f17c";
             string answer = @"021
@@ -67,7 +67,7 @@ namespace TaycanLogger.Tests
         }
 
         [TestMethod()]
-        public async Task processRawAnswerTest2()
+        public async Task processRawAnswerTest4Lines()
         {
             string query = "22 0286 2a07 f17c";
             string answer = @"021
@@ -86,6 +86,11 @@ namespace TaycanLogger.Tests
             Assert.AreEqual(e.Current, 160);
             e.MoveNext();
             Assert.AreEqual(e.Current, 3283.95, 0.1);
+
+            answer = @"00D
+0: 6218020249A4
+1: 18011F46F40D00
+>";
         }
     }
 

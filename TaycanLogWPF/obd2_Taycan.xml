@@ -44,33 +44,33 @@
       </values>
     </command>
     
-    <command send="221E33" skipCount="15" name="CellVMax" conversion="((B3*256)+B4)/10000" units="V">
+    <command send="221E33" skipCount="15" >
       <values>
         <value name="CellVoltMax2" conversion="(B3*256)+B4)/10000" units="V"/>
         <value name="Cell#Max" conversion="B5" units="#"/>
       </values>
     </command>
-    <command send="221E34" skipCount="15" name="CellVMin" conversion="((B3*256)+B4)/10000" units="V">
+    <command send="221E34" skipCount="15" >
       <values>
         <value name="CellVoltMin2" conversion="(B4*256)+B4)/10000" units="V"/>
         <value name="Cell#Min" conversion="B4" units="#"/>
       </values>
     </command>
 
-    <command send="221E0E" skipCount="20" name="CellTMax" conversion="B3-100" units="C">
+    <command send="221E0E" skipCount="20">
       <values>
         <value name="CellTempMax2" conversion="B3-100" units="C"/>
         <value name="CellT#Max" conversion="B4" units="#"/>
       </values>
     </command>
-    <command send="221E0F" skipCount="20" name="CellTMin" conversion="B3-100" units="C">
+    <command send="221E0F" skipCount="20">
       <values>
         <value name="CellTempMin2" conversion="B3-100" units="C"/>
         <value name="CellT#Min" conversion="B4" units="#"/>
       </values>
     </command>
 
-    <command send="221E2C" skipCount="21" name="CellSOCMax" conversion="B3" units="C">
+    <command send="221E2C" skipCount="21" units="C">
       <values>
         <value name="CellSOCMax" conversion="B3" units="%"/>
         <value name="CellSoc#Max" conversion="B4" units="#"/>
@@ -90,7 +90,7 @@
     <command send="222613" skipCount="20" conversion="((B3*256)+B4)/8.0" name="InsideTemp" units="C"/>
 
     <!-- 0x8D BMS -->
-    <command send="221E2D" header="atsh7e5" skipCount="20" name="CellSOCMin" conversion="B3" units="%">
+    <command send="221E2D" header="atsh7e5" skipCount="10" >
       <values>
         <value name="CellSOCMin" conversion="B3" units="%"/>
         <value name="CellSoc#Min" conversion="B4" units="#"/>
