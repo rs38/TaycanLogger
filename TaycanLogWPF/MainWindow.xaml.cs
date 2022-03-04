@@ -82,12 +82,8 @@ namespace TaycanLogger
 
             //quick and dirty
 
-            LoglineGrid.Add(new Logitem { 
-                Voltage = Convert.ToDouble(e.DataList[1].Value),
-                Current = Convert.ToDouble(e.DataList[0].Value)
-            });
-
-          
+            LoglineGrid.Add(e.DataList);// Select(d => new { name = d.name, value = d.Value }));
+                
           //  dataGrid1.Items.Refresh();
 
             var r = new Random();
@@ -99,12 +95,6 @@ namespace TaycanLogger
             //moving time axis
             PlotViewModel.MyModel.Axes[0].Minimum = DateTimeAxis.ToDouble(DateTime.Now.AddMinutes(-2));
             PlotExtern.Plot1.Model.InvalidatePlot(true);
-            
-
-            // DataChart1.Add(new KeyValuePair<DateTime, double>(DateTime.Now, Convert.ToDouble(e.DataList[1].ResponseValue)));
-           // C1.DataContext = DataChart1;
-            //   series1.Points.AddY(e.DataList[0].ResponseValue);
-            // series2.Points.AddY(e.DataList[1].ResponseValue);
         }
 
         async private void StartButton_Click(object sender, RoutedEventArgs e)

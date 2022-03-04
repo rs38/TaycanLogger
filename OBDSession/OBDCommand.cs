@@ -13,7 +13,10 @@ namespace TaycanLogger
     public class OBDCommand : IDisposable
     {
         IOBDDevice runner;
-        public List<OBDValue> Values;
+        public List<OBDValue> Values
+        {
+            get; set;
+        }
         public bool HasSingleValue => Values.Count == 1;
         public string send;
         public int skipCount;
@@ -21,11 +24,13 @@ namespace TaycanLogger
         char[] charsToTrim = { '\r', ' ', '>', '\0' };
 
         public bool IsSkipped(uint i) => (i % skipCount != 0);
-        internal string CommonResponseString;
+        internal string CommonResponseString
+        {
+            get;   set;
+        }
         internal byte[] CommonResponseBytes
         {
-            get;
-            set;
+            get;  set;
         }
         public OBDCommand(IOBDDevice run)
         {
@@ -34,9 +39,25 @@ namespace TaycanLogger
         }
         public bool IsValidResponse()
         {
-            bool valid = (!CommonResponseString.Contains("DATA") && !CommonResponseString.EndsWith("V") && !CommonResponseString.StartsWith("7F") && !CommonResponseString.Contains("STOPPED"));
+            bool valid = !CommonResponseString.Contains("DATA") && 
+                !CommonResponseString.EndsWith("V") && 
+                !CommonResponseString.StartsWith("7F") &&
+                !CommonResponseString.Contains("STOPPED");
             Trace.WriteLine($":Resp valid:{valid},");
             return valid;
+        }
+        bool IsvalidHex()
+        {
+            if (BigInteger.TryParse(CommonResponseString, System.Globalization.NumberStyles.HexNumber, null, out _) &&
+                 (CommonResponseString.Length % 2 == 0)) //valid HEX String?
+            {
+                Trace.Write("corrent Response: " + CommonResponseString);
+                return true;
+            }
+
+            Trace.Write("malformed Response: " + CommonResponseString);
+            return false;
+
         }
 
         internal async Task DoExecAsync()
@@ -45,8 +66,16 @@ namespace TaycanLogger
                 await runner.WriteReadAsync(header);
 
             CommonResponseString = encodeRawAnswer(await runner.WriteReadAsync(send));
-            if (IsValidResponse())  
-                  CommonResponseBytes = Convert.FromHexString(CommonResponseString);
+            if (IsValidResponse() && IsvalidHex())
+                try
+                {
+                    CommonResponseBytes = Convert.FromHexString(CommonResponseString);
+                }
+                catch (Exception ex)
+                {
+
+                    Trace.Write("Hex Convert Error: "+ex.Message);
+                }  
 
             foreach (var value in Values)
             {
@@ -71,74 +100,7 @@ namespace TaycanLogger
             return a.Replace(" ", "").Trim(charsToTrim);
         }
 
-        bool isvalid(string h)
-        {
-            if (BigInteger.TryParse(h, System.Globalization.NumberStyles.HexNumber, null, out var myInt) &&
-                 (h.Length % 2 == 0)) //valid HEX String?
-            {
-                CommonResponseString = h;
-            }
-            else
-            {
-                CommonResponseString = h;
-            }
-            return true;
-        }
+      
         void IDisposable.Dispose() => runner.Dispose();
-    }
-}
-
-public class OBDValue
-{
-    DataTable dt;
-    public string name;
-    public string ConversionFormula;
-    public string units;
-    OBDCommand cmd;
-    public OBDValue(OBDCommand _cmd)
-    {
-        cmd = _cmd;
-        dt = new DataTable();
-    }
-    public double Value
-    {
-        get;
-        set;
-    }
-    public string Response
-    {
-        get => ConversionFormula == "" ? cmd.CommonResponseString : Value.ToString();
-    }
-    internal void calcConversion()
-    {
-        string conversion = ConversionFormula;
-
-        if (String.IsNullOrEmpty(ConversionFormula)) return;
-
-        try
-        {
-            int i = 0;
-            foreach (var b in cmd.CommonResponseBytes)
-            {
-                if (!conversion.Contains("B")) break;
-
-                if (conversion.Contains($"B{i}"))
-                {
-                    conversion = conversion.Replace($"B{i}", b.ToString());
-                }
-                i++;
-            }
-        }
-        catch   {
-            Trace.WriteLine($"{name} did not init conversion '{conversion}' error with '{cmd.CommonResponseString}'");
-        }
-
-        try
-        {
-            Value = double.Parse(dt.Compute(conversion, null).ToString());
-        }
-        catch  {
-            Trace.WriteLine($"{name} conversion '{conversion}' error with {Convert.ToHexString(cmd.CommonResponseBytes)} ");
-        }
     }
 }
