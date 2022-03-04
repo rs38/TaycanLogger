@@ -26,7 +26,8 @@ namespace TaycanLogger
         CancellationTokenSource cancel;
         public ObservableCollection<KeyValuePair<DateTime, double>> DataChart1 { get; private set; }
 
-        LogitemViewModel LoglineGrid;
+        ObservableCollection<List<double>> LoglineGrid;
+       
 
 
         public TaycanLogWPF()
@@ -47,8 +48,7 @@ namespace TaycanLogger
             progressData = new Progress<OBDCommandViewModel>();
             progressData.ProgressChanged += OnDataChanged;
 
-            LoglineGrid = new LogitemViewModel();
-            dataGrid1.ItemsSource = LoglineGrid;
+          
             InitPlot();
 
         }
@@ -82,7 +82,7 @@ namespace TaycanLogger
 
             //quick and dirty
 
-            LoglineGrid.Add(e.DataList);// Select(d => new { name = d.name, value = d.Value }));
+            LoglineGrid.Add(e.DataList.Select(d => d.Value).ToList());// Select(d => new { name = d.name, value = d.Value }));
                 
           //  dataGrid1.Items.Refresh();
 
@@ -105,6 +105,9 @@ namespace TaycanLogger
                 TextboxInformation.AppendText("errors while reading config or init device" + Environment.NewLine);
                 return;
             }
+            LoglineGrid = new ObservableCollection<List<double>> {
+                myOBDSession.cmds.SelectMany(c => c.Values).Select(v => v.Value).ToList()};
+            dataGrid1.ItemsSource = LoglineGrid; 
             await myOBDSession.DoLogAsync(UIDeviceName, progressData, cancel.Token);
         }
 
