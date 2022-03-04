@@ -112,7 +112,7 @@ namespace TaycanLogger
             cancel = new CancellationTokenSource();
             if (!await myOBDSession.InitDevice())
             {
-                TextboxInformation.AppendText("errors while reading config/init" + Environment.NewLine);
+                TextboxInformation.AppendText("errors while reading config or init device" + Environment.NewLine);
                 return;
             }
             await myOBDSession.DoLogAsync(UIDeviceName, progressData, cancel.Token);

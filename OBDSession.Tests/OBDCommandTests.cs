@@ -78,7 +78,7 @@ namespace TaycanLogger.Tests
 
             deviceMock.Setup(d => d.WriteReadAsync(query))
                 .ReturnsAsync(answer);
-
+            
             await cmds[0].DoExecAsync();
             var x = cmds.SelectMany(values => values.Values).Select(v => v.Value);
             var e = x.GetEnumerator();
