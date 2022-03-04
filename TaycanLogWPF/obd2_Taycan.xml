@@ -22,55 +22,59 @@
 
   <rotation>
     <!--    
-    <command send="221804" header="atsh7e5" headerresp="atcra7ED" skipCount="2" name="Amp2" conversion="((B3*65536.0)+B4*256+B5)/100-1500" units="A"/> -->
+    <command send="221804" header="atsh7e5" headerresp="atcra7ED" skipCount="2" name="Amp2" conversion="((B3*65536.0)+B4*256+B5)/100-1500" units="A"/> 
 
     <command send="221802" skipCount="0" name="Amp" conversion="((B3*65536.0)+B4*256+B5)/100-1500" units="A"/>
-    <command send="221801" skipCount="0" name="BattVolt" conversion="((B3*256)+B4)/10" units="V"/>
+        <command send="22F40D" skipCount="3" name="Velocity" conversion="B3" units="km/h"/>
+    <command send="221801" skipCount="0" name="BattVolt" conversion="((B3*256)+B4)/10" units="V"/> -->
 
+    <command send="2218021801f40d" skipCount="0">
+      <!-- Units missing = Subcommands!  621802 334455 1801 6677 F40d 00 -->
+      <values>
+        <value name="Amp" conversion="((B3*65536.0)+B4*256+B5)/100-1500" units="A"/>
+        <value name="BattVolt" conversion="((B8*256)+B9)/10" units="V"/>
+        <value name="Velocity"  conversion="B12" units="km/h"/>
+      </values>
+    </command>
+    
     <command send="22181D" skipCount="9" name="BattTempOut" conversion="B3-40" units="C"/>
     <command send="22181C" skipCount="10" name="BattTempIn" conversion="B3-40" units="C"/>
     <command send="221E10" skipCount="11" name="BattTemp" conversion="B3-100" units="C"/>
-    <command send="22F40D" skipCount="3" name="Velocity" conversion="B3" units="km/h"/>
+
     <command send="22028C" skipCount="12" name="SoC" conversion="B3" units="%"/>
     <command send="221E3B" skipCount="7" name="CellSumm" conversion="((B3*256)+B4)/10" units="V"/>
     <command send="221E1B" skipCount="13" name="BattLimChar" conversion="B3*256+B4" units="A"/>
     <command send="221E1C" skipCount="14" name="BattLimDis" conversion="B3*256+B4" units="A"/>
 
-    <command send="2218021801f40d" skipCount="0">   <!-- Units missing = Subcommands!  621802 334455 1801 6677 F40d 00 -->
-      <values>
-        <value name="Amp" conversion="((B3*65536.0)+B4*256+B5)/100-1500" units="A"/>
-        <value name="BattVolt" conversion="((B6*256)+B7)/10" units="V"/>
-        <value name="Velocity"  conversion="B10" units="km/h"/>
-      </values>
-    </command>
+  
     
-    <command send="221E33" skipCount="15" name="CellVMax" conversion="((B3*256)+B4)/10000" units="V">
+    <command send="221E33" skipCount="15" >
       <values>
         <value name="CellVoltMax2" conversion="(B3*256)+B4)/10000" units="V"/>
         <value name="Cell#Max" conversion="B5" units="#"/>
       </values>
     </command>
-    <command send="221E34" skipCount="15" name="CellVMin" conversion="((B3*256)+B4)/10000" units="V">
+    <command send="221E34" skipCount="15" >
       <values>
         <value name="CellVoltMin2" conversion="(B4*256)+B4)/10000" units="V"/>
         <value name="Cell#Min" conversion="B4" units="#"/>
       </values>
     </command>
 
-    <command send="221E0E" skipCount="20" name="CellTMax" conversion="B3-100" units="C">
+    <command send="221E0E" skipCount="20">
       <values>
         <value name="CellTempMax2" conversion="B3-100" units="C"/>
         <value name="CellT#Max" conversion="B4" units="#"/>
       </values>
     </command>
-    <command send="221E0F" skipCount="20" name="CellTMin" conversion="B3-100" units="C">
+    <command send="221E0F" skipCount="20">
       <values>
         <value name="CellTempMin2" conversion="B3-100" units="C"/>
         <value name="CellT#Min" conversion="B4" units="#"/>
       </values>
     </command>
 
-    <command send="221E2C" skipCount="21" name="CellSOCMax" conversion="B3" units="C">
+    <command send="221E2C" skipCount="21" units="C">
       <values>
         <value name="CellSOCMax" conversion="B3" units="%"/>
         <value name="CellSoc#Max" conversion="B4" units="#"/>
@@ -90,7 +94,7 @@
     <command send="222613" skipCount="20" conversion="((B3*256)+B4)/8.0" name="InsideTemp" units="C"/>
 
     <!-- 0x8D BMS -->
-    <command send="221E2D" header="atsh7e5" skipCount="20" name="CellSOCMin" conversion="B3" units="%">
+    <command send="221E2D" header="atsh7e5" skipCount="10" >
       <values>
         <value name="CellSOCMin" conversion="B3" units="%"/>
         <value name="CellSoc#Min" conversion="B4" units="#"/>

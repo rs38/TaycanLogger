@@ -76,10 +76,10 @@ namespace TaycanLogger
                             // headerResp = cmd.Attribute("headerresp")?.Value,
                             
                         };
-
+                        c.Values = new List<OBDValue>();
                         foreach (var element in (cmd.Descendants("value")))
                         {
-                            c.Values = new List<OBDValue>();
+                            
                             var s = new OBDValue(c)
                             {
                                 name = element.Attribute("name")?.Value ?? "",
@@ -139,10 +139,12 @@ namespace TaycanLogger
                 var OBDvalues = from cmd in cmds
                                 from Values in cmd.Values
                                 select Values;
+
                 //LINQ expression alternative:
                var x= cmds.SelectMany(values => values.Values);
 
                 String.Join(";",OBDvalues.Select(v => v.name)).Dump();
+                Trace.WriteLine("now loggong: "+String.Join(",", OBDvalues.Select(v => v.name)));
                 FileWriter.WriteLine("time," + String.Join(",", OBDvalues.Select(v => v.name)));
                 do
                 {
