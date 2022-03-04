@@ -9,7 +9,6 @@ using TaycanLogger;
 
 namespace TaycanLogger
 {
-
     public class OBDCommand : IDisposable
     {
         IOBDDevice runner;
@@ -40,7 +39,7 @@ namespace TaycanLogger
         public bool IsValidResponse()
         {
             bool valid = !CommonResponseString.Contains("DATA") && 
-                !CommonResponseString.EndsWith("V") && 
+               // !CommonResponseString.EndsWith("V") && 
                 !CommonResponseString.StartsWith("7F") &&
                 !CommonResponseString.Contains("STOPPED");
             Trace.WriteLine($":Resp valid:{valid},");
@@ -67,20 +66,26 @@ namespace TaycanLogger
 
             CommonResponseString = encodeRawAnswer(await runner.WriteReadAsync(send));
             if (IsValidResponse() && IsvalidHex())
+            {
                 try
                 {
                     CommonResponseBytes = Convert.FromHexString(CommonResponseString);
+                    foreach (var value in Values)
+                    {
+                        value.calcConversion();
+                        value.IsValid = true;
+                    }
                 }
                 catch (Exception ex)
                 {
 
-                    Trace.Write("Hex Convert Error: "+ex.Message);
-                }  
+                    Trace.Write("Hex Convert Error: " + ex.Message);
+                }
+            } else
+            {  Values.ForEach(v => v.IsValid = false); }
+            
 
-            foreach (var value in Values)
-            {
-                value.calcConversion();
-            }
+                
         }
 
         public string encodeRawAnswer(string a)

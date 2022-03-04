@@ -11,36 +11,35 @@
           <command send="atcm000"></command>
           <command send="atcf000"></command>
           <command send="atst15"></command>
-          <!--    <command send="atfcsm0"></command>
-                <command send="atcfcs0"></command>
-               <command send="atfcsm0"></command>
-         -->
+		  <command send="atfcsd300000"></command>
+          <command send="atfcsh710"></command>
+		  <command send="atfcsm1"></command>
           <command send="ate0"></command>
 
      </init>
 
-     <!-- 'conversion' if omitted, value is read 'as-is'. Otherwise variables 'B0', 'B1', 'B2', 'B3', 'V' and 'ID#' can be used within
-       conversion formula, for example: conversion="V/10" conversion="V+ID200-74.3" - result is incoming value +
-         'Body Electronics->Gear' - 74.3 -->
-
      <rotation>
           <!-- 0x01 Motor 
 	    <command send="atcr7ed" header="atsh7e5" skipCount="0"/>
-          0x01 Motor -->
+          0x01 Motor 
+		  
+		    <command send="atrv" skipCount="10" name="12VBatt"></command>
+		    <command send="0902" header="ATSH7DF" skipCount="2" name="Battery Current" conversion="B3+B4+B5+B6" units="mA"/>
+		  -->
 
-          <command send="220286" header="atsh710"  skipCount="0" name="VoltTerm" conversion="B3/5" units="V"/>
-          <command send="222A07" skipCount="0" name="BattVolt2" conversion="((B3*256)+B4)/10" units="V"/>
+          <command send="220286" skipCount="0" name="VoltTerm" conversion="B3/5" units="V"/>
+          <command send="222A07" skipCount="2" name="BattVolt2" conversion="((B3*256)+B4)/10" units="V"/>
 
-          <command send="222A09" skipCount="2" name="Battery Current" conversion="B3+B4+B5+B6" units="mA"/>
+          <command send="222A09" skipCount="2" name="Amp" conversion="B3+B4+B5+B6" units="mA"/>
          
-       <!--   <command send="2202f9" skipCount="5" name="VersionMulti" conversion="((B3*256)+B4)/10000" units="V">
+        <command send="2202f9" skipCount="0" >
                <values>
-                    <value name="CellVoltMin2" conversion="(B3*256)+B4)/10000" units="V"/>
+                    <value name="CellVoltMin2" conversion="((B3*256)+B4)/10000" units="V"/>
                     <value name="Cell#Min" conversion="B5" units="#"/>
+				   <value name="whatever" conversion="B6" units="#"/>
                </values>
           </command>
           
-         <command send="0902" header="ATSH7DF" skipCount="2" name="Battery Current" conversion="B3+B4+B5+B6" units="mA"/> -->
-          <command send="atrv" skipCount="10" name="12VBatt"></command>
+        
      </rotation>
 </OBD2>

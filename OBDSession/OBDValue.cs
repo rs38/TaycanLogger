@@ -17,6 +17,7 @@ public class OBDValue
         set;
     }
     public string ConversionFormula;
+    public bool IsValid;
     public string units;
     OBDCommand cmd;
     public OBDValue(OBDCommand _cmd)
@@ -26,8 +27,18 @@ public class OBDValue
     }
     public string Response
     {
-        get => ConversionFormula == "" ? cmd.CommonResponseString : Value.ToString();
+        get
+        {
+            if (ConversionFormula == "")
+                return cmd.CommonResponseString;
+            else if (IsValid)
+                return Value.ToString();
+            else
+                return "err";
+        }
     }
+
+
     public OBDValue()
     {
 
@@ -38,7 +49,7 @@ public class OBDValue
         get;
         set;
     }
-    
+
     internal void calcConversion()
     {
         string conversion = ConversionFormula;
@@ -59,7 +70,8 @@ public class OBDValue
                 i++;
             }
         }
-        catch   {
+        catch
+        {
             Trace.WriteLine($"{name} did not init conversion '{conversion}' error with '{cmd.CommonResponseString}'");
         }
 
@@ -67,8 +79,10 @@ public class OBDValue
         {
             Value = double.Parse(dt.Compute(conversion, null).ToString());
         }
-        catch  {
-            Trace.WriteLine($"{name} conversion '{conversion}' error with {Convert.ToHexString(cmd.CommonResponseBytes)} ");
+        catch (Exception ex)
+        {
+
+            Trace.WriteLine($"{name} conversion '{conversion}' error {ex.Message} with {Convert.ToHexString(cmd.CommonResponseBytes)} ");
         }
     }
 }

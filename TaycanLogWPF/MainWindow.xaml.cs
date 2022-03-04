@@ -93,7 +93,7 @@ namespace TaycanLogger
             lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), value));
 
             //moving time axis
-            PlotViewModel.MyModel.Axes[0].Minimum = DateTimeAxis.ToDouble(DateTime.Now.AddMinutes(-2));
+            PlotViewModel.MyModel.Axes[0].Minimum = DateTimeAxis.ToDouble(DateTime.Now.AddMinutes(-1));
             PlotExtern.Plot1.Model.InvalidatePlot(true);
         }
 
@@ -152,10 +152,8 @@ namespace TaycanLogger
 
          private void InitPlot()
         {
-            PlotViewModel.MyModel = new PlotModel { Title = "Voltage" };
+            PlotViewModel.MyModel = new PlotModel { Title = "Ampere" };
             lineSeries = new LineSeries ();
-
-
 
             var startDate = DateTime.Now;
             var endDate = DateTime.Now.AddMinutes(1);
@@ -164,15 +162,6 @@ namespace TaycanLogger
             var maxValue = DateTimeAxis.ToDouble(endDate);
 
             PlotViewModel.MyModel.Axes.Add(new DateTimeAxis { Position = AxisPosition.Bottom , Minimum = minValue});
-
-
-            //var r = new Random(314);
-            //for (int i = 0; i < 100; i++)
-            //{
-            //    var y = r.NextDouble() * 100;
-            //    lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now.AddSeconds(i*1)), y));
-            //}
-
             PlotViewModel.MyModel.Series.Add(lineSeries);
 
             PlotExtern.Plot1.Model = PlotViewModel.MyModel;

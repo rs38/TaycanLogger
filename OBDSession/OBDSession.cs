@@ -125,27 +125,25 @@ namespace TaycanLogger
         {
             var progressData = new OBDCommandViewModel();
 
-
             var sw = new Stopwatch();
             sw.Start();
             Console.WriteLine("go!");
-            UInt32 max = 10_100;
             UInt32 errorCounter = 0;
             uint lineNr = 0;
 
             //using var FileWriterRaw = new StreamWriter(@$"c:\temp\OBD Taycan {DateTime.Now:yyMMddHHmmssf} Raw.csv");
             using (var FileWriter = new StreamWriter(@$"c:\temp\OBD Taycan {DateTime.Now:yyMMddHHmmssf}.csv"))
             {
-                var OBDvalues = from cmd in cmds
+                var OBDvalueNames = from cmd in cmds
                                 from Values in cmd.Values
-                                select Values;
+                                select Values.name;
 
-                //LINQ expression alternative:
-               var x= cmds.SelectMany(values => values.Values);
+                //LINQ expression syntax alternative:
+               var OBDValueValues = cmds.SelectMany(values => values.Values).Select(v =>  v.IsValid ? v.Value.ToString() : "err");
 
-                String.Join(";",OBDvalues.Select(v => v.name)).Dump();
-                Trace.WriteLine("now loggong: "+String.Join(",", OBDvalues.Select(v => v.name)));
-                FileWriter.WriteLine("time," + String.Join(",", OBDvalues.Select(v => v.name)));
+                String.Join(";",OBDvalueNames).Dump();
+                Trace.WriteLine("now loggong: "+String.Join(",", OBDvalueNames));
+                FileWriter.WriteLine("time," + String.Join(",", OBDvalueNames));
                 do
                 {
                     lineNr++;
@@ -157,14 +155,14 @@ namespace TaycanLogger
                             if (!cmd.IsValidResponse())
                             {
                                 errorCounter++;
-                                //	cmd.Response.Dump("Err:");
+                                
                             }
                             //Console.Write($"{cmd.name}:{cmd.ResponseValue} {cmd.units}, ");
                         }
                     }
-                    var LineString = $"{DateTime.Now:HH:mm:ss.ff},{ String.Join(",", OBDvalues.Select(v => v.Response))}";
+                    var LineString = $"{DateTime.Now:HH:mm:ss.ff},{ String.Join(",", OBDValueValues)}";
                     progressData.logline = LineString + "," + errorCounter;
-                    progressData.DataList = x.ToList();
+                    progressData.DataList = cmds.SelectMany(values => values.Values).ToList();
                     progress.Report(progressData);
                     FileWriter.WriteLine(LineString);
 
@@ -174,7 +172,7 @@ namespace TaycanLogger
                         FileWriter.Flush();
                     }
                     if (token.IsCancellationRequested) break;
-                } while (lineNr < max);
+                } while (true);
                 progressData.logline = $"ms/line: {sw.ElapsedMilliseconds / lineNr} ErrQ: {errorCounter * 1.0F / lineNr} ErrSum{errorCounter}";
                 // progress.Report(progressData);
 

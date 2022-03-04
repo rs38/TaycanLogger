@@ -12,14 +12,24 @@ namespace TaycanLogger.Tests
 
         List<OBDCommand> cmds;
 
+        OBDSession session;
+
         Mock<IOBDDevice> deviceMock = new Mock<IOBDDevice>();
 
 
         public OBDCommandTests()
         {
             string query = "22 0286 2a07 f17c";
+            BuildCommands(query);
+            session = new OBDSession("obd2_gw.xml", "fakedevice");
+
+
+        }
+
+        private void BuildCommands(string query)
+        {
             cmds = new List<OBDCommand>();
-           
+
             var c = new OBDCommand(deviceMock.Object)
             {
                 send = query,
@@ -44,9 +54,16 @@ namespace TaycanLogger.Tests
             c.Values.Add(s);
 
             cmds.Add(c);
-
         }
 
+        [TestMethod()]
+
+        public void LoadConfigShouldworkFine()
+        {
+            Assert.IsTrue( session.hasValidConfig());
+            var x = session.cmds.SelectMany(commands => commands.Values).ToList();
+
+        }
         [TestMethod()]
         public async Task processRawAnswerTestMultiframe5()
         {
@@ -91,6 +108,12 @@ namespace TaycanLogger.Tests
 0: 6218020249A4
 1: 18011F46F40D00
 >";
+            //gateway
+            answer = @">2202f9
+008
+0: 62 02 F9 01 4D A0
+1: A8 2D AA AA AA AA AA
+";
         }
     }
 
