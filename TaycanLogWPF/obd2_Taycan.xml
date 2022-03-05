@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <OBD2>
   <init>
+    <command send="atz"></command>
     <command send="atat1"></command>
     <command send="atsp6"></command>
     <command send="atl0"></command>
@@ -10,8 +11,10 @@
     <command send="atsh7e5"></command>
     <command send="atcm000"></command>
     <command send="atcf000"></command>
-    <command send="atst15"></command>
-    <command send="atfcsm0"></command>
+    <command send="atfcsd300000"></command>
+    <command send="atfcsh7e5"></command>
+    <command send="atfcsm1"></command>
+    
     <!--    
                <command send="atz"></command>
                 <command send="atcfcs0"></command>   flowcontrol
@@ -45,36 +48,34 @@
     <command send="221E3B" skipCount="7" name="CellSumm" conversion="((B3*256)+B4)/10" units="V"/>
     <command send="221E1B" skipCount="13" name="BattLimChar" conversion="B3*256+B4" units="A"/>
     <command send="221E1C" skipCount="14" name="BattLimDis" conversion="B3*256+B4" units="A"/>
-
-  
     
     <command send="221E33" skipCount="15" >
       <values>
-        <value name="CellVoltMax2" conversion="(B3*256)+B4)/10000" units="V"/>
+        <value name="CellVoltMax" conversion="(B3*256)+B4)/10000" units="V"/>
         <value name="Cell#Max" conversion="B5" units="#"/>
       </values>
     </command>
     <command send="221E34" skipCount="15" >
       <values>
-        <value name="CellVoltMin2" conversion="(B4*256)+B4)/10000" units="V"/>
+        <value name="CellVoltMin" conversion="(B4*256)+B4)/10000" units="V"/>
         <value name="Cell#Min" conversion="B4" units="#"/>
       </values>
     </command>
 
     <command send="221E0E" skipCount="20">
       <values>
-        <value name="CellTempMax2" conversion="B3-100" units="C"/>
+        <value name="CellTempMax" conversion="B3-100" units="C"/>
         <value name="CellT#Max" conversion="B4" units="#"/>
       </values>
     </command>
     <command send="221E0F" skipCount="20">
       <values>
-        <value name="CellTempMin2" conversion="B3-100" units="C"/>
+        <value name="CellTempMin" conversion="B3-100" units="C"/>
         <value name="CellT#Min" conversion="B4" units="#"/>
       </values>
     </command>
 
-    <command send="221E2C" skipCount="21" units="C">
+    <command send="221E2C" skipCount="21">
       <values>
         <value name="CellSOCMax" conversion="B3" units="%"/>
         <value name="CellSoc#Max" conversion="B4" units="#"/>
@@ -141,8 +142,10 @@
         22 1512:
         High_voltage_battery_energy_information 29400
         NV_energy_requirement [Wh] 12700
+        
         HV-EM_high_voltage_battery_energy_information 28500
-		-->
     <command send="atrv" skipCount="20" name="12VBatt"></command>
+-->
+
   </rotation>
 </OBD2>

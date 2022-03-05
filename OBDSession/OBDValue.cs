@@ -17,7 +17,11 @@ public class OBDValue
         set;
     }
     public string ConversionFormula;
-    public bool IsValid;
+    public bool IsValid
+    {
+        get;
+        set;
+    }
     public string units;
     OBDCommand cmd;
     public OBDValue(OBDCommand _cmd)
@@ -58,16 +62,15 @@ public class OBDValue
 
         try
         {
-            int i = 0;
-            foreach (var b in cmd.CommonResponseBytes)
+            var b = cmd.CommonResponseBytes;
+            for (int i = b.Length-1; i >= 0; i--)
             {
                 if (!conversion.Contains("B")) break;
-
+              
                 if (conversion.Contains($"B{i}"))
                 {
-                    conversion = conversion.Replace($"B{i}", b.ToString());
+                    conversion = conversion.Replace($"B{i}", b[i].ToString());
                 }
-                i++;
             }
         }
         catch

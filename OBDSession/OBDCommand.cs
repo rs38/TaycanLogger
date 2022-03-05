@@ -56,7 +56,6 @@ namespace TaycanLogger
 
             Trace.Write("malformed Response: " + CommonResponseString);
             return false;
-
         }
 
         internal async Task DoExecAsync()
@@ -82,10 +81,8 @@ namespace TaycanLogger
                     Trace.Write("Hex Convert Error: " + ex.Message);
                 }
             } else
-            {  Values.ForEach(v => v.IsValid = false); }
-            
-
-                
+            {  Values.ForEach(v => v.IsValid = false);
+            }
         }
 
         public string encodeRawAnswer(string a)
