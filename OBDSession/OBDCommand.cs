@@ -21,7 +21,7 @@ namespace TaycanLogger
         public int skipCount;
         public string header;
         char[] charsToTrim = { '\r', ' ', '>', '\0' };
-
+       
         public bool IsSkipped(uint i) => (i % skipCount != 0);
         internal string CommonResponseString
         {
@@ -72,7 +72,7 @@ namespace TaycanLogger
                     foreach (var value in Values)
                     {
                         value.calcConversion();
-                        value.IsValid = true;
+                      
                     }
                 }
                 catch (Exception ex)
@@ -80,9 +80,7 @@ namespace TaycanLogger
 
                     Trace.Write("Hex Convert Error: " + ex.Message);
                 }
-            } else
-            {  Values.ForEach(v => v.IsValid = false);
-            }
+            } 
         }
 
         public string encodeRawAnswer(string a)

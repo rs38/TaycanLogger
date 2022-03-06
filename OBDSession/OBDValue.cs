@@ -17,11 +17,7 @@ public class OBDValue
         set;
     }
     public string ConversionFormula;
-    public bool IsValid
-    {
-        get;
-        set;
-    }
+   
     public string units;
     OBDCommand cmd;
     public OBDValue(OBDCommand _cmd)
@@ -35,10 +31,9 @@ public class OBDValue
         {
             if (ConversionFormula == "")
                 return cmd.CommonResponseString;
-            else if (IsValid)
+            else 
                 return Value.ToString();
-            else
-                return "err";
+            
         }
     }
 

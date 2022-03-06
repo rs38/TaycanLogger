@@ -139,10 +139,10 @@ namespace TaycanLogger
                                 select Values.name;
 
                 //LINQ expression syntax alternative:
-               var OBDValueValues = cmds.SelectMany(values => values.Values).Select(v =>  v.IsValid ? v.Value.ToString() : "err");
+               var OBDValueValues = cmds.SelectMany(values => values.Values).Select(v => v.Value.ToString());
 
                 String.Join(";",OBDvalueNames).Dump();
-                Trace.WriteLine("now loggong: "+String.Join(",", OBDvalueNames));
+                Trace.WriteLine("now loggong: "+ String.Join(",", OBDvalueNames));
                 FileWriter.WriteLine("time," + String.Join(",", OBDvalueNames));
                 do
                 {
