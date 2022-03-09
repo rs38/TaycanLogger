@@ -21,7 +21,7 @@ namespace TaycanLogger.Tests
         {
             string query = "22 0286 2a07 f17c";
             BuildCommands(query);
-            session = new OBDSession("obd2_gw.xml", "fakedevice");
+            session = new OBDSession("obd2_Taycan.xml", "fakedevice");
 
 
         }
@@ -63,6 +63,7 @@ namespace TaycanLogger.Tests
             Assert.IsTrue( session.hasValidConfig());
             var x = session.cmds.SelectMany(commands => commands.Values).ToList();
 
+            Assert.AreEqual(6, x.Count);
         }
         [TestMethod()]
         public async Task processRawAnswerTestMultiframe5()
