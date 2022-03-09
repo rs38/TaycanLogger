@@ -62,7 +62,7 @@
         <value name="Cell#Min" conversion="B4" units="#"/>
       </values>
     </command>
-
+<!--
     <command send="221E0E" skipCount="20">
       <values>
         <value name="CellTempMax" conversion="B3-100" units="C"/>
@@ -75,7 +75,7 @@
         <value name="CellT#Min" conversion="B4" units="#"/>
       </values>
     </command>
-    <!--
+    
     <command send="221E2C" skipCount="21">
       <values>
         <value name="CellSOCMax" conversion="B3" units="%"/>
@@ -98,10 +98,12 @@
         <value conversion="((B3*65536.0)+B4*256+B5)/500.0" name="Compressor" units="W"/>
       </values>
     </command>
-    
+ 
+    <!--
     <command send="2227D6" header="atsh742" skipCount="10" conversion="((B3*65536.0)+B4*256+B5)/500.0" name="Compressor" units="W"/>
     <command send="22475F" skipCount="10" conversion="B3*0.25" name="HeaterAmp" units="A"/>
-
+-->
+    
 
     <!--	  <command send="atcra7B0" header="atsh746" skipCount="10"></command> -->
     <command send="222609" header="atsh746" skipCount="20" conversion="((B3*256)+B4)/8.0" name="OutsideTemp" units="C"/>
