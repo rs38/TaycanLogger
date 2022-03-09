@@ -88,7 +88,7 @@ namespace TaycanLogger
 
             var r = new Random();
 
-            var value = e.DataList.Where(d => d.name == "Amp").First().Value;// + ( r.NextDouble()*50);
+            var value = e.DataList.Where(d => d.Name == "Amp").First().Value;// + ( r.NextDouble()*50);
 
             lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), value));
 

@@ -9,9 +9,9 @@ using TaycanLogger;
 
 public class OBDValue
 {
-    DataTable dt;
+    DataTable dt;  //todo: in die OBDCommand class?
 
-    public string name
+    public string Name
     {
         get;
         set;
@@ -70,7 +70,7 @@ public class OBDValue
         }
         catch
         {
-            Trace.WriteLine($"{name} did not init conversion '{conversion}' error with '{cmd.CommonResponseString}'");
+            Trace.WriteLine($"{Name} did not init conversion '{conversion}' error with '{cmd.CommonResponseString}'");
         }
 
         try
@@ -80,7 +80,7 @@ public class OBDValue
         catch (Exception ex)
         {
 
-            Trace.WriteLine($"{name} conversion '{conversion}' error {ex.Message} with {Convert.ToHexString(cmd.CommonResponseBytes)} ");
+            Trace.WriteLine($"{Name} conversion '{conversion}' error {ex.Message} with {Convert.ToHexString(cmd.CommonResponseBytes)} ");
         }
     }
 }

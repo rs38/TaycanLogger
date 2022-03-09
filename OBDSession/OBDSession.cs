@@ -82,7 +82,7 @@ namespace TaycanLogger
                             
                             var s = new OBDValue(c)
                             {
-                                name = element.Attribute("name")?.Value ?? "",
+                                Name = element.Attribute("name")?.Value ?? "",
                                 ConversionFormula = element.Attribute("conversion")?.Value?.ToUpper() ?? "",
                                 units = element.Attribute("units")?.Value ?? ""
                             };
@@ -100,7 +100,7 @@ namespace TaycanLogger
                         c.Values = new List<OBDValue>();
                         var s = new OBDValue(c)
                         {
-                            name = cmd.Attribute("name")?.Value ?? "",
+                            Name = cmd.Attribute("name")?.Value ?? "",
                             ConversionFormula = cmd.Attribute("conversion")?.Value?.ToUpper() ?? "",
                             units = cmd.Attribute("units")?.Value ?? ""
                         };
@@ -136,7 +136,7 @@ namespace TaycanLogger
             {
                 var OBDvalueNames = from cmd in cmds
                                 from Values in cmd.Values
-                                select Values.name;
+                                select Values.Name;
 
                 //LINQ expression syntax alternative:
                var OBDValueValues = cmds.SelectMany(values => values.Values).Select(v => v.Value.ToString());
