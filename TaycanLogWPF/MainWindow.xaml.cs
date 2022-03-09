@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,11 +34,15 @@ namespace TaycanLogger
         public TaycanLogWPF()
         {
             InitializeComponent();
+            Trace.Listeners.Add(new TextWriterTraceListener(File.Create("TraceFile.txt")) );
+
+            Trace.AutoFlush = true;
+
             this.DataContext = this;
 
             UIDeviceName = Properties.Settings.Default.DeviceName;
             ConfigFilename = Properties.Settings.Default.ConfigFilename;
-            Debug.WriteLine($"start log at {DateTime.Now}!");
+            Trace.WriteLine($"start log at {DateTime.Now}!");
 
             DataChart1 = new ObservableCollection<KeyValuePair<DateTime, double>>();
             DataChart1.Add(new KeyValuePair<DateTime, double>(DateTime.Now, 10.1));
@@ -60,12 +65,12 @@ namespace TaycanLogger
             if (list.Count == 0)
             {
                 TextboxInformation.AppendText("no paired device found");
-                Debug.WriteLine("no paired device found");
+                Trace.WriteLine("no paired device found");
                 StartButton.IsEnabled = false;
             }
             else
             {
-                Debug.WriteLine("init device drop box, default: " + UIDeviceName);
+                Trace.WriteLine("init device drop box, default: " + UIDeviceName);
                 StartButton.IsEnabled = true;
                 if (list.Contains(UIDeviceName))
                     DeviceDropBox.SelectedItem = UIDeviceName;
@@ -127,7 +132,7 @@ namespace TaycanLogger
         {
 
             UIDeviceName = e.AddedItems[0].ToString();
-            Debug.WriteLine($"{UIDeviceName} seleceted");
+            Trace.WriteLine($"{UIDeviceName} seleceted");
             TextboxInformation.Text += $"{UIDeviceName} seleceted\r\n";
             myOBDSession.Devicename = UIDeviceName;
             Properties.Settings.Default.DeviceName = UIDeviceName;
