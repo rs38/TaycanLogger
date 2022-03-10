@@ -27,7 +27,6 @@ namespace TaycanLogger
             myDevice = new OBDDevice();
             configFilename = configfile;
             Devicename = devicename;
-
         }
 
         public async Task<bool> InitDevice()
@@ -47,10 +46,7 @@ namespace TaycanLogger
             await myDevice.writeAllAsync(initSequence);
             return true;
         }
-
-
         public List<string> GetPairedDevices() => myDevice.GetPairedDevices();
-
 
         public bool hasValidConfig() => readConfig();
 
@@ -155,7 +151,6 @@ namespace TaycanLogger
                             if (!cmd.IsValidResponse())
                             {
                                 errorCounter++;
-                                
                             }
                             //Console.Write($"{cmd.name}:{cmd.ResponseValue} {cmd.units}, ");
                         }

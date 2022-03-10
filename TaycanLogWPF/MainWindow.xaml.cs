@@ -28,17 +28,14 @@ namespace TaycanLogger
         public ObservableCollection<KeyValuePair<DateTime, double>> DataChart1 { get; private set; }
 
         ObservableCollection<List<double>> LoglineGrid;
-       
-
 
         public TaycanLogWPF()
         {
             InitializeComponent();
             Trace.Listeners.Add(new TextWriterTraceListener(File.Create("TraceFile.txt")) );
-
             Trace.AutoFlush = true;
 
-            this.DataContext = this;
+            this.DataContext = this; //???
 
             UIDeviceName = Properties.Settings.Default.DeviceName;
             ConfigFilename = Properties.Settings.Default.ConfigFilename;
@@ -52,7 +49,6 @@ namespace TaycanLogger
             InitCOMDropbox();
             progressData = new Progress<OBDCommandViewModel>();
             progressData.ProgressChanged += OnDataChanged;
-
           
             InitPlot();
 
@@ -77,9 +73,7 @@ namespace TaycanLogger
             }
         }
         private void OnTabChange(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-
-        }
+        {       }
 
         private void OnDataChanged(object sender, OBDCommandViewModel e)
         {
@@ -122,15 +116,8 @@ namespace TaycanLogger
             // progressData.ProgressChanged
             cancel.Cancel();
         }
-
-        private void CustomButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void Device_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
             UIDeviceName = e.AddedItems[0].ToString();
             Trace.WriteLine($"{UIDeviceName} seleceted");
             TextboxInformation.Text += $"{UIDeviceName} seleceted\r\n";
@@ -140,9 +127,7 @@ namespace TaycanLogger
         }
 
         private void Device_DropDownClosed(object sender, EventArgs e)
-        {
-          
-        }
+        {        }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {

@@ -72,12 +72,10 @@ namespace TaycanLogger
                     foreach (var value in Values)
                     {
                         value.calcConversion();
-                      
                     }
                 }
                 catch (Exception ex)
                 {
-
                     Trace.Write("Hex Convert Error: " + ex.Message);
                 }
             } 
@@ -99,7 +97,6 @@ namespace TaycanLogger
             }
             return a.Replace(" ", "").Trim(charsToTrim);
         }
-
       
         void IDisposable.Dispose() => runner.Dispose();
     }

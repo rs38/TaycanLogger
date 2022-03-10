@@ -9,7 +9,7 @@ namespace TaycanLogger
     {
         public LogitemViewModel(): base()
         {
-            Add(new List<OBDValue> { new OBDValue() { Name = "Voltage" } });
+            Add(new List<OBDValue>()); //{ new OBDValue() { Name = "Voltage" } });
         }
     }
 
