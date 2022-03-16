@@ -108,7 +108,7 @@
     <command send="222613" skipCount="20" conversion="((B3*256)+B4)/8.0" name="InsideTemp" units="C"/>
 
     <!-- 0x8D BMS -->
-    <command send="221E2D" header="atsh7e5" skipCount="20" >
+    <command send="221E2D" header="atsh7e5" skipCount="10" >
       <values>
         <value name="CellSOCMin" conversion="B3" units="%"/>
         <value name="CellSoc#Min" conversion="B4" units="#"/>
