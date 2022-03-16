@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -23,11 +24,14 @@ namespace TaycanLogger
         string UIDeviceName;
         string ConfigFilename;
         Progress<OBDCommandViewModel> progressData;
-        LineSeries lineSeries;
+        LineSeries lineSeriesA;
+        LineSeries lineSeriesV;
+        DataTable dt;
+
         CancellationTokenSource cancel;
         public ObservableCollection<KeyValuePair<DateTime, double>> DataChart1 { get; private set; }
-
-        ObservableCollection<List<double>> LoglineGrid;
+      //   ObservableCollection<List<OBDValue>> valueTable = new ObservableCollection<List<OBDValue>>();
+      //  ObservableCollection<List<double>> LoglineGrid;
 
         public TaycanLogWPF()
         {
@@ -51,6 +55,25 @@ namespace TaycanLogger
             progressData.ProgressChanged += OnDataChanged;
           
             InitPlot();
+
+            if (!myOBDSession.hasValidConfig()) return;
+
+            
+                var valueLine = myOBDSession.cmds.SelectMany(c => c.Values).ToList();
+               // valueTable.Add(valueLine);
+            
+                 //var tab = new System.Windows.Controls.DataGrid { Name = "Grid1" };
+            dt = new DataTable("dt1");
+            var dc = new DataColumn("time", typeof(DateTime));
+            dt.Columns.Add(dc);
+            foreach (var element in valueLine)
+            {
+                dc = new DataColumn(element.Name, typeof(double));
+                dt.Columns.Add(dc);
+            }
+
+            dataGrid1.DataContext = dt.DefaultView;
+            dataGrid1.ItemsSource = dt.AsDataView();
 
         }
 
@@ -79,22 +102,23 @@ namespace TaycanLogger
         {
             TextboxInformation.AppendText(e.logline + Environment.NewLine);
 
-            //quick and dirty
-
-            LoglineGrid.Add(e.DataList.Select(d => d.Value).ToList());// Select(d => new { name = d.name, value = d.Value }));
-                
-          //  dataGrid1.Items.Refresh();
-
-            var r = new Random();
-
-            var value = e.DataList.Where(d => d.Name == "Amp").First().Value;// + ( r.NextDouble()*50);
-
-            lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), value));
+            var valueA = e.DataList.Where(d => d.Name == "Amp").First().Value;//
+            lineSeriesA.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), valueA));
+            var valueV = e.DataList.Where(d => d.Name == "BatV").First().Value;// 
+            lineSeriesV.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), valueV));
 
             //moving time axis
-            PlotViewModel.MyModel.Axes[0].Minimum = DateTimeAxis.ToDouble(DateTime.Now.AddMinutes(-1));
-            PlotExtern.Plot1.Model.InvalidatePlot(true);
-        }
+            PlotViewModel.MyModelA.Axes[0].Minimum = DateTimeAxis.ToDouble(DateTime.Now.AddMinutes(-1));
+            PlotViewModel.MyModelV.Axes[0].Minimum = DateTimeAxis.ToDouble(DateTime.Now.AddMinutes(-1));
+            PlotAmp.Plot1.Model.InvalidatePlot(true);
+            PlotV.Plot1.Model.InvalidatePlot(true);
+
+            var row = dt.NewRow();
+            var rowList = new List<object> { (object)DateTime.Now };
+            row.ItemArray = rowList.Concat(e.DataList.Select(l => (object)l.Value)).ToArray();
+            dt.Rows.Add(row);
+           // dataGrid1.UpdateLayout();
+             }
 
         async private void StartButton_Click(object sender, RoutedEventArgs e)
         {
@@ -104,9 +128,10 @@ namespace TaycanLogger
                 TextboxInformation.AppendText("errors while reading config or init device" + Environment.NewLine);
                 return;
             }
-            LoglineGrid = new ObservableCollection<List<double>> {
+         /*   LoglineGrid = new ObservableCollection<List<double>> {
                 myOBDSession.cmds.SelectMany(c => c.Values).Select(v => v.Value).ToList()};
             dataGrid1.ItemsSource = LoglineGrid; 
+           */
             await myOBDSession.DoLogAsync(UIDeviceName, progressData, cancel.Token);
         }
 
@@ -145,21 +170,29 @@ namespace TaycanLogger
 
          private void InitPlot()
         {
-            PlotViewModel.MyModel = new PlotModel { Title = "Ampere" };
-            lineSeries = new LineSeries ();
-
+            PlotViewModel.MyModelA = new PlotModel { Title = "Ampere" };
+            lineSeriesA = new LineSeries();
+            lineSeriesV = new LineSeries();
             var startDate = DateTime.Now;
             var endDate = DateTime.Now.AddMinutes(1);
 
             var minValue = DateTimeAxis.ToDouble(startDate);
-            var maxValue = DateTimeAxis.ToDouble(endDate);
+          //  var maxValue = DateTimeAxis.ToDouble(endDate);
 
-            PlotViewModel.MyModel.Axes.Add(new DateTimeAxis { Position = AxisPosition.Bottom , Minimum = minValue});
-            PlotViewModel.MyModel.Series.Add(lineSeries);
+            PlotViewModel.MyModelA.Axes.Add(new DateTimeAxis { Position = AxisPosition.Bottom , Minimum = minValue});
+            PlotViewModel.MyModelA.Series.Add(lineSeriesA);
 
-            PlotExtern.Plot1.Model = PlotViewModel.MyModel;
-            PlotExtern.Plot1.Model.InvalidatePlot(true);
+            PlotAmp.Plot1.Model = PlotViewModel.MyModelA;
+            PlotAmp.Plot1.Model.InvalidatePlot(true);
 
+
+            PlotViewModel.MyModelV = new PlotModel { Title = "Voltage" };
+
+            PlotViewModel.MyModelV.Axes.Add(new DateTimeAxis { Position = AxisPosition.Bottom, Minimum = minValue });
+            PlotViewModel.MyModelV.Series.Add(lineSeriesV);
+
+            PlotV.Plot1.Model = PlotViewModel.MyModelV;
+            PlotV.Plot1.Model.InvalidatePlot(true);
         }
     }
 
