@@ -63,7 +63,7 @@ namespace TaycanLogger.Tests
             Assert.IsTrue( session.hasValidConfig());
             var x = session.cmds.SelectMany(commands => commands.Values).ToList();
 
-            Assert.AreEqual(6, x.Count);
+            Assert.AreEqual(27, x.Count);
         }
         [TestMethod()]
         public async Task processRawAnswerTestMultiframe5()

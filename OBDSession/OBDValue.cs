@@ -7,72 +7,75 @@ using System.Text;
 using System.Threading.Tasks;
 using TaycanLogger;
 
-public class OBDValue
+namespace TaycanLogger
 {
-    DataTable dt;  //todo: in die OBDCommand class?
+    public class OBDValue
+    {
+        DataTable dt;  //todo: in die OBDCommand class?
 
-    public string Name
-    {
-        get;
-        set;
-    }
-    public string ConversionFormula;
-
-    public string units;
-    OBDCommand cmd;
-    public OBDValue(OBDCommand _cmd)
-    {
-        cmd = _cmd;
-        dt = new DataTable();
-    }
-    public string Response
-    {
-        get
+        public string Name
         {
-            if (ConversionFormula == "")
-                return cmd.CommonResponseString;
-            else
-                return Value.ToString();
+            get;
+            set;
         }
-    }
-    public double Value
-    {
-        get;
-        set;
-    }
+        public string ConversionFormula;
 
-    internal void calcConversion()
-    {
-        string conversion = ConversionFormula;
-
-        if (String.IsNullOrEmpty(ConversionFormula)) return;
-
-        try
+        public string units;
+        OBDCommand cmd;
+        public OBDValue(OBDCommand _cmd)
         {
-            var b = cmd.CommonResponseBytes;
-            for (int i = b.Length - 1; i >= 0; i--)
+            cmd = _cmd;
+            dt = new DataTable();
+        }
+        public string Response
+        {
+            get
             {
-                if (!conversion.Contains("B")) break;
-
-                if (conversion.Contains($"B{i}"))
-                {
-                    conversion = conversion.Replace($"B{i}", b[i].ToString());
-                }
+                if (ConversionFormula == "")
+                    return cmd.CommonResponseString;
+                else
+                    return Value.ToString();
             }
         }
-        catch
+        public double Value
         {
-            Trace.WriteLine($"{Name} did not init conversion '{conversion}' error with '{cmd.CommonResponseString}'");
+            get;
+            set;
         }
 
-        try
+        internal void calcConversion()
         {
-            Value = double.Parse(dt.Compute(conversion, null).ToString());
-        }
-        catch (Exception ex)
-        {
+            string conversion = ConversionFormula;
 
-            Trace.WriteLine($"{Name} conversion '{conversion}' error {ex.Message} with {Convert.ToHexString(cmd.CommonResponseBytes)} ");
+            if (String.IsNullOrEmpty(ConversionFormula)) return;
+
+            try
+            {
+                var b = cmd.CommonResponseBytes;
+                for (int i = b.Length - 1; i >= 0; i--)
+                {
+                    if (!conversion.Contains("B")) break;
+
+                    if (conversion.Contains($"B{i}"))
+                    {
+                        conversion = conversion.Replace($"B{i}", b[i].ToString());
+                    }
+                }
+            }
+            catch
+            {
+                Trace.WriteLine($"{Name} did not init conversion '{conversion}' error with '{cmd.CommonResponseString}'");
+            }
+
+            try
+            {
+                Value = double.Parse(dt.Compute(conversion, null).ToString());
+            }
+            catch (Exception ex)
+            {
+
+                Trace.WriteLine($"{Name} conversion '{conversion}' error {ex.Message} with {Convert.ToHexString(cmd.CommonResponseBytes)} ");
+            }
         }
     }
 }
