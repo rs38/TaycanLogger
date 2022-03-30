@@ -20,12 +20,12 @@ namespace TaycanLogger
 
         string[] initSequence;
 
-        string configFilename;
+        string configFileContent;
 
-        public OBDSession(string configfile, string devicename)
+        public OBDSession(string configContent, string devicename)
         {
             myDevice = new OBDDevice();
-            configFilename = configfile;
+            configFileContent = configContent;
             Devicename = devicename;
         }
 
@@ -33,7 +33,7 @@ namespace TaycanLogger
         {
             if (!hasValidConfig())
             {
-                Trace.WriteLine($"config data {configFilename} not valid or found");
+                Trace.WriteLine($"config data not valid or found");
 
                 return false;
             }
@@ -55,7 +55,7 @@ namespace TaycanLogger
             cmds = new List<OBDCommand>();
             try
             {
-                var config = XDocument.Load(configFilename);
+                var config = XDocument.Parse(configFileContent);
                 var init = config.Elements().Elements("init");
                 initSequence = init.Elements().Attributes("send").Select(s => s.Value).ToArray();
 
@@ -128,7 +128,7 @@ namespace TaycanLogger
             uint lineNr = 0;
 
             //using var FileWriterRaw = new StreamWriter(@$"c:\temp\OBD Taycan {DateTime.Now:yyMMddHHmmssf} Raw.csv");
-            using (var FileWriter = new StreamWriter(@$"c:\temp\OBD Taycan {DateTime.Now:yyMMddHHmmssf}.csv"))
+            using (var FileWriter = new StreamWriter(@$"{System.Environment.CurrentDirectory}\TayCANLogger {DateTime.Now:yyMMddHHmmssf}.csv"))
             {
                 var OBDvalueNames = from cmd in cmds
                                 from Values in cmd.Values

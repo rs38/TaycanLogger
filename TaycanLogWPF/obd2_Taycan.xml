@@ -30,17 +30,18 @@
 
     <command send="221802" skipCount="0" name="Amp" conversion="((B3*65536.0)+B4*256+B5)/100-1500" units="A"/>
         <command send="22F40D" skipCount="3" name="Velocity" conversion="B3" units="km/h"/>
-    <command send="221801" skipCount="0" name="BattVolt" conversion="((B3*256)+B4)/10" units="V"/> -->
+    <command send="221801" skipCount="0" name="BattVolt" conversion="((B3*256)+B4)/10" units="V"/> 
+        <value name="Speed"  conversion="B12" units="km/h"/>-->
 
-    <command send="2218021801f40d" skipCount="0">
+    <command send="2218021801" skipCount="0">
       <!-- Units missing = Subcommands!  621802 334455 1801 6677 F40d 00 -->
       <values>
         <value name="Amp" conversion="((B3*65536.0)+B4*256+B5)/100-1500" units="A"/>
         <value name="BatV" conversion="((B8*256)+B9)/10" units="V"/>
-        <value name="Speed"  conversion="B12" units="km/h"/>
+    
       </values>
     </command>
-
+  
     <command send="22181D" skipCount="9" name="BatTOut" conversion="B3-40" units="C"/>
     <command send="22181C" skipCount="10" name="BatTIn" conversion="B3-40" units="C"/>
     <command send="221E10" skipCount="11" name="BatTemp" conversion="B3-100" units="C"/>
@@ -86,9 +87,12 @@
         <value name="CelSoc#Min" conversion="B4" units="#"/>
       </values>
     </command>
-
+   
 
    0x01 Motor -->
+
+    <command send="22F40D" skipCount="5" name="Speed" conversion="B3" units="km/h"/>
+    
     <command send="2208D2" header="atsh7E0" skipCount="20" name="SoCDiplay" conversion="((B3*256)+B4)*0.01" units="%"/>
 
     <!--  <command send="atcra7AC" header="atsh742" skipCount="10">
@@ -102,8 +106,8 @@
     
 
     <!--	  <command send="atcra7B0" header="atsh746" skipCount="10"></command> -->
-    <command send="222609" header="atsh746" skipCount="20" conversion="((B3*256)+B4)/8.0" name="AirT" units="C"/>
-    <command send="222613" skipCount="20" conversion="((B3*256)+B4)/8.0" name="InsideT" units="C"/>
+    <command send="222609" header="atsh746" skipCount="10" conversion="((B3*256)+B4)/8.0" name="AirT" units="C"/>
+    <command send="222613" skipCount="10" conversion="((B3*256)+B4)/8.0" name="InsideT" units="C"/>
 
     <!-- 0x8D BMS 
   

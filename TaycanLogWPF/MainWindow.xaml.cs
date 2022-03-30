@@ -22,7 +22,7 @@ namespace TaycanLogger
     {
         OBDSession myOBDSession { get; set; }
         string UIDeviceName;
-        string ConfigFilename;
+        //string ConfigFilename;
         Progress<OBDCommandViewModel> progressData;
         LineSeries lineSeriesA;
         LineSeries lineSeriesV;
@@ -30,25 +30,25 @@ namespace TaycanLogger
 
         CancellationTokenSource cancel;
         public ObservableCollection<KeyValuePair<DateTime, double>> DataChart1 { get; private set; }
-      //   ObservableCollection<List<OBDValue>> valueTable = new ObservableCollection<List<OBDValue>>();
-      //  ObservableCollection<List<double>> LoglineGrid;
+    
 
         public TaycanLogWPF()
         {
             InitializeComponent();
-            Trace.Listeners.Add(new TextWriterTraceListener(File.Create("TraceFile.txt")) );
+           // Trace.Listeners.Add(new TextWriterTraceListener(File.Create(@$"{System.Environment.CurrentDirectory}\TraceFile.txt")) );
             Trace.AutoFlush = true;
 
             this.DataContext = this; //???
 
             UIDeviceName = Properties.Settings.Default.DeviceName;
-            ConfigFilename = Properties.Settings.Default.ConfigFilename;
+            //ConfigFilename = Properties.Settings.Default.ConfigFilename;
+            var configContent = Properties.Resources.obd2_Taycan;
             Trace.WriteLine($"start log at {DateTime.Now}!");
 
             DataChart1 = new ObservableCollection<KeyValuePair<DateTime, double>>();
             DataChart1.Add(new KeyValuePair<DateTime, double>(DateTime.Now, 10.1));
 
-            myOBDSession = new OBDSession(ConfigFilename, UIDeviceName);
+            myOBDSession = new OBDSession(configContent, UIDeviceName);
 
             InitCOMDropbox();
             progressData = new Progress<OBDCommandViewModel>();
