@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,7 +22,8 @@ namespace TaycanLogger.Tests
         {
             string query = "22 0286 2a07 f17c";
             BuildCommands(query);
-            session = new OBDSession("obd2_Taycan.xml", "fakedevice");
+           var configContent = File.ReadAllText("obd2_Taycan.xml");
+            session = new OBDSession(configContent, "fakedevice");
 
 
         }
@@ -63,7 +65,7 @@ namespace TaycanLogger.Tests
             Assert.IsTrue( session.hasValidConfig());
             var x = session.cmds.SelectMany(commands => commands.Values).ToList();
 
-            Assert.AreEqual(27, x.Count);
+            Assert.AreEqual(19, x.Count);
         }
         [TestMethod()]
         public async Task processRawAnswerTestMultiframe5()

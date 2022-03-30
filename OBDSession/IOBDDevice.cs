@@ -11,5 +11,6 @@ namespace TaycanLogger
         Task writeAllAsync(string[] array);
         Task writeAsync(string str);
         Task<string> WriteReadAsync(string str);
+        public string CurrentECUHeader { get; set; }
     }
 }

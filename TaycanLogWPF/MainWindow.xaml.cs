@@ -35,14 +35,16 @@ namespace TaycanLogger
         public TaycanLogWPF()
         {
             InitializeComponent();
-           // Trace.Listeners.Add(new TextWriterTraceListener(File.Create(@$"{System.Environment.CurrentDirectory}\TraceFile.txt")) );
+            Trace.Listeners.Add(new TextWriterTraceListener(File.Create(@$"{System.Environment.CurrentDirectory}\TraceFile.txt")) );
             Trace.AutoFlush = true;
 
             this.DataContext = this; //???
 
             UIDeviceName = Properties.Settings.Default.DeviceName;
-            //ConfigFilename = Properties.Settings.Default.ConfigFilename;
+            var configFilename = Properties.Settings.Default.ConfigFilename;
             var configContent = Properties.Resources.obd2_Taycan;
+          //  configContent = File.ReadAllText(configFilename); //external file
+
             Trace.WriteLine($"start log at {DateTime.Now}!");
 
             DataChart1 = new ObservableCollection<KeyValuePair<DateTime, double>>();

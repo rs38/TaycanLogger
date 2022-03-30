@@ -28,9 +28,12 @@ namespace TaycanLogger
         enum DeviceType { BT, IP, USB }
         DeviceType devicetype;
 
+        public string CurrentECUHeader { get; set; } 
+
         public OBDDevice()
         {
             BTclient = new BluetoothClient();
+            CurrentECUHeader = "7E5";
         }
 
         public bool init(string _dongleName)

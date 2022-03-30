@@ -60,8 +60,7 @@ namespace TaycanLogger
 
         internal async Task DoExecAsync()
         {
-            if (!String.IsNullOrEmpty(header))
-                await runner.WriteReadAsync(header);
+            await checkCorrectECUHeader();
 
             CommonResponseString = encodeRawAnswer(await runner.WriteReadAsync(send));
             if (IsValidResponse() && IsvalidHex())
@@ -78,7 +77,16 @@ namespace TaycanLogger
                 {
                     Trace.Write("Hex Convert Error: " + ex.Message);
                 }
-            } 
+            }
+        }
+
+        private async Task checkCorrectECUHeader()
+        {
+            if (!String.IsNullOrEmpty(header) && runner.CurrentECUHeader != header)
+            {
+                await runner.WriteReadAsync(header);
+                runner.CurrentECUHeader = header;
+            }
         }
 
         public string encodeRawAnswer(string a)

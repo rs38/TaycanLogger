@@ -68,9 +68,7 @@ namespace TaycanLogger
                         {
                             send = cmd.Attribute("send").Value,
                             skipCount = int.Parse(cmd.Attribute("skipCount").Value) + 1,
-                            header = cmd.Attribute("header")?.Value
-                            // headerResp = cmd.Attribute("headerresp")?.Value,
-                            
+                            header = cmd.Attribute("header")?.Value?.ToUpper()
                         };
                         c.Values = new List<OBDValue>();
                         foreach (var element in (cmd.Descendants("value")))
@@ -149,10 +147,7 @@ namespace TaycanLogger
                         {
                             await cmd.DoExecAsync();
                             if (!cmd.IsValidResponse())
-                            {
-                                errorCounter++;
-                            }
-                            //Console.Write($"{cmd.name}:{cmd.ResponseValue} {cmd.units}, ");
+                                 errorCounter++;
                         }
                     }
                     var LineString = $"{DateTime.Now:HH:mm:ss.ff},{ String.Join(",", OBDValueValues)}";
