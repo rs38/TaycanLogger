@@ -43,7 +43,7 @@ namespace TaycanLogger
             UIDeviceName = Properties.Settings.Default.DeviceName;
             var configFilename = Properties.Settings.Default.ConfigFilename;
             var configContent = Properties.Resources.obd2_Taycan;
-          //  configContent = File.ReadAllText(configFilename); //external file
+            configContent = File.ReadAllText(configFilename); //external file
 
             Trace.WriteLine($"start log at {DateTime.Now}!");
 

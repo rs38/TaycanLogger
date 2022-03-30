@@ -33,7 +33,7 @@
     <command send="221801" skipCount="0" name="BattVolt" conversion="((B3*256)+B4)/10" units="V"/> 
         <value name="Speed"  conversion="B12" units="km/h"/>-->
 
-    <command send="2218021801" skipCount="0">
+    <command send="2218021801" header="atsh7e5" skipCount="0">
       <!-- Units missing = Subcommands!  621802 334455 1801 6677 F40d 00 -->
       <values>
         <value name="Amp" conversion="((B3*65536.0)+B4*256+B5)/100-1500" units="A"/>
@@ -42,46 +42,46 @@
       </values>
     </command>
   
-    <command send="22181D" skipCount="9" name="BatTOut" conversion="B3-40" units="C"/>
-    <command send="22181C" skipCount="10" name="BatTIn" conversion="B3-40" units="C"/>
-    <command send="221E10" skipCount="11" name="BatTemp" conversion="B3-100" units="C"/>
+    <command send="22181D" header="atsh7e5" skipCount="9" name="BatTOut" conversion="B3-40" units="C"/>
+    <command send="22181C" header="atsh7e5" skipCount="10" name="BatTIn" conversion="B3-40" units="C"/>
+    <command send="221E10" header="atsh7e5" skipCount="11" name="BatTemp" conversion="B3-100" units="C"/>
 
-    <command send="22028C" skipCount="12" name="SoC" conversion="B3" units="%"/>
-    <command send="221E3B" skipCount="7" name="CelSum" conversion="((B3*256)+B4)/10" units="V"/>
-    <command send="221E1B" skipCount="13" name="BatLimC" conversion="B3*256+B4" units="A"/>
-    <command send="221E1C" skipCount="14" name="BatLimD" conversion="B3*256+B4" units="A"/>
+    <command send="22028C" header="atsh7e5" skipCount="12" name="SoC" conversion="B3" units="%"/>
+    <command send="221E3B" header="atsh7e5" skipCount="7" name="CelSum" conversion="((B3*256)+B4)/10" units="V"/>
+    <command send="221E1B" header="atsh7e5" skipCount="13" name="BatLimC" conversion="B3*256+B4" units="A"/>
+    <command send="221E1C" header="atsh7e5" skipCount="14" name="BatLimD" conversion="B3*256+B4" units="A"/>
 
     
     
-    <command send="221E33" skipCount="15" >
+    <command send="221E33" header="atsh7e5" skipCount="15" >
       <values>
         <value name="CellVoltMax" conversion="((B3*256)+B4)/10000" units="V"/>
         <value name="Cell#Max" conversion="B5" units="#"/>
       </values>
     </command>
     <!--
-    <command send="221E34" skipCount="15" >
+    <command send="221E34" header="atsh7e5" skipCount="15" >
       <values>
         <value name="CellVoltMin" conversion="((B4*256)+B4)/10000" units="V"/>
         <value name="Cell#Min" conversion="B4" units="#"/>
       </values>
     </command>
 
-    <command send="221E0F" skipCount="20">
+    <command send="221E0F" header="atsh7e5" skipCount="20">
       <values>
         <value name="CellTempMin" conversion="B3-100" units="C"/>
         <value name="CellT#Min" conversion="B4" units="#"/>
       </values>
     </command>
     
-    <command send="221E2C" skipCount="21">
+    <command send="221E2C" header="atsh7e5" skipCount="21">
       <values>
         <value name="CellSOCMax" conversion="B3" units="%"/>
         <value name="CellSoc#Max" conversion="B4" units="#"/>
       </values>
     </command>
     
-      <command send="221E2D" header="atsh7e5" skipCount="20" >
+      <command send="221E2D" header="atsh7e5" header="atsh7e5" skipCount="20" >
       <values>
         <value name="CelSOCMin" conversion="B3" units="%"/>
         <value name="CelSoc#Min" conversion="B4" units="#"/>
@@ -91,23 +91,21 @@
 
    0x01 Motor -->
 
-    <command send="22F40D" skipCount="5" name="Speed" conversion="B3" units="km/h"/>
+    <command send="22F40D" header="atsh7e5" skipCount="5" name="Speed" conversion="B3" units="km/h"/>
     
     <command send="2208D2" header="atsh7E0" skipCount="20" name="SoCDiplay" conversion="((B3*256)+B4)*0.01" units="%"/>
 
-    <!--  <command send="atcra7AC" header="atsh742" skipCount="10">
+    <!--  
+    <command send="atcra7AC" header="atsh742" skipCount="10">
     multiline?
      <command send="atfcsh7e5"></command>
      
     </command> -->
 
- 
-
-    
-
     <!--	  <command send="atcra7B0" header="atsh746" skipCount="10"></command> -->
+    
     <command send="222609" header="atsh746" skipCount="10" conversion="((B3*256)+B4)/8.0" name="AirT" units="C"/>
-    <command send="222613" skipCount="10" conversion="((B3*256)+B4)/8.0" name="InsideT" units="C"/>
+    <command send="222613" header="atsh746" skipCount="10" conversion="((B3*256)+B4)/8.0" name="InsideT" units="C"/>
 
     <!-- 0x8D BMS 
   
@@ -121,7 +119,7 @@
     
     -->
     <command send="2227D6" header="atsh742" skipCount="10" conversion="((B3*65536.0)+B4*256+B5)/500.0" name="CompW" units="W"/>
-   <command send="22475F" skipCount="10" conversion="B3*0.25" name="HeatA" units="A"/>
+   <command send="22475F" header="atsh742" skipCount="10" conversion="B3*0.25" name="HeatA" units="A"/>
     
     <command send="221E0E"  header="atsh7e5" skipCount="10">
       <values>
