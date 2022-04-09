@@ -42,7 +42,7 @@ namespace TaycanLogger
                // !CommonResponseString.EndsWith("V") && 
                 !CommonResponseString.StartsWith("7F") &&
                 !CommonResponseString.Contains("STOPPED");
-            Trace.WriteLine($":Resp valid:{valid},");
+            //Trace.WriteLine($":Resp valid:{valid},");
             return valid;
         }
         bool IsvalidHex()
@@ -50,11 +50,11 @@ namespace TaycanLogger
             if (BigInteger.TryParse(CommonResponseString, System.Globalization.NumberStyles.HexNumber, null, out _) &&
                  (CommonResponseString.Length % 2 == 0)) //valid HEX String?
             {
-                Trace.Write("corrent Response: " + CommonResponseString);
+                //Trace.Write("corrent Response: " + CommonResponseString);
                 return true;
             }
 
-            Trace.Write("malformed Response: " + CommonResponseString);
+            //Trace.Write("malformed Response: " + CommonResponseString);
             return false;
         }
 
@@ -75,7 +75,7 @@ namespace TaycanLogger
                 }
                 catch (Exception ex)
                 {
-                    Trace.Write("Hex Convert Error: " + ex.Message);
+                    //Trace.Write("Hex Convert Error: " + ex.Message);
                 }
             }
         }
@@ -105,7 +105,10 @@ namespace TaycanLogger
             }
             return a.Replace(" ", "").Trim(charsToTrim);
         }
-      
-        void IDisposable.Dispose() => runner.Dispose();
+
+    public void Dispose()
+    {
+      runner.Dispose();
     }
+  }
 }

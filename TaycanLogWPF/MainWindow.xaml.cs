@@ -51,6 +51,8 @@ namespace TaycanLogger
             DataChart1.Add(new KeyValuePair<DateTime, double>(DateTime.Now, 10.1));
 
             myOBDSession = new OBDSession(configContent, UIDeviceName);
+            if (myOBDSession != null && UIDeviceName == "RawDevice")
+              myOBDSession.RawFilename = () => PickRawFile();
 
             InitCOMDropbox();
             progressData = new Progress<OBDCommandViewModel>();
@@ -78,6 +80,26 @@ namespace TaycanLogger
             dataGrid1.ItemsSource = dt.AsDataView();
 
         }
+
+    private string PickRawFile()
+    {
+      // Configure open file dialog box
+      var dialog = new Microsoft.Win32.OpenFileDialog();
+      dialog.FileName = "RawDevice data"; // Default file name
+      dialog.DefaultExt = ".raw"; // Default file extension
+      dialog.Filter = "RawDevice data (.raw)|*.raw"; // Filter files by extension
+
+      // Show open file dialog box
+      bool? result = dialog.ShowDialog();
+
+      // Process open file dialog box results
+      if (result == true)
+      {
+        // Open document
+        return dialog.FileName;
+      }
+      return null;
+    }
 
         private void InitCOMDropbox()
         {
