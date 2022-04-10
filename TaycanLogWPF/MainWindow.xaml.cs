@@ -51,9 +51,7 @@ namespace TaycanLogger
             DataChart1.Add(new KeyValuePair<DateTime, double>(DateTime.Now, 10.1));
 
             myOBDSession = new OBDSession(configContent, UIDeviceName);
-            if (myOBDSession != null && UIDeviceName == "RawDevice")
-              myOBDSession.RawFilename = () => PickRawFile();
-
+           
             InitCOMDropbox();
             progressData = new Progress<OBDCommandViewModel>();
             progressData.ProgressChanged += OnDataChanged;
@@ -146,6 +144,9 @@ namespace TaycanLogger
 
         async private void StartButton_Click(object sender, RoutedEventArgs e)
         {
+            if (myOBDSession != null && UIDeviceName == "RawDevice")
+                myOBDSession.RawFilename = () => PickRawFile();
+
             cancel = new CancellationTokenSource();
             if (!await myOBDSession.InitDevice())
             {
