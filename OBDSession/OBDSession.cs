@@ -19,6 +19,7 @@ namespace TaycanLogger
     public string Devicename;
     public IOBDDevice myDevice;
     public Func<string> RawFilename = null;
+    public bool WriteToRaw { get; set; }
 
     string[] initSequence;
 
@@ -40,6 +41,8 @@ namespace TaycanLogger
       }
       else
         myDevice = new OBDDevice();
+      myDevice.WriteToRaw = this.WriteToRaw;
+
       if (!hasValidConfig())
       {
         //Trace.WriteLine($"config data not valid or found");

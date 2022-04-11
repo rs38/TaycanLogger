@@ -30,10 +30,8 @@ namespace TaycanLogger
 
     public string CurrentECUHeader { get; set; }
 
-
-    //ck
+    public bool WriteToRaw { get; set; }
     private FileRawLogger m_FileRawLogger;
-
 
     public OBDDevice()
     {
@@ -67,8 +65,8 @@ namespace TaycanLogger
           BTclient.Connect(device.DeviceAddress, BluetoothService.SerialPort);
 
         myStream = BTclient.GetStream();
-
-        m_FileRawLogger = new FileRawLogger(dongleName);
+        if (WriteToRaw)
+          m_FileRawLogger = new FileRawLogger(dongleName);
       }
       catch (Exception ex)
       {
@@ -91,8 +89,8 @@ namespace TaycanLogger
 
     public async Task writeAsync(string str)
     {
-      //ck
-      await m_FileRawLogger.WriteAsync(Encoding.ASCII.GetBytes(str + '\r'), str.Length + 1, true);
+      if (WriteToRaw)
+        await m_FileRawLogger.WriteAsync(Encoding.ASCII.GetBytes(str + '\r'), str.Length + 1, true);
 
       await myStream.WriteAsync(Encoding.ASCII.GetBytes(str + '\r'), 0, str.Length + 1);
       // stream.FlushAsync();
@@ -121,9 +119,8 @@ namespace TaycanLogger
         //Trace.Write($"got buffer of {read} bytes,");
       }
 
-      //ck
-      await m_FileRawLogger.WriteAsync(buffer, totalRead, false);
-
+      if (WriteToRaw)
+        await m_FileRawLogger.WriteAsync(buffer, totalRead, false);
 
       //Trace.Write($"got total buffer of {totalRead} bytes,");
       return buffer;

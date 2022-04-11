@@ -46,7 +46,7 @@ namespace TaycanLogger
           {
             long v_TickRead = m_BinaryReader.ReadInt64();
             if (m_TickWrite < v_TickRead)
-              Task.Delay((int)((v_TickRead - m_TickWrite) / 10000)).Wait();
+              Task.Delay((int)((v_TickRead - m_TickWrite) / 100000)).Wait();
             m_BinaryReader.Read(buffer, offset, v_Count);
             m_Count = m_BinaryReader.ReadInt32();
           }

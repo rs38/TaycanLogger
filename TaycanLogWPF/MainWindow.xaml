@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TaycanLogger"
         mc:Ignorable="d"
-        Title="TayCANLogger v0.1" Height="890" Width="1660"
+        Title="TayCANLogger v0.1" Height="500" Width="800"
        
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen" >
 
     <Window.Resources>
 
@@ -97,11 +97,11 @@
 
                 <StackPanel Orientation="Horizontal"  Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2">
                     <Label VerticalAlignment="Center">aktiv:</Label>
-                    <TextBox x:Name="textAnzahl" VerticalAlignment="Center" Text="Anzahl" HorizontalAlignment="Left" Width="70" />
-                    <Label VerticalAlignment="Center" Margin="10" >device:</Label>
-                    <ComboBox x:Name="DeviceDropBox" SelectedIndex="1" Margin="20,10" Padding="10" VerticalAlignment="Center" HorizontalAlignment="Right" SelectionChanged="Device_SelectionChanged" DropDownClosed="Device_DropDownClosed"/>
-                    <Button Content="refresh BT devices" Width="Auto" HorizontalAlignment="Right" VerticalAlignment="Center" Click="Button_Click" Margin="20" Padding="10"/>
-                </StackPanel>
+                    <TextBox x:Name="textAnzahl" VerticalAlignment="Center" Text="Anzahl" HorizontalAlignment="Left" Width="30" />
+                    <CheckBox x:Name="tickWirteToRaw" Margin="4"  VerticalAlignment="Center" HorizontalAlignment="Right" Content="Write To RAW. Device:" Checked="tickWirteToRaw_Checked"/>
+                    <ComboBox x:Name="DeviceDropBox" Width="80" SelectedIndex="1" Margin="4" Padding="2" VerticalAlignment="Center" HorizontalAlignment="Right" SelectionChanged="Device_SelectionChanged" DropDownClosed="Device_DropDownClosed"/>
+                    <Button Content="refresh BT devices" Width="103" Click="Button_Click" Margin="4" Padding="2"  VerticalAlignment="Center" HorizontalAlignment="Right" />
+                  </StackPanel>
 
                 <Border  Grid.Column="3" Grid.Row="0" Grid.RowSpan="1" BorderBrush="DarkGray" BorderThickness="1" Margin="3">
                     <StackPanel IsEnabled="False">

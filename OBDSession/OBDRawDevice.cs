@@ -9,6 +9,7 @@ namespace TaycanLogger
   public class OBDRawDevice : IDisposable, IOBDDevice
   {
     private FileRawStream m_FileRawStream;
+    public bool WriteToRaw { get; set; }
     public string CurrentECUHeader { get; set; }
     public Func<string> Filename = null;
 
