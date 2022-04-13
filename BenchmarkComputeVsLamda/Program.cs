@@ -36,5 +36,18 @@
 //we need a better solution for the conversion calculation. We need a parser to generate
 //expression functions, compile them as lamda function and store them to be used every time.
 
+
+
+//|                  Method |           Mean |          Error |        StdDev |      Ratio |  RatioSD |
+//|------------------------ |---------------:|---------------:|--------------:|-----------:|---------:|
+//|                  Direct |       1.798 ns |      0.1777 ns |     0.0275 ns |       1.00 |     0.00 |
+//|               DataTable |   3,059.478 ns |  1,318.6724 ns |   204.0660 ns |   1,703.49 |   139.94 |
+//|      ExpressionCompiled |       4.721 ns |      0.2451 ns |     0.0379 ns |       2.63 |     0.03 |
+//| MathExpressionEvaluator | 481,571.021 ns | 44,661.1051 ns | 6,911.3554 ns | 267,983.89 | 7,906.72 |
+//|             MathEvalOrg |   1,075.770 ns |     17.2845 ns |     2.6748 ns |     598.55 |     9.50 |
+
+
 BenchmarkDotNet.Running.BenchmarkRunner.Run<BenchmarkComputeVsLamda>();
+//var b = new BenchmarkComputeVsLamda(); b.MathEvalOrg(); // for debug
+
 Console.ReadKey();
