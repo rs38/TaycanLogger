@@ -90,9 +90,9 @@ namespace TaycanLogger
               var s = new OBDValue(c)
               {
                 Name = element.Attribute("name")?.Value ?? "",
-                ConversionFormula = element.Attribute("conversion")?.Value?.ToUpper() ?? "",
-                units = element.Attribute("units")?.Value ?? ""
+                Units = element.Attribute("units")?.Value ?? ""
               };
+              s.AddConversionFormula(element.Attribute("conversion")?.Value?.ToUpper() ?? "");
               c.Values.Add(s);
             }
           }
@@ -108,9 +108,9 @@ namespace TaycanLogger
             var s = new OBDValue(c)
             {
               Name = cmd.Attribute("name")?.Value ?? "",
-              ConversionFormula = cmd.Attribute("conversion")?.Value?.ToUpper() ?? "",
-              units = cmd.Attribute("units")?.Value ?? ""
+              Units = cmd.Attribute("units")?.Value ?? ""
             };
+            s.AddConversionFormula(cmd.Attribute("conversion")?.Value?.ToUpper() ?? "");
             c.Values.Add(s);
           }
           cmds.Add(c);

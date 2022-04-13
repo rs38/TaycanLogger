@@ -43,16 +43,16 @@ namespace TaycanLogger.Tests
             var s = new OBDValue(c)
             {
                 Name = "v1",
-                ConversionFormula = "B3+B4",
-                units = "v"
+                Units = "v"
             };
+            s.AddConversionFormula("B3+B4");
             c.Values.Add(s);
             s = new OBDValue(c)
             {
                 Name = "v2",
-                ConversionFormula = "B8*B9/9.1",
-                units = "v"
+                Units = "v"
             };
+            s.AddConversionFormula("B8*B9/9.1");
             c.Values.Add(s);
 
             cmds.Add(c);

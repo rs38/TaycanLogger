@@ -30,6 +30,7 @@ namespace TaycanLogger
         m_BinaryWriter.Write(p_Count * (p_Sent ? -1 : 1));
         m_BinaryWriter.Write(DateTime.Now.ToBinary());
         m_BinaryWriter.Write(p_Buffer, 0, p_Count);
+        m_BinaryWriter.Flush();
       }
       finally
       {
@@ -39,7 +40,6 @@ namespace TaycanLogger
 
     public void Dispose()
     {
-      m_BinaryWriter.Flush();
       m_BinaryWriter.Close();
     }
   }
