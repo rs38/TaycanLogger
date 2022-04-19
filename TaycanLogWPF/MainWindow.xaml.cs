@@ -141,7 +141,9 @@ namespace TaycanLogger
       var rowList = new List<object> { (object)DateTime.Now };
       row.ItemArray = rowList.Concat(e.DataList.Select(l => (object)l.Value)).ToArray();
       dt.Rows.Add(row);
-      // dataGrid1.UpdateLayout();
+      //dataGrid1.UpdateLayout();
+      if (AutoScrollCheckBox.IsChecked == true)
+          dataGrid1.ScrollIntoView(dataGrid1.Items.GetItemAt(dataGrid1.Items.Count-1));
     }
 
     async private void StartButton_Click(object sender, RoutedEventArgs e)
