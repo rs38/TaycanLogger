@@ -6,7 +6,7 @@ namespace TaycanLogger
     public interface IOBDDevice
     {
         void Dispose();
-        List<string> GetPairedDevices();
+        public bool WriteToRaw { get; set; }
         bool init(string _dongleName);
         Task writeAllAsync(string[] array);
         Task writeAsync(string str);
