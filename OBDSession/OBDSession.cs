@@ -81,7 +81,8 @@ namespace TaycanLogger
             {
               send = cmd.Attribute("send").Value,
               skipCount = int.Parse(cmd.Attribute("skipCount").Value) + 1,
-              header = cmd.Attribute("header")?.Value?.ToUpper()
+              //upper?
+              header = cmd.Attribute("header")?.Value?.ToUpper()?.ToUpper()
             };
             c.Values = new List<OBDValue>();
             foreach (var element in (cmd.Descendants("value")))
@@ -102,7 +103,8 @@ namespace TaycanLogger
             {
               send = cmd.Attribute("send").Value,
               skipCount = int.Parse(cmd.Attribute("skipCount").Value) + 1,
-              header = cmd.Attribute("header")?.Value,
+              //upper?
+              header = cmd.Attribute("header")?.Value?.ToUpper(),
             };
             c.Values = new List<OBDValue>();
             var s = new OBDValue(c)

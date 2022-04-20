@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<OBD2>
+  <init>
+    <command send="atz"></command>
+    <command send="atat1"></command>
+    <command send="atsp6"></command>
+    <command send="atl0"></command>
+    <command send="ats0"></command>
+    <command send="ath0"></command>
+    <command send="ate0"></command>
+    <command send="atst25"></command>
+    <command send="atsh7e5"></command>
+    <command send="atcm000"></command>
+    <command send="atcf000"></command>
+    <command send="atfcsd300000"></command>
+    <command send="atfcsh7e5"></command>
+    <command send="atfcsm1"></command>
+  </init>
+
+
+  <rotation>
+      <command send="2251E0" header="atsh7e5" skipCount="0">
+            <values>
+              <value name="SoH1" conversion="B3" units="#"/>
+              <value name="SoH2" conversion="(B4/8)+87" units="%"/>
+            </values>
+      </command>
+  </rotation>
+
+</OBD2>

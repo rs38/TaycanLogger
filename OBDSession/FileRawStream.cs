@@ -92,6 +92,12 @@ namespace TaycanLogger
       // must be the same...
       //  System.Diagnostics.Debug.WriteLine(Encoding.ASCII.GetString(buffer, offset, count));
       //  System.Diagnostics.Debug.WriteLine(Encoding.ASCII.GetString(m_Buffer, 0, v_Count));
+
+
+      //string v_Sent = Encoding.ASCII.GetString(buffer, offset, count);
+      //string v_Original = Encoding.ASCII.GetString(m_Buffer, 0, v_Count);
+      //if (v_Sent != v_Original)
+      //  throw new System.Exception($"Raw stream missmatch! Sent: {v_Sent} Original: {v_Original}");
     }
 
     public override long Seek(long offset, SeekOrigin origin)
