@@ -88,7 +88,7 @@
                   </StackPanel>
 
                 <Border  Grid.Column="3" Grid.Row="0" Grid.RowSpan="1" BorderBrush="DarkGray" BorderThickness="1" Margin="3">
-                    <CheckBox x:Name="AutoScrollCheckBox" Content="AutoScroll" IsChecked="True"/>
+                    <CheckBox x:Name="AutoScrollCheckBox" Content="AutoScroll"/>
                 </Border>
 
                 <Border Name="PLWerte" Grid.ColumnSpan="2" Grid.Column="3" Grid.Row="2"  BorderBrush="DarkGray" BorderThickness="1" Margin="3">
