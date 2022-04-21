@@ -18,9 +18,8 @@
 
     protected override void OnSizeChanged(EventArgs e)
     {
-      base.OnSizeChanged(e);
       m_PlotterDrawPosNeg.Size = new SizeF(ClientSize.Width, ClientSize.Height - 80);
-      Invalidate();
+      base.OnSizeChanged(e);
     }
 
     public void Reset()
@@ -48,27 +47,14 @@
     {
       base.OnPaint(e);
       m_PlotterDrawPosNeg.Paint(e.Graphics);
-      float v_TextHeight = e.Graphics.MeasureString("0", Font).Height;
-      StringFormat v_StringFormat = new StringFormat();
-      v_StringFormat.Alignment = StringAlignment.Center;
-      v_StringFormat.LineAlignment = StringAlignment.Center;
-      var v_Brush = new SolidBrush(ForeColor);
-      var v_Rect = new RectangleF(4, ClientSize.Height - v_TextHeight - 4, ClientSize.Width - 8, v_TextHeight);
-      e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-      v_StringFormat.Alignment = StringAlignment.Near;
-      e.Graphics.DrawString("Recup", Font, v_Brush, v_Rect, v_StringFormat);
-      v_StringFormat.Alignment = StringAlignment.Far;
-      e.Graphics.DrawString("Power", Font, v_Brush, v_Rect, v_StringFormat);
-      v_Rect.Offset(0, -v_TextHeight - 4);
-      v_StringFormat.Alignment = StringAlignment.Near;
-      if (m_ValueMin < 1000)
-        e.Graphics.DrawString(Math.Round(m_ValueMin / 1000, 1).ToString(), Font, v_Brush, v_Rect, v_StringFormat);
-      v_StringFormat.Alignment = StringAlignment.Far;
-      if (m_ValueMax > 0)
-        e.Graphics.DrawString(Math.Round(m_ValueMax / 1000, 1).ToString(), Font, v_Brush, v_Rect, v_StringFormat);
-      v_StringFormat.Alignment = StringAlignment.Center;
+      PaintText(e.Graphics, "Recup", StringAlignment.Near, true);
+      PaintText(e.Graphics, "Power", StringAlignment.Far, true);
+      if (m_ValueMin < double.MaxValue)
+        PaintText(e.Graphics, Math.Round(m_ValueMin / 1000, 1).ToString(), StringAlignment.Near, true, true);
+      if (m_ValueMax > double.MinValue)
+        PaintText(e.Graphics, Math.Round(m_ValueMax / 1000, 1).ToString(), StringAlignment.Far, true, true);
       if (!double.IsNaN(m_ValueCurrent))
-        e.Graphics.DrawString($"{Math.Round(m_ValueCurrent / 1000, 1)} kW", Font, v_Brush, v_Rect, v_StringFormat);
+        PaintText(e.Graphics, $"{Math.Round(m_ValueCurrent / 1000, 1)} kW", StringAlignment.Center, true, true);
     }
 
   }

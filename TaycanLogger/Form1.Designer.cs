@@ -47,7 +47,7 @@
       this.btStart.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(53)))), ((int)(((byte)(53)))), ((int)(((byte)(53)))));
       this.btStart.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
       this.btStart.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btStart.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+      this.btStart.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
       this.btStart.ForeColor = System.Drawing.Color.White;
       this.btStart.Location = new System.Drawing.Point(252, 659);
       this.btStart.Margin = new System.Windows.Forms.Padding(0);
@@ -66,7 +66,7 @@
       this.btSettings.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(53)))), ((int)(((byte)(53)))), ((int)(((byte)(53)))));
       this.btSettings.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
       this.btSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btSettings.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+      this.btSettings.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
       this.btSettings.ForeColor = System.Drawing.Color.White;
       this.btSettings.Location = new System.Drawing.Point(45, 659);
       this.btSettings.Margin = new System.Windows.Forms.Padding(0);
@@ -85,7 +85,7 @@
       this.btTinker.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(53)))), ((int)(((byte)(53)))), ((int)(((byte)(53)))));
       this.btTinker.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
       this.btTinker.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btTinker.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+      this.btTinker.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
       this.btTinker.ForeColor = System.Drawing.Color.White;
       this.btTinker.Location = new System.Drawing.Point(666, 659);
       this.btTinker.Margin = new System.Windows.Forms.Padding(0);
@@ -104,7 +104,7 @@
       this.btPower.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(53)))), ((int)(((byte)(53)))), ((int)(((byte)(53)))));
       this.btPower.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
       this.btPower.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btPower.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+      this.btPower.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
       this.btPower.ForeColor = System.Drawing.Color.White;
       this.btPower.Location = new System.Drawing.Point(459, 659);
       this.btPower.Margin = new System.Windows.Forms.Padding(0);
@@ -123,7 +123,7 @@
       this.btLogger.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(53)))), ((int)(((byte)(53)))), ((int)(((byte)(53)))));
       this.btLogger.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
       this.btLogger.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btLogger.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+      this.btLogger.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
       this.btLogger.ForeColor = System.Drawing.Color.White;
       this.btLogger.Location = new System.Drawing.Point(873, 659);
       this.btLogger.Margin = new System.Windows.Forms.Padding(0);
@@ -152,7 +152,7 @@
       this.tableLayoutPanel1.Controls.Add(this.btLogger, 5, 1);
       this.tableLayoutPanel1.Controls.Add(this.btRight, 6, 1);
       this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.tableLayoutPanel1.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+      this.tableLayoutPanel1.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
       this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
       this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
       this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -207,7 +207,7 @@
       this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
       this.ClientSize = new System.Drawing.Size(1126, 706);
       this.Controls.Add(this.tableLayoutPanel1);
-      this.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+      this.Font = Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
       this.ForeColor = System.Drawing.SystemColors.ControlText;
       this.Margin = new System.Windows.Forms.Padding(0);
       this.Name = "Form1";

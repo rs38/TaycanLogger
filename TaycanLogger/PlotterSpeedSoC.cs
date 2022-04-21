@@ -18,9 +18,8 @@
 
     protected override void OnSizeChanged(EventArgs e)
     {
-      base.OnSizeChanged(e);
       m_PlotterDraw.Size = ClientSize;
-      Invalidate();
+      base.OnSizeChanged(e);
     }
 
     public void Reset()

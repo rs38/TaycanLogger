@@ -20,9 +20,8 @@
 
     protected override void OnSizeChanged(EventArgs e)
     {
-      base.OnSizeChanged(e);
       m_PlotterDraw.Size = ClientSize;
-      Invalidate();
+      base.OnSizeChanged(e);
     }
 
     public void Reset()
@@ -50,11 +49,11 @@
     {
       base.OnPaint(e);
       m_PlotterDraw.Paint(e.Graphics);
-      PaintText(e.Graphics, "Consumption", StringAlignment.Center, false);
-      if (m_ValueMax > double.MinValue)
-        PaintText(e.Graphics, Math.Round(m_ValueMax).ToString(), StringAlignment.Far, false);
+      PaintText(e.Graphics, "Consumption", StringAlignment.Center, true);
       if (m_ValueMin < double.MaxValue)
         PaintText(e.Graphics, Math.Round(m_ValueMin).ToString(), StringAlignment.Far, true);
+      if (m_ValueMax > double.MinValue)
+        PaintText(e.Graphics, Math.Round(m_ValueMax).ToString(), StringAlignment.Far, false);
       if (!double.IsNaN(m_ValueCurrent))
         PaintText(e.Graphics, $"{Math.Round(m_ValueCurrent)} kWh/100km", StringAlignment.Near, true);
     }

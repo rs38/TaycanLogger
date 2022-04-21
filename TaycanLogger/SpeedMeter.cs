@@ -8,6 +8,7 @@
     public SpeedMeter()
     {
       DoubleBuffered = true;
+      ResizeRedraw = true;
       BackColor = SystemColors.Control;
       m_StringFormat = new StringFormat();
       m_StringFormat.Alignment = StringAlignment.Center;
@@ -23,10 +24,10 @@
 
     private bool m_Resized;
 
-    protected override void OnResize(EventArgs e)
+    protected override void OnSizeChanged(EventArgs e)
     {
-      base.OnResize(e);
       m_Resized = true;
+      base.OnSizeChanged(e);
     }
 
     protected override void OnPaint(PaintEventArgs e)
@@ -38,7 +39,7 @@
         for (int size = (int)(ClientSize.Height * 72 / e.Graphics.DpiY); size >= 8; --size)
         {
           Font = new Font(Font.FontFamily, size, Font.Style);
-          if (TextRenderer.MeasureText(Text, Font).Width <= ClientSize.Width) break;
+          if (TextRenderer.MeasureText("000", Font).Width <= ClientSize.Width) break;
         }
       m_Resized = false;
       e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;

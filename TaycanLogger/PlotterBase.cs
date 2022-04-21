@@ -15,6 +15,7 @@
     public PlotterBase()
     {
       DoubleBuffered = true;
+      ResizeRedraw = true;
       BackColor = SystemColors.Control;
       m_StringFormat = new StringFormat();
       m_StringFormat.Alignment = StringAlignment.Center;

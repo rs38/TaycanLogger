@@ -17,9 +17,8 @@
 
     protected override void OnSizeChanged(EventArgs e)
     {
-      base.OnSizeChanged(e);
       m_PlotterDraw.Size = new SizeF(ClientSize.Width, ClientSize.Height - 80);
-      Invalidate();
+      base.OnSizeChanged(e);
     }
 
     public void Reset()
@@ -47,24 +46,13 @@
     {
       base.OnPaint(e);
       m_PlotterDraw.Paint(e.Graphics);
-      float v_TextHeight = e.Graphics.MeasureString("0", Font).Height;
-      StringFormat v_StringFormat = new StringFormat();
-      v_StringFormat.Alignment = StringAlignment.Center;
-      v_StringFormat.LineAlignment = StringAlignment.Center;
-      var v_Brush = new SolidBrush(ForeColor);
-      var v_Rect = new RectangleF(TextMargin, ClientSize.Height - v_TextHeight - TextMargin, ClientSize.Width - TextMargin * 2, v_TextHeight);
-      e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-      e.Graphics.DrawString("Voltage", Font, v_Brush, v_Rect, v_StringFormat);
-      v_Rect.Offset(0, -v_TextHeight - TextMargin);
-      v_StringFormat.Alignment = StringAlignment.Near;
+      PaintText(e.Graphics, "Voltage", StringAlignment.Center, true);
       if (m_ValueMin < double.MaxValue)
-        e.Graphics.DrawString(Math.Round(m_ValueMin).ToString(), Font, v_Brush, v_Rect, v_StringFormat);
-      v_StringFormat.Alignment = StringAlignment.Far;
+        PaintText(e.Graphics, Math.Round(m_ValueMin).ToString(), StringAlignment.Far, true, true);
       if (m_ValueMax > double.MinValue)
-        e.Graphics.DrawString(Math.Round(m_ValueMax).ToString(), Font, v_Brush, v_Rect, v_StringFormat);
-      v_StringFormat.Alignment = StringAlignment.Center;
+        PaintText(e.Graphics, Math.Round(m_ValueMax).ToString(), StringAlignment.Near, true, true);
       if (!double.IsNaN(m_ValueCurrent))
-        e.Graphics.DrawString($"{Math.Round(m_ValueCurrent)} V", Font, v_Brush, v_Rect, v_StringFormat);
+        PaintText(e.Graphics, $"{Math.Round(m_ValueCurrent)} V", StringAlignment.Center, true, true);
     }
   }
 }
