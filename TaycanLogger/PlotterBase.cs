@@ -2,7 +2,7 @@
 {
   public enum StartPinFlow { StartLeftPinTop, StartLeftPinBottom, StartRightPinTop, StartRightPinBottom, StartTopPinLeft, StartTopPinRight, StartBottomPinLeft, StartBottomPinRight }
 
-  public class BaseGauge : Control
+  public class PlotterBase : Control
   {
     protected StringFormat m_StringFormat;
     protected float m_TextHeight;
@@ -12,7 +12,7 @@
     public static Color ColorRecup = Color.FromArgb(16, 185, 0);
     public static float TextMargin = 2f;
 
-    public BaseGauge()
+    public PlotterBase()
     {
       DoubleBuffered = true;
       BackColor = SystemColors.Control;
@@ -85,11 +85,10 @@
         green = (255 - green) * correctionFactor + green;
         blue = (255 - blue) * correctionFactor + blue;
       }
-
       return Color.FromArgb(color.A, (int)red, (int)green, (int)blue);
     }
 
-    internal class DrawGauge
+    internal class PlotterDraw
     {
       private Buffer<float>? m_Values;
       private PointF m_Location;
@@ -104,7 +103,7 @@
       internal StartPinFlow FlowDirection { get; set; }
       internal Color ForeColor { get => m_Pens[0].Color; set => SetForeColor(value); }
 
-      internal DrawGauge()
+      internal PlotterDraw()
       {
         ValueMin = 0;
         ValueMax = 100;
@@ -205,10 +204,10 @@
       }
     }
 
-    internal class DrawPosNegGauge
+    internal class PlotterDrawPosNeg
     {
-      private DrawGauge m_DrawGaugePos;
-      private DrawGauge m_DrawGaugeNeg;
+      private PlotterDraw m_PlotterDrawPos;
+      private PlotterDraw m_PlotterDrawNeg;
       private PointF m_Location;
       private SizeF m_Size;
 
@@ -216,14 +215,14 @@
 
       internal SizeF Size { get => m_Size; set => SetLocationSize(null, value); }
 
-      internal double ValueMin { get => m_DrawGaugeNeg.ValueMax * -1; set => m_DrawGaugeNeg.ValueMax = value * -1; }
-      internal double ValueMax { get => m_DrawGaugePos.ValueMax; set => m_DrawGaugePos.ValueMax = value; }
-      internal Color ForeColorPos { get => m_DrawGaugePos.ForeColor; set => m_DrawGaugePos.ForeColor = value; }
-      internal Color ForeColorNeg { get => m_DrawGaugeNeg.ForeColor; set => m_DrawGaugeNeg.ForeColor = value; }
+      internal double ValueMin { get => m_PlotterDrawNeg.ValueMax * -1; set => m_PlotterDrawNeg.ValueMax = value * -1; }
+      internal double ValueMax { get => m_PlotterDrawPos.ValueMax; set => m_PlotterDrawPos.ValueMax = value; }
+      internal Color ForeColorPos { get => m_PlotterDrawPos.ForeColor; set => m_PlotterDrawPos.ForeColor = value; }
+      internal Color ForeColorNeg { get => m_PlotterDrawNeg.ForeColor; set => m_PlotterDrawNeg.ForeColor = value; }
 
       internal FlowDirection Flow
       {
-        get => m_DrawGaugePos.FlowDirection switch
+        get => m_PlotterDrawPos.FlowDirection switch
         {
           StartPinFlow.StartLeftPinTop => FlowDirection.LeftToRight,
           StartPinFlow.StartLeftPinBottom => FlowDirection.LeftToRight,
@@ -237,16 +236,16 @@
         set => SetFlowDirection(value);
       }
 
-      internal DrawPosNegGauge()
+      internal PlotterDrawPosNeg()
       {
-        m_DrawGaugePos = new DrawGauge();
-        m_DrawGaugeNeg = new DrawGauge();
-        m_DrawGaugePos.ValueMin = 0;
-        m_DrawGaugePos.ValueMax = 50;
-        m_DrawGaugeNeg.ValueMin = 0;
-        m_DrawGaugeNeg.ValueMax = 50;
-        m_DrawGaugePos.FlowDirection = StartPinFlow.StartLeftPinBottom;
-        m_DrawGaugeNeg.FlowDirection = StartPinFlow.StartLeftPinTop;
+        m_PlotterDrawPos = new PlotterDraw();
+        m_PlotterDrawNeg = new PlotterDraw();
+        m_PlotterDrawPos.ValueMin = 0;
+        m_PlotterDrawPos.ValueMax = 50;
+        m_PlotterDrawNeg.ValueMin = 0;
+        m_PlotterDrawNeg.ValueMax = 50;
+        m_PlotterDrawPos.FlowDirection = StartPinFlow.StartLeftPinBottom;
+        m_PlotterDrawNeg.FlowDirection = StartPinFlow.StartLeftPinTop;
       }
 
       private void SetFlowDirection(FlowDirection p_FlowDirection)
@@ -254,20 +253,20 @@
         switch (p_FlowDirection)
         {
           case FlowDirection.LeftToRight:
-            m_DrawGaugePos.FlowDirection = StartPinFlow.StartLeftPinBottom;
-            m_DrawGaugeNeg.FlowDirection = StartPinFlow.StartLeftPinTop;
+            m_PlotterDrawPos.FlowDirection = StartPinFlow.StartLeftPinBottom;
+            m_PlotterDrawNeg.FlowDirection = StartPinFlow.StartLeftPinTop;
             break;
           case FlowDirection.RightToLeft:
-            m_DrawGaugePos.FlowDirection = StartPinFlow.StartRightPinBottom;
-            m_DrawGaugeNeg.FlowDirection = StartPinFlow.StartRightPinTop;
+            m_PlotterDrawPos.FlowDirection = StartPinFlow.StartRightPinBottom;
+            m_PlotterDrawNeg.FlowDirection = StartPinFlow.StartRightPinTop;
             break;
           case FlowDirection.TopDown:
-            m_DrawGaugePos.FlowDirection = StartPinFlow.StartTopPinLeft;
-            m_DrawGaugeNeg.FlowDirection = StartPinFlow.StartTopPinRight;
+            m_PlotterDrawPos.FlowDirection = StartPinFlow.StartTopPinLeft;
+            m_PlotterDrawNeg.FlowDirection = StartPinFlow.StartTopPinRight;
             break;
           case FlowDirection.BottomUp:
-            m_DrawGaugePos.FlowDirection = StartPinFlow.StartBottomPinLeft;
-            m_DrawGaugeNeg.FlowDirection = StartPinFlow.StartBottomPinRight;
+            m_PlotterDrawPos.FlowDirection = StartPinFlow.StartBottomPinLeft;
+            m_PlotterDrawNeg.FlowDirection = StartPinFlow.StartBottomPinRight;
             break;
         }
       }
@@ -291,17 +290,17 @@
           {
             case FlowDirection.LeftToRight:
             case FlowDirection.RightToLeft:
-              m_DrawGaugePos.Location = new PointF(0, 0);
-              m_DrawGaugePos.Size = new SizeF(m_Size.Width, m_Size.Height / 2 - 1);
-              m_DrawGaugeNeg.Location = new PointF(0, m_Size.Height / 2);
-              m_DrawGaugeNeg.Size = new SizeF(m_Size.Width, m_Size.Height / 2 - 1);
+              m_PlotterDrawPos.Location = new PointF(0, 0);
+              m_PlotterDrawPos.Size = new SizeF(m_Size.Width, m_Size.Height / 2 - 1);
+              m_PlotterDrawNeg.Location = new PointF(0, m_Size.Height / 2);
+              m_PlotterDrawNeg.Size = new SizeF(m_Size.Width, m_Size.Height / 2 - 1);
               break;
             case FlowDirection.TopDown:
             case FlowDirection.BottomUp:
-              m_DrawGaugePos.Location = new PointF(m_Size.Width / 2, 0);
-              m_DrawGaugePos.Size = new SizeF(m_Size.Width / 2, m_Size.Height - 1);
-              m_DrawGaugeNeg.Location = new PointF(0, 0);
-              m_DrawGaugeNeg.Size = new SizeF(m_Size.Width / 2 - 1, m_Size.Height - 1);
+              m_PlotterDrawPos.Location = new PointF(m_Size.Width / 2, 0);
+              m_PlotterDrawPos.Size = new SizeF(m_Size.Width / 2, m_Size.Height - 1);
+              m_PlotterDrawNeg.Location = new PointF(0, 0);
+              m_PlotterDrawNeg.Size = new SizeF(m_Size.Width / 2 - 1, m_Size.Height - 1);
               break;
           }
         }
@@ -309,30 +308,30 @@
 
       internal void Reset()
       {
-        m_DrawGaugePos.Reset();
-        m_DrawGaugePos.Reset();
+        m_PlotterDrawPos.Reset();
+        m_PlotterDrawPos.Reset();
       }
 
       internal void AddValue(double p_Value)
       {
-        m_DrawGaugePos.AddValue(Math.Max(0, p_Value));
-        m_DrawGaugeNeg.AddValue(Math.Min(0, p_Value) * -1);
+        m_PlotterDrawPos.AddValue(Math.Max(0, p_Value));
+        m_PlotterDrawNeg.AddValue(Math.Min(0, p_Value) * -1);
       }
 
       internal void AddValuePos(double p_Value)
       {
-        m_DrawGaugePos.AddValue(Math.Max(0, p_Value));
+        m_PlotterDrawPos.AddValue(Math.Max(0, p_Value));
       }
 
       internal void AddValueNeg(double p_Value)
       {
-        m_DrawGaugeNeg.AddValue(Math.Max(0, p_Value));
+        m_PlotterDrawNeg.AddValue(Math.Max(0, p_Value));
       }
 
       internal void Paint(Graphics p_Graphics)
       {
-        m_DrawGaugePos.Paint(p_Graphics);
-        m_DrawGaugeNeg.Paint(p_Graphics);
+        m_PlotterDrawPos.Paint(p_Graphics);
+        m_PlotterDrawNeg.Paint(p_Graphics);
       }
     }
   }

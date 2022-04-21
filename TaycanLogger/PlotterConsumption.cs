@@ -1,33 +1,33 @@
 ﻿namespace TaycanLogger
 {
-  internal class ConsumptionGauge : BaseGauge
+  internal class PlotterConsumption : PlotterBase
   {
-    private DrawPosNegGauge m_DrawGauge;
-    public double ValueMin { get => m_DrawGauge.ValueMin; set => m_DrawGauge.ValueMin = value; }
-    public double ValueMax { get => m_DrawGauge.ValueMax; set => m_DrawGauge.ValueMax = value; }
+    private PlotterDrawPosNeg m_PlotterDraw;
+    public double ValueMin { get => m_PlotterDraw.ValueMin; set => m_PlotterDraw.ValueMin = value; }
+    public double ValueMax { get => m_PlotterDraw.ValueMax; set => m_PlotterDraw.ValueMax = value; }
 
-    public ConsumptionGauge()
+    public PlotterConsumption()
     {
       DoubleBuffered = true;
       BackColor = SystemColors.Control;
-      m_DrawGauge = new DrawPosNegGauge();
-      m_DrawGauge.ForeColorPos = ColorPower;
-      m_DrawGauge.ForeColorNeg = ColorRecup;
-      m_DrawGauge.ValueMin = -10;
-      m_DrawGauge.ValueMax = 10;
-      m_DrawGauge.Flow = FlowDirection.LeftToRight;
+      m_PlotterDraw = new PlotterDrawPosNeg();
+      m_PlotterDraw.ForeColorPos = ColorPower;
+      m_PlotterDraw.ForeColorNeg = ColorRecup;
+      m_PlotterDraw.ValueMin = -10;
+      m_PlotterDraw.ValueMax = 10;
+      m_PlotterDraw.Flow = FlowDirection.LeftToRight;
     }
 
     protected override void OnSizeChanged(EventArgs e)
     {
       base.OnSizeChanged(e);
-      m_DrawGauge.Size = ClientSize;
+      m_PlotterDraw.Size = ClientSize;
       Invalidate();
     }
 
     public void Reset()
     {
-      m_DrawGauge.Reset();
+      m_PlotterDraw.Reset();
       Invalidate();
     }
 
@@ -40,16 +40,16 @@
       m_ValueCurrent = p_Value;
       m_ValueMin = Math.Min(m_ValueMin, m_ValueCurrent);
       m_ValueMax = Math.Max(m_ValueMax, m_ValueCurrent);
-      m_DrawGauge.AddValue(p_Value);
-      m_DrawGauge.ValueMin = m_ValueMin - 10f;
-      m_DrawGauge.ValueMax = m_ValueMax + 10f;
+      m_PlotterDraw.AddValue(p_Value);
+      m_PlotterDraw.ValueMin = m_ValueMin - 10f;
+      m_PlotterDraw.ValueMax = m_ValueMax + 10f;
       Invalidate();
     }
 
     protected override void OnPaint(PaintEventArgs e)
     {
       base.OnPaint(e);
-      m_DrawGauge.Paint(e.Graphics);
+      m_PlotterDraw.Paint(e.Graphics);
       PaintText(e.Graphics, "Consumption", StringAlignment.Center, false);
       if (m_ValueMax > double.MinValue)
         PaintText(e.Graphics, Math.Round(m_ValueMax).ToString(), StringAlignment.Far, false);

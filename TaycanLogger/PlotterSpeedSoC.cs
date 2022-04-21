@@ -1,31 +1,31 @@
 ﻿namespace TaycanLogger
 {
-  internal class SpeedSoCGauge : BaseGauge
+  internal class PlotterSpeedSoC : PlotterBase
   {
-    private DrawPosNegGauge m_DrawGauge;
-    public double ValueMin { get => m_DrawGauge.ValueMin; set => m_DrawGauge.ValueMin = value; }
-    public double ValueMax { get => m_DrawGauge.ValueMax; set => m_DrawGauge.ValueMax = value; }
+    private PlotterDrawPosNeg m_PlotterDraw;
+    public double ValueMin { get => m_PlotterDraw.ValueMin; set => m_PlotterDraw.ValueMin = value; }
+    public double ValueMax { get => m_PlotterDraw.ValueMax; set => m_PlotterDraw.ValueMax = value; }
 
-    public SpeedSoCGauge()
+    public PlotterSpeedSoC()
     {
-      m_DrawGauge = new DrawPosNegGauge();
-      m_DrawGauge.ForeColorPos = ColorPower;
-      m_DrawGauge.ForeColorNeg = ColorRecup;
-      m_DrawGauge.ValueMin = -100;
-      m_DrawGauge.ValueMax = 50;
-      m_DrawGauge.Flow = FlowDirection.RightToLeft;
+      m_PlotterDraw = new PlotterDrawPosNeg();
+      m_PlotterDraw.ForeColorPos = ColorPower;
+      m_PlotterDraw.ForeColorNeg = ColorRecup;
+      m_PlotterDraw.ValueMin = -100;
+      m_PlotterDraw.ValueMax = 50;
+      m_PlotterDraw.Flow = FlowDirection.RightToLeft;
     }
 
     protected override void OnSizeChanged(EventArgs e)
     {
       base.OnSizeChanged(e);
-      m_DrawGauge.Size = ClientSize;
+      m_PlotterDraw.Size = ClientSize;
       Invalidate();
     }
 
     public void Reset()
     {
-      m_DrawGauge.Reset();
+      m_PlotterDraw.Reset();
       Invalidate();
     }
 
@@ -38,10 +38,10 @@
     {
       m_ValueCurrentSpeed = p_Value;
       m_ValueMax = Math.Max(m_ValueMax, m_ValueCurrentSpeed);
-      m_DrawGauge.AddValuePos(p_Value);
+      m_PlotterDraw.AddValuePos(p_Value);
       if (!double.IsNaN(m_ValueCurrentSoC))
-        m_DrawGauge.AddValueNeg(m_ValueCurrentSoC);
-      m_DrawGauge.ValueMax = m_ValueMax + 10f;
+        m_PlotterDraw.AddValueNeg(m_ValueCurrentSoC);
+      m_PlotterDraw.ValueMax = m_ValueMax + 10f;
       Invalidate();
     }
 
@@ -54,7 +54,7 @@
     protected override void OnPaint(PaintEventArgs e)
     {
       base.OnPaint(e);
-      m_DrawGauge.Paint(e.Graphics);
+      m_PlotterDraw.Paint(e.Graphics);
       PaintText(e.Graphics, "Speed", StringAlignment.Center, false);
       if (m_ValueMax > double.MinValue)
         PaintText(e.Graphics, $"{Math.Round(m_ValueMax)} km/h", StringAlignment.Near, false);

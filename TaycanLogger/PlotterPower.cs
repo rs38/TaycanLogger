@@ -1,32 +1,31 @@
 ﻿namespace TaycanLogger
 {
-  internal class PowerGauge : BaseGauge
+  internal class PlotterPower : PlotterBase
   {
-    private DrawPosNegGauge m_DrawPosNegGauge;
-    public double ValueMin { get => m_DrawPosNegGauge.ValueMin; set => m_DrawPosNegGauge.ValueMin = value; }
-    public double ValueMax { get => m_DrawPosNegGauge.ValueMax; set => m_DrawPosNegGauge.ValueMax = value; }
+    private PlotterDrawPosNeg m_PlotterDrawPosNeg;
+    public double ValueMin { get => m_PlotterDrawPosNeg.ValueMin; set => m_PlotterDrawPosNeg.ValueMin = value; }
+    public double ValueMax { get => m_PlotterDrawPosNeg.ValueMax; set => m_PlotterDrawPosNeg.ValueMax = value; }
 
-    internal PowerGauge()
+    internal PlotterPower()
     {
-      m_DrawPosNegGauge = new DrawPosNegGauge();
-      m_DrawPosNegGauge.ForeColorPos = ColorPower;
-      m_DrawPosNegGauge.ForeColorNeg = ColorRecup;
-      m_DrawPosNegGauge.ValueMin = -50;
-      m_DrawPosNegGauge.ValueMax = 50;
-      m_DrawPosNegGauge.Flow = FlowDirection.TopDown;
+      m_PlotterDrawPosNeg = new PlotterDrawPosNeg();
+      m_PlotterDrawPosNeg.ForeColorPos = ColorPower;
+      m_PlotterDrawPosNeg.ForeColorNeg = ColorRecup;
+      m_PlotterDrawPosNeg.ValueMin = -50;
+      m_PlotterDrawPosNeg.ValueMax = 50;
+      m_PlotterDrawPosNeg.Flow = FlowDirection.TopDown;
     }
 
     protected override void OnSizeChanged(EventArgs e)
     {
       base.OnSizeChanged(e);
-      //m_DrawGauge.Location = new PointF(0, 0);
-      m_DrawPosNegGauge.Size = new SizeF(ClientSize.Width, ClientSize.Height - 80);
+      m_PlotterDrawPosNeg.Size = new SizeF(ClientSize.Width, ClientSize.Height - 80);
       Invalidate();
     }
 
     public void Reset()
     {
-      m_DrawPosNegGauge.Reset();
+      m_PlotterDrawPosNeg.Reset();
       Invalidate();
     }
 
@@ -39,16 +38,16 @@
       m_ValueCurrent = p_Value;
       m_ValueMin = Math.Min(m_ValueMin, m_ValueCurrent);
       m_ValueMax = Math.Max(m_ValueMax, m_ValueCurrent);
-      m_DrawPosNegGauge.AddValue(p_Value);
-      m_DrawPosNegGauge.ValueMin = m_ValueMin - 10f;
-      m_DrawPosNegGauge.ValueMax = m_ValueMax + 10f;
+      m_PlotterDrawPosNeg.AddValue(p_Value);
+      m_PlotterDrawPosNeg.ValueMin = m_ValueMin - 10f;
+      m_PlotterDrawPosNeg.ValueMax = m_ValueMax + 10f;
       Invalidate();
     }
 
     protected override void OnPaint(PaintEventArgs e)
     {
       base.OnPaint(e);
-      m_DrawPosNegGauge.Paint(e.Graphics);
+      m_PlotterDrawPosNeg.Paint(e.Graphics);
       float v_TextHeight = e.Graphics.MeasureString("0", Font).Height;
       StringFormat v_StringFormat = new StringFormat();
       v_StringFormat.Alignment = StringAlignment.Center;
