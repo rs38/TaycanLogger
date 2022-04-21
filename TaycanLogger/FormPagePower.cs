@@ -101,34 +101,76 @@
 
     private double m_LastVoltageValue = double.NaN;
     private DateTime m_LastVoltageTime = DateTime.MaxValue;
+
+    private double m_LastPowerValue = double.NaN;
+
+    private double m_LastDistanceValue = double.NaN;
+       
     private double m_LastSpeedValue = double.NaN;
     private DateTime m_LastSpeedTime = DateTime.MaxValue;
 
     public override void SessionValueExecuted(string p_Name, string p_Units, double p_Value)
     {
+
+      
       if (!string.IsNullOrEmpty(p_Name) && p_Name == "Amp")
       {
         m_PlotterAmpere.AddValue(p_Value);
-        //can we use these 2 values to run the power plotter?
+
+                /*     Power, Current and Speed usually have slightly different timestamps from OBD but time span between reads should be similar if skipcount is same.
+                       I alread tried to read amp,volt AND velocity at once but this was a bit of unrealiable:
+
+                         <command send="2218021801F40D" header="atsh7e5" skipCount="0">
+                            <values>
+                              <value name="Amp" conversion="((B3*65536.0)+B4*256+B5)/100-1500" units="A"/>
+                              <value name="BatV" conversion="((B8*256)+B9)/10" units="V"/>
+                              <value name="Speed"  conversion="B12" units="km/h"/>-->
+                            </values>
+                          </command>
+
+                      we should give it a retry, result will be cleaner and more precise! 
+
+                      Math:
+
+                      TimeSpan = (now - LastVoltageTime) (in seconds)
+
+                      Energy = LastPower * TimeSpan (in Ws = J)
+                      EnergyKWh = Energy / 3_600_000
+
+                      Distance = Speed * TimeSpan (km/h * s)
+                      DistanceKm = Distance / 3600
+
+                      Consumption = 100 * EnergyKWh / DistanceKm (kWh/100km)
+                      */
+
+        TimeSpan l_TimeSpan = (DateTime.Now - m_LastVoltageTime);
+        var EnergykWh = m_LastPowerValue * l_TimeSpan.TotalSeconds / 3_600_000;
+        var DistanceKm = m_LastSpeedValue * l_TimeSpan.TotalSeconds / 3600;
+        var Consumption = 100 * EnergykWh / DistanceKm;
+
+        if (Consumption < 100 & Consumption > -100)
+            m_PlotterConsumption.AddValue(Consumption);
+        
         if (!double.IsNaN(m_LastVoltageValue))
-          m_PlotterPower.AddValue(m_LastVoltageValue * -p_Value);
+        {
+            m_PlotterPower.AddValue(m_LastVoltageValue * -p_Value);
+            m_LastPowerValue = m_LastVoltageValue * -p_Value;
+        }
       }
+
       if (!string.IsNullOrEmpty(p_Name) && p_Name == "BatV")
       {
         m_PlotterVolt.AddValue(p_Value);
         m_LastVoltageValue = p_Value;
         m_LastVoltageTime = DateTime.Now;
       }
+
       if (!string.IsNullOrEmpty(p_Name) && p_Name == "Speed")
       {
         m_SpeedMeter.SetSpeed(p_Value);
         m_PlotterSpeedSoC.AddValueSpeed(p_Value);
         m_LastSpeedValue = p_Value;
         m_LastSpeedTime = DateTime.Now;
-        // need the math to calculate the consumption based on speed over time is distance
-        // m_LastVoltageValue * -p_Value Amps, gives us power together with m_LastVoltageTime energy.
-        // matching up the time from above we can calculate current consumption values...
-        m_PlotterConsumption.AddValue(18.3);//garbage test value
 
       }
       if (!string.IsNullOrEmpty(p_Name) && p_Name == "SoCDiplay")

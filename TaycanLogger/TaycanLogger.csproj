@@ -16,4 +16,10 @@
     <ProjectReference Include="..\OBDEngine\OBDEngine.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="obd2_Taycan.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
