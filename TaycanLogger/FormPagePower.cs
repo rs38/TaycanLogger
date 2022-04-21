@@ -10,10 +10,13 @@
     private PlotterVoltage m_PlotterVolt;
     private PlotterConsumption m_PlotterConsumption;
     private PlotterSpeedSoC m_PlotterSpeedSoC;
-
+    private DataListDisplay m_DataListDisplayLeft;
+    private DataListDisplay m_DataListDisplayRight;
 
     public FormPagePower(int p_ColumnSpan) : base(p_ColumnSpan)
     {
+      m_DataListDisplayLeft = new DataListDisplay();
+      m_DataListDisplayRight = new DataListDisplay();
       m_SpeedMeter = new SpeedMeter();
       m_PlotterAmpere = new PlotterAmpere();
       m_PlotterPower = new PlotterPower();
@@ -25,49 +28,62 @@
     public override void Load()
     {
       base.Load();
-      m_SpeedMeter.Font = Parent.Font;
-      m_PlotterAmpere.Font = Parent.Font;
-      m_PlotterPower.Font = Parent.Font;
-      m_PlotterVolt.Font = Parent.Font;
-      m_PlotterConsumption.Font = Parent.Font;
-      m_PlotterSpeedSoC.Font = Parent.Font;
-      m_SpeedMeter.ForeColor = Color.White;
-      m_PlotterAmpere.ForeColor = Color.White;
-      m_PlotterPower.ForeColor = Color.White;
-      m_PlotterVolt.ForeColor = Color.White;
-      m_PlotterConsumption.ForeColor = Color.White;
-      m_PlotterSpeedSoC.ForeColor = Color.White;
-      m_SpeedMeter.BackColor = Color.Black;
-      m_PlotterAmpere.BackColor = Color.Black;
-      m_PlotterPower.BackColor = Color.Black;
-      m_PlotterVolt.BackColor = Color.Black;
-      m_PlotterConsumption.BackColor = Color.Black;
-      m_PlotterSpeedSoC.BackColor = Color.Black;
-      m_PlotterPower.Dock = System.Windows.Forms.DockStyle.Fill;
-      m_SpeedMeter.Dock = System.Windows.Forms.DockStyle.Fill;
-      m_PlotterAmpere.Dock = System.Windows.Forms.DockStyle.Fill;
-      m_PlotterVolt.Dock = System.Windows.Forms.DockStyle.Fill;
-      m_PlotterConsumption.Dock = System.Windows.Forms.DockStyle.Fill;
-      m_PlotterSpeedSoC.Dock = System.Windows.Forms.DockStyle.Fill;
-      ColumnCount = 4;
-      ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-      ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-      ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-      ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+      SetupControl(m_DataListDisplayLeft);
+      SetupControl(m_DataListDisplayRight);
+      SetupControl(m_SpeedMeter);
+      SetupControl(m_PlotterAmpere);
+      SetupControl(m_PlotterPower);
+      SetupControl(m_PlotterVolt);
+      SetupControl(m_PlotterConsumption);
+      SetupControl(m_PlotterSpeedSoC);
+      ColumnCount = 6;
+      ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 28F));
+      ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12F));
+      ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
+      ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
+      ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12F));
+      ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 28F));
       RowCount = 3;
       RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15F));
       RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 75F));
       RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+      SetColumnSpan(m_DataListDisplayLeft, 2);
+      Controls.Add(m_DataListDisplayLeft, 0, 0);
+      SetColumnSpan(m_DataListDisplayRight, 2);
+      Controls.Add(m_DataListDisplayRight, 4, 0);
       SetColumnSpan(m_SpeedMeter, 2);
-      Controls.Add(m_SpeedMeter, 1, 0);
+      Controls.Add(m_SpeedMeter, 2, 0);
       Controls.Add(m_PlotterAmpere, 0, 1);
-      SetColumnSpan(m_PlotterPower, 2);
+      SetColumnSpan(m_PlotterPower, 4);
       Controls.Add(m_PlotterPower, 1, 1);
-      Controls.Add(m_PlotterVolt, 2, 1);
-      SetColumnSpan(m_PlotterSpeedSoC, 2);
+      Controls.Add(m_PlotterVolt, 5, 1);
+      SetColumnSpan(m_PlotterSpeedSoC, 3);
       Controls.Add(m_PlotterSpeedSoC, 0, 2);
-      SetColumnSpan(m_PlotterConsumption, 2);
-      Controls.Add(m_PlotterConsumption, 2, 2);
+      SetColumnSpan(m_PlotterConsumption, 3);
+      Controls.Add(m_PlotterConsumption, 3, 2);
+
+
+
+
+
+      //test data, delete...
+      m_DataListDisplayLeft.AddItem("i1", "Drive time", "10:34 h");
+      m_DataListDisplayLeft.AddItem("i2", "Distance", "932.2 km");
+      m_DataListDisplayLeft.AddItem("i3", "Average consumption", "18.1 kWh/100 km");
+      m_DataListDisplayLeft.AddItem("i4", "Average speed", "10 km/h");
+      m_DataListDisplayRight.AddItem("i1", "Drive time", "10:34 h");
+      m_DataListDisplayRight.AddItem("i2", "Distance", "932.2 km");
+      m_DataListDisplayRight.AddItem("i3", "Average consumption", "18.1 kWh/100 km");
+      m_DataListDisplayRight.AddItem("i4", "Average speed", "10 km/h");
+
+    }
+
+    private void SetupControl(Control m_SpeedMeter)
+    {
+      m_SpeedMeter.Font = Parent.Font;
+      m_SpeedMeter.ForeColor = Color.White;
+      m_SpeedMeter.BackColor = Color.Black;
+      m_SpeedMeter.Dock = System.Windows.Forms.DockStyle.Fill;
     }
 
     private uint m_CommandExecutedCount = 0;
