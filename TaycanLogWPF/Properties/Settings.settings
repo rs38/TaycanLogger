@@ -1,12 +1,12 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="TaycanLogWPF.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="TaycanLogger.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
     <Setting Name="DeviceName" Type="System.String" Scope="User">
       <Value Profile="(Default)">UniCarScan</Value>
     </Setting>
     <Setting Name="ConfigFilename" Type="System.String" Scope="User">
-      <Value Profile="(Default)">obd2_taycan.xml</Value>
+      <Value Profile="(Default)">obd2_gw.xml</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -42,8 +42,8 @@ namespace TaycanLogger
 
       UIDeviceName = Properties.Settings.Default.DeviceName;
       var configFilename = Properties.Settings.Default.ConfigFilename;
-      var configContent = Properties.Resources.obd2_Taycan;
-      configContent = File.ReadAllText(configFilename); //external file
+      //var configContent = Properties.Resources.obd2_Taycan;
+      var configContent = File.ReadAllText(configFilename); //external file
 
       Trace.WriteLine($"start log at {DateTime.Now}!");
 
@@ -128,8 +128,8 @@ namespace TaycanLogger
 
       var valueA = e.DataList.Where(d => d.Name == "Amp").First().Value;//
       lineSeriesA.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), valueA));
-      var valueV = e.DataList.Where(d => d.Name == "BatV").First().Value;// 
-      lineSeriesV.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), valueV));
+    //  var valueV = e.DataList.Where(d => d.Name == "BatV").First().Value;// 
+     // lineSeriesV.Points.Add(new DataPoint(DateTimeAxis.ToDouble(DateTime.Now), valueV));
 
       //moving time axis
       PlotViewModel.MyModelA.Axes[0].Minimum = DateTimeAxis.ToDouble(DateTime.Now.AddMinutes(-1));
