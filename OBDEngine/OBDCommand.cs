@@ -12,15 +12,26 @@ namespace OBDEngine
       m_Command = Encoding.ASCII.GetBytes((string)p_XElement.Attribute("send") + '\r');
     }
 
-    public void Execute(Stream p_Stream, byte[] p_Buffer, Action<int>? p_BufferRead = null, byte[]? p_Command = null)
+    public void Execute(Stream p_Stream, byte[] p_Buffer, bool p_Tinker, Action<int>? p_BufferRead = null, byte[]? p_Command = null)
     {
       byte[] v_Command = m_Command;
       if (p_Command != null)
         v_Command = p_Command;
-      p_Stream.Write(v_Command, 0, v_Command.Length);
+
+      // we do not want to record tinker commands...
+      if (p_Tinker && p_Stream is WriteRawStream)
+        (p_Stream as WriteRawStream)?.BaseStream.Write(v_Command, 0, v_Command.Length);
+      else
+        p_Stream.Write(v_Command, 0, v_Command.Length);
       int v_BytesRead = 0;
       while (!p_Buffer.Contains((byte)'>'))
-        v_BytesRead += p_Stream.Read(p_Buffer, v_BytesRead, p_Buffer.Length - v_BytesRead);
+      {
+        // we do not want to record tinker commands...
+        if (p_Tinker && p_Stream is WriteRawStream)
+          v_BytesRead += (p_Stream as WriteRawStream).BaseStream.Read(p_Buffer, v_BytesRead, p_Buffer.Length - v_BytesRead);
+        else
+          v_BytesRead += p_Stream.Read(p_Buffer, v_BytesRead, p_Buffer.Length - v_BytesRead);
+      }
       if (p_BufferRead is not null)
         p_BufferRead(v_BytesRead);
       Array.Clear(p_Buffer, 0, v_BytesRead);
@@ -84,8 +95,8 @@ namespace OBDEngine
     {
       bool v_Result = false;
       if (p_SendHeader)
-        base.Execute(p_Stream, p_Buffer, null, Encoding.ASCII.GetBytes(m_Header + '\r'));
-      base.Execute(p_Stream, p_Buffer, p_BytesRead =>
+        base.Execute(p_Stream, p_Buffer, p_ResultRaw is not null, null, Encoding.ASCII.GetBytes(m_Header + '\r'));
+      base.Execute(p_Stream, p_Buffer, p_ResultRaw is not null, p_BytesRead =>
       {
         var v_Buffer = ProcessResult(p_Buffer);
         if (v_Buffer != null)
@@ -95,7 +106,7 @@ namespace OBDEngine
             byte[] v_BufferRaw = new byte[p_BytesRead];
             Array.Copy(p_Buffer, v_BufferRaw, v_BufferRaw.Length);
             p_ResultRaw(v_BufferRaw, v_Buffer);
-          } 
+          }
           m_OBDValues?.ForEach(l_OBDValue => p_ResultValue(l_OBDValue, l_OBDValue.Execute(v_Buffer)));
           v_Result = true;
         }

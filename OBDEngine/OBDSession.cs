@@ -77,6 +77,9 @@ namespace OBDEngine
         string? v_Filename = m_RawFilename();
         if (!string.IsNullOrEmpty(v_Filename))
           m_Stream = new ReadRawStream(v_Filename);
+        //this creates a copy of the raw stream. Used for debugging and can be deleted...
+        //if (p_WriteToRaw)
+        //  m_Stream = new WriteRawStream(p_DeviceName, m_Stream);
       }
       else
       {
@@ -109,7 +112,7 @@ namespace OBDEngine
             byte[] v_Buffer = new byte[4096];
             foreach (var l_OBDCommand in m_InitOBDCommands)
             {
-              l_OBDCommand.Execute(m_Stream, v_Buffer);
+              l_OBDCommand.Execute(m_Stream, v_Buffer,false);
               if (p_CancellationToken.IsCancellationRequested)
                 break;
             }
