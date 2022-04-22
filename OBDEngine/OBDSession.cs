@@ -100,8 +100,9 @@ namespace OBDEngine
       m_OBDDevice?.Close();
     }
 
-#if DEBUG
+#if DEBUGx
 
+    // this code is only used to test tinker commands in recorded raw streams...
     public void Execute(CancellationToken p_CancellationToken)
     {
       if (m_Stream is not null)
@@ -222,6 +223,7 @@ namespace OBDEngine
               if (v_TinkerOBDCommand is not null)
               {
                 v_TinkerOBDCommand.Execute(m_Stream, v_Buffer, v_Header != v_TinkerOBDCommand.Header, (p_OBDValue, p_Value) => ProcessTinkerValue(p_OBDValue, p_Value), (p_ResultRaw, p_ResultProcessed) => ProcessTinkerRaw(p_ResultRaw, p_ResultProcessed));
+                v_Header = v_TinkerOBDCommand.Header;
                 v_TinkerOBDCommand = null;
               }
             }
