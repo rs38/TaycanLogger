@@ -1,11 +1,11 @@
 ﻿namespace TaycanLogger
 {
-  internal class DataDisplayBase : Control
+  internal class DisplayDataBase : Control
   {
     protected StringFormat m_StringFormat;
     protected Brush? m_Brush;
 
-    public DataDisplayBase()
+    public DisplayDataBase()
     {
       DoubleBuffered = true;
       ResizeRedraw = true;
@@ -53,12 +53,12 @@
     }
   }
 
-  internal class DataListDisplay : DataDisplayBase
+  internal class DisplayDataList : DisplayDataBase
   {
     private Font m_FontTitle;
     private Dictionary<string, DataListItem> m_Dictionary;
 
-    public DataListDisplay()
+    public DisplayDataList()
     {
       m_Dictionary = new Dictionary<string, DataListItem>();
     }

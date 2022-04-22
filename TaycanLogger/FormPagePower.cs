@@ -4,20 +4,20 @@
   {
     public override Type Type { get => this.GetType(); }
 
-    private SpeedMeter m_SpeedMeter;
+    private DisplaySpeedMeter m_DisplaySpeedMeter;
     private PlotterPower m_PlotterPower;
     private PlotterAmpere m_PlotterAmpere;
     private PlotterVoltage m_PlotterVolt;
     private PlotterConsumption m_PlotterConsumption;
     private PlotterSpeedSoC m_PlotterSpeedSoC;
-    private DataListDisplay m_DataListDisplayLeft;
-    private DataListDisplay m_DataListDisplayRight;
+    private DisplayDataList m_DataListDisplayLeft;
+    private DisplayDataList m_DataListDisplayRight;
 
     public FormPagePower(int p_ColumnSpan) : base(p_ColumnSpan)
     {
-      m_DataListDisplayLeft = new DataListDisplay();
-      m_DataListDisplayRight = new DataListDisplay();
-      m_SpeedMeter = new SpeedMeter();
+      m_DataListDisplayLeft = new DisplayDataList();
+      m_DataListDisplayRight = new DisplayDataList();
+      m_DisplaySpeedMeter = new DisplaySpeedMeter();
       m_PlotterAmpere = new PlotterAmpere();
       m_PlotterPower = new PlotterPower();
       m_PlotterVolt = new PlotterVoltage();
@@ -30,7 +30,7 @@
       base.Load();
       SetupControl(m_DataListDisplayLeft);
       SetupControl(m_DataListDisplayRight);
-      SetupControl(m_SpeedMeter);
+      SetupControl(m_DisplaySpeedMeter);
       SetupControl(m_PlotterAmpere);
       SetupControl(m_PlotterPower);
       SetupControl(m_PlotterVolt);
@@ -51,8 +51,8 @@
       Controls.Add(m_DataListDisplayLeft, 0, 0);
       SetColumnSpan(m_DataListDisplayRight, 2);
       Controls.Add(m_DataListDisplayRight, 4, 0);
-      SetColumnSpan(m_SpeedMeter, 2);
-      Controls.Add(m_SpeedMeter, 2, 0);
+      SetColumnSpan(m_DisplaySpeedMeter, 2);
+      Controls.Add(m_DisplaySpeedMeter, 2, 0);
       Controls.Add(m_PlotterAmpere, 0, 1);
       SetColumnSpan(m_PlotterPower, 4);
       Controls.Add(m_PlotterPower, 1, 1);
@@ -99,84 +99,22 @@
       m_CommandExecutedCount++;
     }
 
-    private double m_LastVoltageValue = double.NaN;
-    private DateTime m_LastVoltageTime = DateTime.MaxValue;
-
-    private double m_LastPowerValue = double.NaN;
-
-    private double m_LastDistanceValue = double.NaN;
-       
-    private double m_LastSpeedValue = double.NaN;
-    private DateTime m_LastSpeedTime = DateTime.MaxValue;
+    private FormPagePowerCalc? m_FormPagePowerCalc;
 
     public override void SessionValueExecuted(string p_Name, string p_Units, double p_Value)
     {
-
-      
-      if (!string.IsNullOrEmpty(p_Name) && p_Name == "Amp")
+      if (m_FormPagePowerCalc is null)
       {
-        m_PlotterAmpere.AddValue(p_Value);
-
-                /*     Power, Current and Speed usually have slightly different timestamps from OBD but time span between reads should be similar if skipcount is same.
-                       I alread tried to read amp,volt AND velocity at once but this was a bit of unrealiable:
-
-                         <command send="2218021801F40D" header="atsh7e5" skipCount="0">
-                            <values>
-                              <value name="Amp" conversion="((B3*65536.0)+B4*256+B5)/100-1500" units="A"/>
-                              <value name="BatV" conversion="((B8*256)+B9)/10" units="V"/>
-                              <value name="Speed"  conversion="B12" units="km/h"/>-->
-                            </values>
-                          </command>
-
-                      we should give it a retry, result will be cleaner and more precise! 
-
-                      Math:
-
-                      TimeSpan = (now - LastVoltageTime) (in seconds)
-
-                      Energy = LastPower * TimeSpan (in Ws = J)
-                      EnergyKWh = Energy / 3_600_000
-
-                      Distance = Speed * TimeSpan (km/h * s)
-                      DistanceKm = Distance / 3600
-
-                      Consumption = 100 * EnergyKWh / DistanceKm (kWh/100km)
-                      */
-
-        TimeSpan l_TimeSpan = (DateTime.Now - m_LastVoltageTime);
-        var EnergykWh = m_LastPowerValue * l_TimeSpan.TotalSeconds / 3_600_000;
-        var DistanceKm = m_LastSpeedValue * l_TimeSpan.TotalSeconds / 3600;
-        var Consumption = 100 * EnergykWh / DistanceKm;
-
-        if (Consumption < 100 & Consumption > -100)
-            m_PlotterConsumption.AddValue(Consumption);
-        
-        if (!double.IsNaN(m_LastVoltageValue))
-        {
-            m_PlotterPower.AddValue(m_LastVoltageValue * -p_Value);
-            m_LastPowerValue = m_LastVoltageValue * -p_Value;
-        }
+        m_FormPagePowerCalc = new FormPagePowerCalc(
+          p_Value => m_DisplaySpeedMeter.SetSpeed(p_Value),
+          p_Value => m_PlotterAmpere.AddValue(p_Value),
+          p_Value => m_PlotterConsumption.AddValue(p_Value),
+          p_Value => m_PlotterPower.AddValue(p_Value),
+          p_Value => m_PlotterVolt.AddValue(p_Value),
+          p_Value => m_PlotterSpeedSoC.AddValueSpeed(p_Value),
+          p_Value => m_PlotterSpeedSoC.AddValueSoC(p_Value));
       }
-
-      if (!string.IsNullOrEmpty(p_Name) && p_Name == "BatV")
-      {
-        m_PlotterVolt.AddValue(p_Value);
-        m_LastVoltageValue = p_Value;
-        m_LastVoltageTime = DateTime.Now;
-      }
-
-      if (!string.IsNullOrEmpty(p_Name) && p_Name == "Speed")
-      {
-        m_SpeedMeter.SetSpeed(p_Value);
-        m_PlotterSpeedSoC.AddValueSpeed(p_Value);
-        m_LastSpeedValue = p_Value;
-        m_LastSpeedTime = DateTime.Now;
-
-      }
-      if (!string.IsNullOrEmpty(p_Name) && p_Name == "SoCDiplay")
-      {
-        m_PlotterSpeedSoC.AddValueSoC(p_Value);
-      }
+      m_FormPagePowerCalc.SessionValueExecuted(p_Name, p_Units, p_Value);
     }
   }
 }
