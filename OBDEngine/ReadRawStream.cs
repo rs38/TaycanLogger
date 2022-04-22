@@ -36,7 +36,7 @@ namespace OBDEngine
     {
     }
 
-    public override int Read(byte[] buffer, int offset, int count)
+    public override int Read(byte[] buffer, int offset, int _)
     {
       int v_Count = 0;
       m_SemaphoreSlim.Wait(2000);

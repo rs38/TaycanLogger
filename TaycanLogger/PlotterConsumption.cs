@@ -6,9 +6,14 @@
     public double ValueMin { get => m_PlotterDraw.ValueMin; set => m_PlotterDraw.ValueMin = value; }
     public double ValueMax { get => m_PlotterDraw.ValueMax; set => m_PlotterDraw.ValueMax = value; }
 
+    double ValueSum=0;
+    int CallCounter=0;
+    int SkipCount=5;
+
     public PlotterConsumption()
     {
       DoubleBuffered = true;
+
       BackColor = SystemColors.Control;
       m_PlotterDraw = new PlotterDrawPosNeg();
       m_PlotterDraw.ForeColorPos = ColorPower;
@@ -36,13 +41,23 @@
 
     public void AddValue(double p_Value)
     {
-      m_ValueCurrent = p_Value;
-      m_ValueMin = Math.Min(m_ValueMin, m_ValueCurrent);
-      m_ValueMax = Math.Max(m_ValueMax, m_ValueCurrent);
-      m_PlotterDraw.AddValue(p_Value);
-      m_PlotterDraw.ValueMin = m_ValueMin - 10f;
-      m_PlotterDraw.ValueMax = m_ValueMax + 10f;
-      Invalidate();
+        CallCounter++;
+
+        if (CallCounter % SkipCount == 0)
+        {
+            m_ValueCurrent = ValueSum / SkipCount;
+            m_ValueMin = Math.Min(m_ValueMin, m_ValueCurrent);
+            m_ValueMax = Math.Max(m_ValueMax, m_ValueCurrent);
+
+            m_PlotterDraw.AddValue(m_ValueCurrent);
+            m_PlotterDraw.ValueMin = m_ValueMin - 10f;
+            m_PlotterDraw.ValueMax = m_ValueMax + 10f;
+            Invalidate();
+            ValueSum = 0;
+        }
+
+        ValueSum +=p_Value;
+           
     }
 
     protected override void OnPaint(PaintEventArgs e)
