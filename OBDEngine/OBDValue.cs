@@ -8,6 +8,7 @@ namespace OBDEngine
   {
     private string m_Name;
     private string m_Units;
+    private int m_IndexMax;
     private Func<byte[], double> m_Convert;
 
     public string Name { get => m_Name; }
@@ -25,13 +26,15 @@ namespace OBDEngine
       if (!string.IsNullOrEmpty(p_Conversion))
       {
         var v_ConversionParser = new ConversionParser(p_Conversion.ToUpper());
-        var v_Expression = v_ConversionParser.ParseFormula();
+        var v_Expression = v_ConversionParser.ParseFormula(out m_IndexMax);
         m_Convert = Expression.Lambda<Func<byte[], double>>(v_Expression, v_ConversionParser.ParameterArray).Compile();
       }
     }
 
     internal double Execute(byte[] p_Buffer)
     {
+      if (p_Buffer.Length - 1 < m_IndexMax)
+        return double.NaN;
       return m_Convert(p_Buffer);
     }
   }

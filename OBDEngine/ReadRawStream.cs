@@ -52,10 +52,16 @@ namespace OBDEngine
               Task.Delay((int)((v_TickRead - m_TickWrite) / 50000)).Wait(); //should be 10000, but increase speed for dev work...
             m_BinaryReader.Read(buffer, offset, v_Count);
             m_Count = m_BinaryReader.ReadInt32();
+
+            //200 bytes max length of raw data, increase if not enough...
+            if (m_Count < -200 || m_Count > 200)
+              throw new Exception($"Raw stream missmatch! count record: {m_Count}");
           }
           else
             m_Count = 0;
         }
+        else
+          throw new Exception($"Raw stream read write missmatch. Expected read, not write!");
       }
       finally
       {
@@ -80,10 +86,16 @@ namespace OBDEngine
             m_BinaryReader.Read(m_Buffer, 0, v_Count);
             m_Count = 0;
             m_Count = m_BinaryReader.ReadInt32();
+
+            //200 bytes max length of raw data, increase if not enough...
+            if (m_Count < -200 || m_Count > 200)
+              throw new Exception($"Raw stream missmatch! count record: {m_Count}");
           }
           else
             m_Count = 0;
         }
+        else
+          throw new Exception($"Raw stream read write missmatch. Expected write, not read!");
       }
       finally
       {

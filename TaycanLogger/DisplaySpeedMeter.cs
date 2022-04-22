@@ -1,11 +1,11 @@
 ﻿namespace TaycanLogger
 {
-  public class SpeedMeter : Control
+  public class DisplaySpeedMeter : Control
   {
     private StringFormat m_StringFormat;
     private Brush? m_Brush;
 
-    public SpeedMeter()
+    public DisplaySpeedMeter()
     {
       DoubleBuffered = true;
       ResizeRedraw = true;
