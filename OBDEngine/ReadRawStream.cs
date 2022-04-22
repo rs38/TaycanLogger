@@ -42,6 +42,8 @@ namespace OBDEngine
       m_SemaphoreSlim.Wait(2000);
       try
       {
+        if (m_Count < 0)
+          throw new Exception($"Raw stream read write missmatch. Expected read, not write! Count record: {m_Count}");
         if (m_Count > 0)
         {
           v_Count = m_Count;
@@ -55,13 +57,11 @@ namespace OBDEngine
 
             //200 bytes max length of raw data, increase if not enough...
             if (m_Count < -200 || m_Count > 200)
-              throw new Exception($"Raw stream missmatch! count record: {m_Count}");
+              throw new Exception($"Raw stream missmatch! Count record: {m_Count}");
           }
           else
             m_Count = 0;
         }
-        else
-          throw new Exception($"Raw stream read write missmatch. Expected read, not write!");
       }
       finally
       {
@@ -77,6 +77,8 @@ namespace OBDEngine
       m_SemaphoreSlim.Wait(2000);
       try
       {
+        if (m_Count > 0)
+          throw new Exception($"Raw stream read write missmatch. Expected write, not read! Count record: {m_Count}");
         if (m_Count < 0)
         {
           v_Count = m_Count * -1;
@@ -94,8 +96,6 @@ namespace OBDEngine
           else
             m_Count = 0;
         }
-        else
-          throw new Exception($"Raw stream read write missmatch. Expected write, not read!");
       }
       finally
       {

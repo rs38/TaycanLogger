@@ -112,7 +112,7 @@ namespace OBDEngine
             byte[] v_Buffer = new byte[4096];
             foreach (var l_OBDCommand in m_InitOBDCommands)
             {
-              l_OBDCommand.Execute(m_Stream, v_Buffer,false);
+              l_OBDCommand.Execute(m_Stream, v_Buffer, false);
               if (p_CancellationToken.IsCancellationRequested)
                 break;
             }
@@ -185,7 +185,7 @@ namespace OBDEngine
             byte[] v_Buffer = new byte[4096];
             foreach (var l_OBDCommand in m_InitOBDCommands)
             {
-              l_OBDCommand.Execute(m_Stream, v_Buffer);
+              l_OBDCommand.Execute(m_Stream, v_Buffer, false);
               if (p_CancellationToken.IsCancellationRequested)
                 break;
             }
@@ -199,7 +199,7 @@ namespace OBDEngine
               {
                 if (lineNr % (ulong)l_OBDCommand.SkipCount == 0)
                 {
-                  bool v_Error=!l_OBDCommand.Execute(m_Stream, v_Buffer, v_Header != l_OBDCommand.Header, (p_OBDValue, p_Value) => ProcessSessionValue(p_OBDValue, p_Value));
+                  bool v_Error = !l_OBDCommand.Execute(m_Stream, v_Buffer, v_Header != l_OBDCommand.Header, (p_OBDValue, p_Value) => ProcessSessionValue(p_OBDValue, p_Value));
                   v_Header = l_OBDCommand.Header;
                   CommandExecuted?.Invoke(v_Error);
                   if (p_CancellationToken.IsCancellationRequested)
