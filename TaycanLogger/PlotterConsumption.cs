@@ -11,8 +11,8 @@
       DoubleBuffered = true;
       BackColor = SystemColors.Control;
       m_PlotterDraw = new PlotterDrawPosNeg();
-      m_PlotterDraw.ForeColorPos = ColorPower;
-      m_PlotterDraw.ForeColorNeg = ColorRecup;
+      m_PlotterDraw.ForeColorPos = FormControlGlobals.ColorPower;
+      m_PlotterDraw.ForeColorNeg = FormControlGlobals.ColorRecup;
       m_PlotterDraw.ValueMin = -10;
       m_PlotterDraw.ValueMax = 10;
       m_PlotterDraw.Flow = FlowDirection.LeftToRight;

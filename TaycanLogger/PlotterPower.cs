@@ -9,8 +9,8 @@
     internal PlotterPower()
     {
       m_PlotterDrawPosNeg = new PlotterDrawPosNeg();
-      m_PlotterDrawPosNeg.ForeColorPos = ColorPower;
-      m_PlotterDrawPosNeg.ForeColorNeg = ColorRecup;
+      m_PlotterDrawPosNeg.ForeColorPos = FormControlGlobals.ColorPower;
+      m_PlotterDrawPosNeg.ForeColorNeg = FormControlGlobals.ColorRecup;
       m_PlotterDrawPosNeg.ValueMin = -50;
       m_PlotterDrawPosNeg.ValueMax = 50;
       m_PlotterDrawPosNeg.Flow = FlowDirection.TopDown;

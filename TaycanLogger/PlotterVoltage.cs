@@ -9,7 +9,7 @@
     public PlotterVoltage()
     {
       m_PlotterDraw = new PlotterDraw();
-      m_PlotterDraw.ForeColor = ColorPower;
+      m_PlotterDraw.ForeColor = FormControlGlobals.ColorPower;
       m_PlotterDraw.ValueMin = 600;
       m_PlotterDraw.ValueMax = 850;
       m_PlotterDraw.FlowDirection = StartPinFlow.StartLeftPinBottom;

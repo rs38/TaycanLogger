@@ -84,7 +84,7 @@
         m_Brush = new SolidBrush(ForeColor);
       if (m_Resized)
       {
-        m_ItemHeight = TextRenderer.MeasureText("0", Font).Height * 2f;
+        m_ItemHeight = TextRenderer.MeasureText("0", FormControlGlobals.FontDisplayTitle).Height * 1.8f;
       }
       m_Resized = false;
       //  for (int size = (int)(ClientSize.Height * 72 / e.Graphics.DpiY); size >= 8; --size)

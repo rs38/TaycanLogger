@@ -9,8 +9,8 @@
     public PlotterSpeedSoC()
     {
       m_PlotterDraw = new PlotterDrawPosNeg();
-      m_PlotterDraw.ForeColorPos = ColorPower;
-      m_PlotterDraw.ForeColorNeg = ColorRecup;
+      m_PlotterDraw.ForeColorPos = FormControlGlobals.ColorPower;
+      m_PlotterDraw.ForeColorNeg = FormControlGlobals.ColorRecup;
       m_PlotterDraw.ValueMin = -100;
       m_PlotterDraw.ValueMax = 50;
       m_PlotterDraw.Flow = FlowDirection.RightToLeft;

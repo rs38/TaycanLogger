@@ -11,6 +11,7 @@ namespace TaycanLogger
 
     public Form1()
     {
+      FormControlGlobals.LoadFonts();
       if (OBDSession.GlobalErrorDisplay is null)
         OBDSession.GlobalErrorDisplay = p_Exception => GlobalErrorDisplay?.Invoke(p_Exception);
       InitializeComponent();
@@ -97,7 +98,7 @@ namespace TaycanLogger
             if (v_DeviceName is not null)
             {
               m_CancellationTokenSource = new CancellationTokenSource();
-#if DEBUG
+#if DEBUGx
               m_OBDSession.LoadConfig(Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "obd2_Taycan.xml"));
               if (Control.ModifierKeys == Keys.Control)
                 v_DeviceName = "RawDevice";

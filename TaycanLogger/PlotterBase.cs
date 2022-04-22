@@ -8,10 +8,6 @@
     protected float m_TextHeight;
     protected Brush? m_Brush;
 
-    public static Color ColorPower = Color.FromArgb(0, 176, 244);
-    public static Color ColorRecup = Color.FromArgb(16, 185, 0);
-    public static float TextMargin = 2f;
-
     public PlotterBase()
     {
       DoubleBuffered = true;
@@ -37,13 +33,13 @@
       m_StringFormat.Alignment = p_StringAlignment;
       RectangleF v_LayoutRectangle;
       if (p_Bottom)
-        v_LayoutRectangle = new RectangleF(TextMargin, ClientSize.Height - m_TextHeight - TextMargin * 2, ClientSize.Width - TextMargin * 2, m_TextHeight);
+        v_LayoutRectangle = new RectangleF(FormControlGlobals.TextMargin, ClientSize.Height - m_TextHeight - FormControlGlobals.TextMargin * 2, ClientSize.Width - FormControlGlobals.TextMargin * 2, m_TextHeight);
       else
-        v_LayoutRectangle = new RectangleF(TextMargin, TextMargin, ClientSize.Width - TextMargin * 2, m_TextHeight);
+        v_LayoutRectangle = new RectangleF(FormControlGlobals.TextMargin, FormControlGlobals.TextMargin, ClientSize.Width - FormControlGlobals.TextMargin * 2, m_TextHeight);
       if (p_Second)
-        v_LayoutRectangle.Offset(0, (m_TextHeight + TextMargin) * (p_Bottom ? -1 : 1));
+        v_LayoutRectangle.Offset(0, (m_TextHeight + FormControlGlobals.TextMargin) * (p_Bottom ? -1 : 1));
       p_Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-      p_Graphics.DrawString(p_Text, Font, m_Brush, v_LayoutRectangle, m_StringFormat);
+      p_Graphics.DrawString(p_Text, FormControlGlobals.FontDisplayText, m_Brush, v_LayoutRectangle, m_StringFormat);
     }
 
     internal class Buffer<T> : LinkedList<T>
