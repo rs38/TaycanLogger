@@ -10,6 +10,8 @@ namespace OBDEngine
   {
     public Stream BaseStream;
     private BinaryWriter m_BinaryWriter;
+    private BinaryWriter m_BinaryWriterRead;
+    private BinaryWriter m_BinaryWriterWrite;
     private SemaphoreSlim m_SemaphoreSlim;
 
     public WriteRawStream(string p_DeviceName, Stream p_Stream)
@@ -20,6 +22,8 @@ namespace OBDEngine
       foreach (var c in Path.GetInvalidFileNameChars())
         v_DongleName = v_DongleName.Replace(c, '-');
       m_BinaryWriter = new BinaryWriter(File.Open(Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, $"{v_DongleName}-{DateTime.Now:yyMMddHHmmss}.raw"), FileMode.Create));
+      m_BinaryWriterRead = new BinaryWriter(File.Open(Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, $"{v_DongleName}-{DateTime.Now:yyMMddHHmmss}.raw-read"), FileMode.Create)); ;
+      m_BinaryWriterWrite = new BinaryWriter(File.Open(Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, $"{v_DongleName}-{DateTime.Now:yyMMddHHmmss}.raw-write"), FileMode.Create)); ;
     }
 
     public override bool CanRead => BaseStream.CanRead;
@@ -40,6 +44,7 @@ namespace OBDEngine
     public override int Read(byte[] buffer, int offset, int count)
     {
       int v_Read = BaseStream.Read(buffer, offset, count);
+      m_BinaryWriterRead.Write(buffer, offset, v_Read);
       LogAsync(buffer, offset, v_Read, false).Wait();
       return v_Read;
     }
@@ -58,6 +63,7 @@ namespace OBDEngine
     {
       Task v_Task = LogAsync(buffer, offset, count, true);
       BaseStream.Write(buffer, offset, count);
+      m_BinaryWriterWrite.Write(buffer, offset, count);
       v_Task.Wait();
     }
 
@@ -94,6 +100,11 @@ namespace OBDEngine
       {
         m_BinaryWriter.Flush();
         m_BinaryWriter.Close();
+
+        m_BinaryWriterRead.Flush();
+        m_BinaryWriterRead.Close();
+        m_BinaryWriterWrite.Flush();
+        m_BinaryWriterWrite.Close();
       }
       finally
       {
