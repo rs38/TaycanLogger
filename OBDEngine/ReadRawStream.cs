@@ -1,9 +1,4 @@
-﻿using System.IO;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace OBDEngine
+﻿namespace OBDEngine
 {
   public class ReadRawStream : Stream
   {
@@ -67,7 +62,7 @@ namespace OBDEngine
       {
         m_SemaphoreSlim.Release();
       }
-      //System.Diagnostics.Debug.WriteLine(Encoding.ASCII.GetString(buffer, offset, v_Count));
+      //System.Diagnostics.Debug.WriteLine(System.Text.Encoding.ASCII.GetString(buffer, offset, v_Count));
       return v_Count;
     }
 
@@ -102,13 +97,15 @@ namespace OBDEngine
         m_SemaphoreSlim.Release();
       }
       // must be the same...
-      string v_Sent = Encoding.ASCII.GetString(buffer, offset, count);
-      string v_Original = Encoding.ASCII.GetString(m_Buffer, 0, v_Count);
+#if DEBUG
+      string v_Sent = System.Text.Encoding.ASCII.GetString(buffer, offset, count);
+      string v_Original = System.Text.Encoding.ASCII.GetString(m_Buffer, 0, v_Count);
       if (v_Sent.ToUpper() != v_Original.ToUpper())
         System.Diagnostics.Debug.WriteLine($"Raw stream missmatch! Sent: {v_Sent} Original: {v_Original}");
       if (v_Sent != v_Original)
         System.Diagnostics.Debug.WriteLine($"Raw stream missmatch! Sent: {v_Sent} Original: {v_Original}");
       //throw new Exception($"Raw stream missmatch! Sent: {v_Sent} Original: {v_Original}");
+#endif
     }
 
     public override long Seek(long offset, SeekOrigin origin)
