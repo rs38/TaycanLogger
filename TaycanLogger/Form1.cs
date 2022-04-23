@@ -39,17 +39,11 @@ namespace TaycanLogger
       ExceptionCheck(() =>
       {
         this.LoadFormSizeState();
-
-        FormPageSettings? v_FormPageSettings = (FormPageSettings?)m_PageManager.GetFormPage(typeof(FormPageSettings));
-        if (v_FormPageSettings is not null)
-          v_FormPageSettings.RefreshDevices += V_FormPageSettings_RefreshDevices;
-
-        FormPageTinker? v_FormPageTinker = (FormPageTinker?)m_PageManager.GetFormPage(typeof(FormPageTinker));
-        if (v_FormPageTinker is not null)
-          v_FormPageTinker.XMLCommandChanged += M_FormPageTinker_XMLCommandChanged;
-
+        m_PageManager.GetFormPage<FormPageSettings>().RefreshDevices += V_FormPageSettings_RefreshDevices;
+        m_PageManager.GetFormPage<FormPageTinker>().XMLCommandChanged += M_FormPageTinker_XMLCommandChanged;
         m_OBDSession.CommandExecuted += M_OBDSession_CommandExecuted;
         m_OBDSession.SessionExecuted += M_OBDSession_SessionExecuted;
+        m_OBDSession.SessionInitExecuted += M_OBDSession_SessionInitExecuted;
         m_OBDSession.SessionValueExecuted += M_OBDSession_SessionValueExecuted;
         m_OBDSession.TinkerRawExecuted += M_OBDSession_TinkerRawExecuted;
         m_OBDSession.TinkerValueExecuted += M_OBDSession_TinkerValueExecuted;
@@ -91,7 +85,7 @@ namespace TaycanLogger
         {
           if (m_CancellationTokenSource == null)
             m_CancellationTokenSource?.Cancel();
-          FormPageSettings? v_FormPageSettings = (FormPageSettings?)m_PageManager.GetFormPage(typeof(FormPageSettings));
+          FormPageSettings? v_FormPageSettings = m_PageManager.GetFormPage<FormPageSettings>();
           if (v_FormPageSettings is not null)
           {
             string? v_DeviceName = v_FormPageSettings.CurrentDevice;
@@ -190,15 +184,21 @@ namespace TaycanLogger
       //ExceptionCheck(() =>  m_PageManager.ActivateFormPage(typeof(FormPageLogger)));
     }
 
+    private void M_OBDSession_SessionInitExecuted(string p_InitResult)
+    {
+      this.InvokeIfRequired(() => m_PageManager.GetFormPage<FormPageSettings>().AddInitResult(p_InitResult));
+    }
+
+    private void M_OBDSession_SessionValueExecuted(string p_Name, string p_Units, double p_Value)
+    {
+      this.InvokeIfRequired(() => m_PageManager.Pages.ForEach(l_FormPage => l_FormPage.SessionValueExecuted(p_Name, p_Units, p_Value)));
+    }
+
     private void M_FormPageTinker_XMLCommandChanged(string p_XmlCommand)
     {
       string? v_Result = m_OBDSession.LoadTinkerCommand(p_XmlCommand);
       if (v_Result is not null)
-      {
-        FormPageTinker? v_FormPageTinker = (FormPageTinker?)m_PageManager.GetFormPage(typeof(FormPageTinker));
-        if (v_FormPageTinker is not null)
-          v_FormPageTinker?.AddErrorMessage(v_Result);
-      }
+        m_PageManager.GetFormPage<FormPageTinker>().AddErrorMessage(v_Result);
     }
 
     private void M_OBDSession_TinkerRawExecuted(byte[] p_ResultRaw, byte[] p_ResultProcessed)
@@ -209,11 +209,6 @@ namespace TaycanLogger
     private void M_OBDSession_TinkerValueExecuted(string p_Name, string p_Units, double p_Value)
     {
       this.InvokeIfRequired(() => m_PageManager.Pages.ForEach(l_FormPage => l_FormPage.ShowResultValue(p_Name, p_Units, p_Value)));
-    }
-
-    private void M_OBDSession_SessionValueExecuted(string p_Name, string p_Units, double p_Value)
-    {
-      this.InvokeIfRequired(() => m_PageManager.Pages.ForEach(l_FormPage => l_FormPage.SessionValueExecuted(p_Name, p_Units, p_Value)));
     }
   }
 }

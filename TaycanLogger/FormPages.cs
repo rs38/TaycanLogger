@@ -81,15 +81,18 @@
       return v_FormPage;
     }
 
-    public FormPage? GetFormPage(Type p_FormPageType)
+    public T GetFormPage<T>() where T : class
     {
-      FormPage? v_FormPage = null;
-      Pages.ForEach(l_FormPage =>
+      foreach (var l_FormPage in Pages)
       {
-        if (p_FormPageType == l_FormPage.GetType())
-          v_FormPage = l_FormPage;
-      });
-      return v_FormPage;
+        if (l_FormPage is T)
+        {
+          T? v_FormPage = l_FormPage as T;
+          if (v_FormPage is not null)
+            return v_FormPage;
+        }
+      }
+      throw new InvalidOperationException($"GetFormPage of type {typeof(T)} does not exist!");
     }
   }
 }

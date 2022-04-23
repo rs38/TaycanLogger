@@ -122,7 +122,7 @@ namespace OBDEngine
             byte[] v_Buffer = new byte[4096];
             foreach (var l_OBDCommand in m_InitOBDCommands)
             {
-              l_OBDCommand.Execute(m_Stream, v_Buffer, false);
+              l_OBDCommand.Execute(m_Stream, v_Buffer, false, p_BytesRead => ProcessInitRaw(v_Buffer, p_BytesRead));
               if (p_CancellationToken.IsCancellationRequested)
                 break;
             }
@@ -176,7 +176,7 @@ namespace OBDEngine
                     break;
                 }
               }
-              
+
               v_TinkerOBDCommand = SetTinkerCommand();
               if (v_TinkerOBDCommand is not null)
               {
@@ -247,9 +247,16 @@ namespace OBDEngine
 
     public event Action<bool>? CommandExecuted;
     public event Action? SessionExecuted;
+    public event Action<string>? SessionInitExecuted;
     public event Action<string, string, double>? SessionValueExecuted;
     public event Action<byte[], byte[]>? TinkerRawExecuted;
     public event Action<string, string, double>? TinkerValueExecuted;
+
+
+    private void ProcessInitRaw(byte[] p_ResultRaw, int p_BytesRead)
+    {
+      SessionInitExecuted?.Invoke(System.Text.Encoding.UTF8.GetString(p_ResultRaw, 0, p_BytesRead));
+    }
 
     private void ProcessSessionValue(OBDValue p_OBDValue, double p_Value)
     {

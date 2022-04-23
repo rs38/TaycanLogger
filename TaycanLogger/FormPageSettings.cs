@@ -16,7 +16,7 @@
       btRefresh = new System.Windows.Forms.Button();
       tbError = new System.Windows.Forms.TextBox();
       if (Form1.GlobalErrorDisplay is null)
-        Form1.GlobalErrorDisplay = p_Exception => ShowErrorMessage(p_Exception);
+        Form1.GlobalErrorDisplay = p_Exception => AddErrorMessage(p_Exception);
     }
 
     public override void Load()
@@ -80,18 +80,28 @@
       RefreshDevices?.Invoke();
     }
 
-    public void ShowErrorMessage(Exception p_Exception)
+    public void AddErrorMessage(Exception p_Exception)
     {
       this.InvokeIfRequired(() =>
       {
         if (string.IsNullOrEmpty(tbError.Text))
           tbError.Text = p_Exception.ToString();
         else
-        {
           tbError.Text = $"{p_Exception.ToString()}{Environment.NewLine}---------------------------------------------------------------{Environment.NewLine}{tbError.Text}";
-        }
         OnActivateRequested();
       });
+    }
+
+    public void AddInitResult(string p_Message)
+    {
+      if (!string.IsNullOrEmpty(p_Message))
+      {
+        string v_Message = p_Message.Replace((char)13, '¶');
+        if (string.IsNullOrEmpty(tbError.Text))
+          tbError.Text = v_Message;
+        else
+          tbError.AppendText($"{Environment.NewLine}{v_Message}");
+      }
     }
 
     public override void UpdateDevices(string[]? p_Devices)
