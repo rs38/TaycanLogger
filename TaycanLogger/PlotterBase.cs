@@ -4,42 +4,34 @@
 
   public class PlotterBase : Control
   {
-    protected StringFormat m_StringFormat;
     protected float m_TextHeight;
-    protected Brush? m_Brush;
 
     public PlotterBase()
     {
       DoubleBuffered = true;
       ResizeRedraw = true;
       BackColor = SystemColors.Control;
-      m_StringFormat = new StringFormat();
-      m_StringFormat.Alignment = StringAlignment.Center;
-      m_StringFormat.LineAlignment = StringAlignment.Center;
     }
 
     protected override void OnPaint(PaintEventArgs e)
     {
       base.OnPaint(e);
       e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+      e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
       m_TextHeight = e.Graphics.MeasureString("0", Font).Height;
     }
 
 
-    protected virtual void PaintText(Graphics p_Graphics, string p_Text, StringAlignment p_StringAlignment, bool p_Bottom, bool p_Second = false)
+    protected virtual void PaintText(Graphics p_Graphics, string p_Text, Font p_Font, TextFormatFlags p_TextFormatFlags, bool p_Bottom, bool p_Second = false)
     {
-      if (m_Brush is null)
-        m_Brush = new SolidBrush(ForeColor);
-      m_StringFormat.Alignment = p_StringAlignment;
-      RectangleF v_LayoutRectangle;
+      Rectangle v_LayoutRectangle;
       if (p_Bottom)
-        v_LayoutRectangle = new RectangleF(FormControlGlobals.TextMargin, ClientSize.Height - m_TextHeight - FormControlGlobals.TextMargin * 2, ClientSize.Width - FormControlGlobals.TextMargin * 2, m_TextHeight);
+        v_LayoutRectangle = new Rectangle((int)FormControlGlobals.TextMarginWidth, (int)(ClientSize.Height - m_TextHeight - FormControlGlobals.TextMarginHeight * 2), (int)(ClientSize.Width - FormControlGlobals.TextMarginWidth * 2), (int)m_TextHeight);
       else
-        v_LayoutRectangle = new RectangleF(FormControlGlobals.TextMargin, FormControlGlobals.TextMargin, ClientSize.Width - FormControlGlobals.TextMargin * 2, m_TextHeight);
+        v_LayoutRectangle = new Rectangle((int)FormControlGlobals.TextMarginWidth, (int)FormControlGlobals.TextMarginHeight, (int)(ClientSize.Width - FormControlGlobals.TextMarginWidth * 2), (int)m_TextHeight);
       if (p_Second)
-        v_LayoutRectangle.Offset(0, (m_TextHeight + FormControlGlobals.TextMargin) * (p_Bottom ? -1 : 1));
-      p_Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-      p_Graphics.DrawString(p_Text, FormControlGlobals.FontDisplayText, m_Brush, v_LayoutRectangle, m_StringFormat);
+        v_LayoutRectangle.Offset(0, (int)(m_TextHeight + FormControlGlobals.TextMarginHeight) * (p_Bottom ? -1 : 1));
+      TextRenderer.DrawText(p_Graphics, p_Text, p_Font, v_LayoutRectangle, ForeColor, Color.Transparent, FormControlGlobals.DefaultTextFormatFlags | TextFormatFlags.VerticalCenter | p_TextFormatFlags);
     }
 
     internal class Buffer<T> : LinkedList<T>

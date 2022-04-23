@@ -49,13 +49,13 @@
     {
       base.OnPaint(e);
       m_PlotterDraw.Paint(e.Graphics);
-      PaintText(e.Graphics, "Consumption", StringAlignment.Center, true);
+      PaintText(e.Graphics, "Consumption kWh/100 km", FormControlGlobals.FontDisplayTitle, TextFormatFlags.HorizontalCenter, true);
       if (m_ValueMin < double.MaxValue)
-        PaintText(e.Graphics, Math.Round(m_ValueMin).ToString(), StringAlignment.Far, true);
+        PaintText(e.Graphics, Math.Round(m_ValueMin).ToString(), FormControlGlobals.FontDisplayText, TextFormatFlags.Right, true);
       if (m_ValueMax > double.MinValue)
-        PaintText(e.Graphics, Math.Round(m_ValueMax).ToString(), StringAlignment.Far, false);
+        PaintText(e.Graphics, Math.Round(m_ValueMax).ToString(), FormControlGlobals.FontDisplayText, TextFormatFlags.Right, false);
       if (!double.IsNaN(m_ValueCurrent))
-        PaintText(e.Graphics, $"{Math.Round(m_ValueCurrent)} kWh/100km", StringAlignment.Near, true);
+        PaintText(e.Graphics, Math.Round(m_ValueCurrent).ToString(), FormControlGlobals.FontDisplayText, TextFormatFlags.Left, true);
     }
   }
 }

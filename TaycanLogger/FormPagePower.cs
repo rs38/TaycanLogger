@@ -69,21 +69,21 @@
       //test data, delete...
       m_DataListDisplayLeft.AddItem("i1", "Drive time", "10:34 h");
       m_DataListDisplayLeft.AddItem("i2", "Distance", "932.2 km");
-      m_DataListDisplayLeft.AddItem("i3", "Average consumption", "18.1 kWh/100 km");
-      m_DataListDisplayLeft.AddItem("i4", "Average speed", "10 km/h");
+      //m_DataListDisplayLeft.AddItem("i3", "Average consumption", "18.1 kWh/100 km");
+      //m_DataListDisplayLeft.AddItem("i4", "Average speed", "10 km/h");
       m_DataListDisplayRight.AddItem("i1", "Drive time", "10:34 h");
       m_DataListDisplayRight.AddItem("i2", "Distance", "932.2 km");
-      m_DataListDisplayRight.AddItem("i3", "Average consumption", "18.1 kWh/100 km");
-      m_DataListDisplayRight.AddItem("i4", "Average speed", "10 km/h");
+      //m_DataListDisplayRight.AddItem("i3", "Average consumption", "18.1 kWh/100 km");
+      //m_DataListDisplayRight.AddItem("i4", "Average speed", "10 km/h");
 
     }
 
-    private void SetupControl(Control m_SpeedMeter)
+    private void SetupControl(Control p_Control)
     {
-      m_SpeedMeter.Font = Parent.Font;
-      m_SpeedMeter.ForeColor = Color.White;
-      m_SpeedMeter.BackColor = Color.Black;
-      m_SpeedMeter.Dock = System.Windows.Forms.DockStyle.Fill;
+      p_Control.Font = Parent.Font;
+      p_Control.ForeColor = Color.White;
+      p_Control.BackColor = Color.Black;
+      p_Control.Dock = System.Windows.Forms.DockStyle.Fill;
     }
 
     private uint m_CommandExecutedCount = 0;

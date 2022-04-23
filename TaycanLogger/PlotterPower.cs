@@ -47,14 +47,15 @@
     {
       base.OnPaint(e);
       m_PlotterDrawPosNeg.Paint(e.Graphics);
-      PaintText(e.Graphics, "Recup", StringAlignment.Near, true);
-      PaintText(e.Graphics, "Power", StringAlignment.Far, true);
+      PaintText(e.Graphics, "Recup", FormControlGlobals.FontDisplayTitle, TextFormatFlags.Left, true);
+      PaintText(e.Graphics, "kW", FormControlGlobals.FontDisplayTitle, TextFormatFlags.HorizontalCenter, true);
+      PaintText(e.Graphics, "Power", FormControlGlobals.FontDisplayTitle, TextFormatFlags.Right, true);
       if (m_ValueMin < double.MaxValue)
-        PaintText(e.Graphics, Math.Round(m_ValueMin / 1000, 1).ToString(), StringAlignment.Near, true, true);
+        PaintText(e.Graphics, Math.Round(m_ValueMin / 1000, 1).ToString(), FormControlGlobals.FontDisplayText, TextFormatFlags.Left, true, true);
       if (m_ValueMax > double.MinValue)
-        PaintText(e.Graphics, Math.Round(m_ValueMax / 1000, 1).ToString(), StringAlignment.Far, true, true);
+        PaintText(e.Graphics, Math.Round(m_ValueMax / 1000, 1).ToString(), FormControlGlobals.FontDisplayText, TextFormatFlags.Right, true, true);
       if (!double.IsNaN(m_ValueCurrent))
-        PaintText(e.Graphics, $"{Math.Round(m_ValueCurrent / 1000, 1)} kW", StringAlignment.Center, true, true);
+        PaintText(e.Graphics, Math.Round(m_ValueCurrent / 1000, 1).ToString(), FormControlGlobals.FontDisplayText, TextFormatFlags.HorizontalCenter, true, true);
     }
 
   }

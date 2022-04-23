@@ -9,7 +9,9 @@ namespace TaycanLogger
 
     public static Color ColorPower = Color.FromArgb(0, 176, 244);
     public static Color ColorRecup = Color.FromArgb(16, 185, 0);
-    public static float TextMargin = 2f;
+    public static float TextMarginWidth = 6f;
+    public static float TextMarginHeight = 2f;
+    public static TextFormatFlags DefaultTextFormatFlags = TextFormatFlags.PreserveGraphicsClipping | TextFormatFlags.SingleLine | TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix;
     private static PrivateFontCollection m_PrivateFontCollection;
     public static FontFamily FontFamily;
     public static Font FontDisplayTitle;
@@ -26,8 +28,8 @@ namespace TaycanLogger
       AddFontMemResourceEx(fontPtr, (uint)fontData.Length, IntPtr.Zero, ref dummy);
       System.Runtime.InteropServices.Marshal.FreeCoTaskMem(fontPtr);
       FontFamily = m_PrivateFontCollection.Families[0];
-      FontDisplayTitle = new Font(FontFamily, 14.25F, FontStyle.Bold);
-      FontDisplayText = new Font(FontFamily, 14.25F, FontStyle.Bold);
+      FontDisplayTitle = new Font(FontFamily, 15F, FontStyle.Regular);
+      FontDisplayText = new Font(FontFamily, 19F, FontStyle.Regular);
     }
   }
 }

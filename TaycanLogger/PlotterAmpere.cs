@@ -48,13 +48,13 @@
     {
       base.OnPaint(e);
       m_PlotterDraw.Paint(e.Graphics);
-      PaintText(e.Graphics, "Ampere", StringAlignment.Center, true);
+      PaintText(e.Graphics, "Ampere", FormControlGlobals.FontDisplayTitle, TextFormatFlags.HorizontalCenter, true);
       if (m_ValueMin < double.MaxValue)
-        PaintText(e.Graphics, Math.Round(m_ValueMin).ToString(), StringAlignment.Near, true, true);
+        PaintText(e.Graphics, Math.Round(m_ValueMin).ToString(), FormControlGlobals.FontDisplayText, TextFormatFlags.Left, true, true);
       if (m_ValueMax > double.MinValue)
-        PaintText(e.Graphics, Math.Round(m_ValueMax).ToString(), StringAlignment.Far, true, true);
+        PaintText(e.Graphics, Math.Round(m_ValueMax).ToString(), FormControlGlobals.FontDisplayText, TextFormatFlags.Right, true, true);
       if (!double.IsNaN(m_ValueCurrent))
-        PaintText(e.Graphics, $"{Math.Round(m_ValueCurrent, 1)} A", StringAlignment.Center, true, true);
+        PaintText(e.Graphics, Math.Round(m_ValueCurrent, 1).ToString(), FormControlGlobals.FontDisplayText, TextFormatFlags.HorizontalCenter, true, true);
     }
 
   }
