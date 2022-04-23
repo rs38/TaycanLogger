@@ -192,7 +192,7 @@ namespace TaycanLogger
 
     private void M_FormPageTinker_XMLCommandChanged(string p_XmlCommand)
     {
-      string? v_Result = m_OBDSession.LoadTinker(p_XmlCommand);
+      string? v_Result = m_OBDSession.LoadTinkerCommand(p_XmlCommand);
       if (v_Result is not null)
       {
         FormPageTinker? v_FormPageTinker = (FormPageTinker?)m_PageManager.GetFormPage(typeof(FormPageTinker));

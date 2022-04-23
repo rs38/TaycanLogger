@@ -45,31 +45,6 @@ namespace OBDEngine
       }
     }
 
-
-    public string? LoadTinker(string p_XmlCommand)
-    {
-      try
-      {
-        XDocument v_XDocument = XDocument.Load(new StringReader(p_XmlCommand), LoadOptions.None);
-        OBDCommand v_OBDCommand = new OBDCommand(v_XDocument.Root);
-        //make it executed and get results to tinker window...
-        if (m_SemaphoreSlimTinker.Wait(10000))
-          try
-          {
-            m_TinkerOBDCommand = v_OBDCommand;
-          }
-          finally
-          {
-            m_SemaphoreSlimTinker.Release();
-          }
-      }
-      catch (Exception p_Exception)
-      {
-        return p_Exception.Message;
-      }
-      return null;
-    }
-
     public void Initialise(string p_DeviceName, bool p_WriteToRaw)
     {
       if (p_DeviceName == "RawDevice")
@@ -100,9 +75,43 @@ namespace OBDEngine
       m_OBDDevice?.Close();
     }
 
-#if DEBUGx
 
-    // this code is only used to test tinker commands in recorded raw streams...
+    //public void Execute(CancellationToken p_CancellationToken)
+    //{
+    //  if (m_Stream is not null)
+    //    Task.Run(() =>
+    //    {
+    //      try
+    //      {
+    //        byte[] v_Buffer = new byte[4096];
+    //        foreach (var l_OBDCommand in m_InitOBDCommands)
+    //        {
+    //          l_OBDCommand.Execute(m_Stream, v_Buffer, false);
+    //          if (p_CancellationToken.IsCancellationRequested)
+    //            break;
+    //        }
+    //        ulong lineNr = 0;
+    //        string v_Header = "7E5";
+    //        OBDCommand? v_TinkerOBDCommand = null;
+    //        while (!p_CancellationToken.IsCancellationRequested)
+    //        {
+    //          lineNr++;
+    //        }
+    //      }
+    //      catch (Exception p_Exception)
+    //      {
+    //        GlobalErrorDisplay?.Invoke(p_Exception);
+    //      }
+    //      finally
+    //      {
+    //        SessionExecuted?.Invoke();
+    //      }
+    //    });
+    //  else
+    //    SessionExecuted?.Invoke();
+    //}
+
+
     public void Execute(CancellationToken p_CancellationToken)
     {
       if (m_Stream is not null)
@@ -117,30 +126,23 @@ namespace OBDEngine
               if (p_CancellationToken.IsCancellationRequested)
                 break;
             }
-            ulong lineNr = 0;
+            ulong v_CommandLoopIndex = 0;
             string v_Header = "7E5";
             OBDCommand? v_TinkerOBDCommand = null;
             while (!p_CancellationToken.IsCancellationRequested)
             {
-              lineNr++;
+              v_CommandLoopIndex++;
+
+#if DEVELOPTINKERWITHRAW
+              #region DEVELOPTINKERWITHRAW
+
+//only use this code to test tinker with recorded data...
+
               foreach (var l_OBDCommand in m_LoopOBDCommands)
               {
                 if (lineNr % (ulong)l_OBDCommand.SkipCount == 0)
                 {
-
-                  if (m_SemaphoreSlimTinker.Wait(0))
-                    try
-                    {
-                      if (m_TinkerOBDCommand is not null)
-                      {
-                        v_TinkerOBDCommand = m_TinkerOBDCommand;
-                        m_TinkerOBDCommand = null;
-                      }
-                    }
-                    finally
-                    {
-                      m_SemaphoreSlimTinker.Release();
-                    }
+                  v_TinkerOBDCommand = SetTinkerCommand(v_TinkerOBDCommand);
 
                   //just for testing on the raw stream, to fire the tinker result and ignoring the regular command...
                   if (v_TinkerOBDCommand is not null && l_OBDCommand == v_TinkerOBDCommand)
@@ -159,46 +161,13 @@ namespace OBDEngine
                     break;
                 }
               }
-            }
-          }
-          catch (Exception p_Exception)
-          {
-            GlobalErrorDisplay?.Invoke(p_Exception);
-          }
-          finally
-          {
-            SessionExecuted?.Invoke();
-          }
-        });
-      else
-        SessionExecuted?.Invoke();
-    }
 
+              #endregion
 #else
 
-    public void Execute(CancellationToken p_CancellationToken)
-    {
-      if (m_Stream is not null)
-        Task.Run(() =>
-        {
-          try
-          {
-            byte[] v_Buffer = new byte[4096];
-            foreach (var l_OBDCommand in m_InitOBDCommands)
-            {
-              l_OBDCommand.Execute(m_Stream, v_Buffer, false);
-              if (p_CancellationToken.IsCancellationRequested)
-                break;
-            }
-            ulong lineNr = 0;
-            string v_Header = "7E5";
-            OBDCommand? v_TinkerOBDCommand = null;
-            while (!p_CancellationToken.IsCancellationRequested)
-            {
-              lineNr++;
               foreach (var l_OBDCommand in m_LoopOBDCommands)
               {
-                if (lineNr % (ulong)l_OBDCommand.SkipCount == 0)
+                if (v_CommandLoopIndex % (ulong)l_OBDCommand.SkipCount == 0)
                 {
                   bool v_Error = !l_OBDCommand.Execute(m_Stream, v_Buffer, v_Header != l_OBDCommand.Header, (p_OBDValue, p_Value) => ProcessSessionValue(p_OBDValue, p_Value));
                   v_Header = l_OBDCommand.Header;
@@ -207,25 +176,17 @@ namespace OBDEngine
                     break;
                 }
               }
-              if (m_SemaphoreSlimTinker.Wait(0))
-                try
-                {
-                  if (m_TinkerOBDCommand is not null)
-                  {
-                    v_TinkerOBDCommand = m_TinkerOBDCommand;
-                    m_TinkerOBDCommand = null;
-                  }
-                }
-                finally
-                {
-                  m_SemaphoreSlimTinker.Release();
-                }
+              
+              v_TinkerOBDCommand = SetTinkerCommand();
               if (v_TinkerOBDCommand is not null)
               {
                 v_TinkerOBDCommand.Execute(m_Stream, v_Buffer, v_Header != v_TinkerOBDCommand.Header, (p_OBDValue, p_Value) => ProcessTinkerValue(p_OBDValue, p_Value), (p_ResultRaw, p_ResultProcessed) => ProcessTinkerRaw(p_ResultRaw, p_ResultProcessed));
                 v_Header = v_TinkerOBDCommand.Header;
                 v_TinkerOBDCommand = null;
               }
+
+#endif
+
             }
           }
           catch (Exception p_Exception)
@@ -239,7 +200,50 @@ namespace OBDEngine
         });
     }
 
-#endif
+    public string? LoadTinkerCommand(string p_XmlCommand)
+    {
+      try
+      {
+        XDocument v_XDocument = XDocument.Load(new StringReader(p_XmlCommand), LoadOptions.None);
+        OBDCommand v_OBDCommand = new OBDCommand(v_XDocument.Root);
+        //make it executed and get results to tinker window...
+        if (m_SemaphoreSlimTinker.Wait(10000))
+          try
+          {
+            m_TinkerOBDCommand = v_OBDCommand;
+          }
+          finally
+          {
+            m_SemaphoreSlimTinker.Release();
+          }
+      }
+      catch (Exception p_Exception)
+      {
+        return p_Exception.Message;
+      }
+      return null;
+    }
+
+    private OBDCommand? SetTinkerCommand(OBDCommand? p_TinkerOBDCommand = null)
+    {
+      if (p_TinkerOBDCommand is not null)
+        return p_TinkerOBDCommand;
+      OBDCommand? v_TinkerOBDCommand = null;
+      if (m_SemaphoreSlimTinker.Wait(0))
+        try
+        {
+          if (m_TinkerOBDCommand is not null)
+          {
+            v_TinkerOBDCommand = m_TinkerOBDCommand;
+            m_TinkerOBDCommand = null;
+          }
+        }
+        finally
+        {
+          m_SemaphoreSlimTinker.Release();
+        }
+      return v_TinkerOBDCommand;
+    }
 
     public event Action<bool>? CommandExecuted;
     public event Action? SessionExecuted;
@@ -252,7 +256,7 @@ namespace OBDEngine
 
       // fire off events into the UI which are cross threaded, so need to be handled with care...
       // ideally put them together into a 
-      ///Pipelines
+      // Pipelines to make sure we never have a back pressure problem
 
       SessionValueExecuted?.Invoke(p_OBDValue.Name, p_OBDValue.Units, p_Value);
 
