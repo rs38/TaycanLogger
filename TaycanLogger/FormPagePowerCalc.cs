@@ -33,6 +33,12 @@
     private double m_LastSpeedValue = double.NaN;
     private DateTime m_LastSpeedTime = DateTime.MaxValue;
 
+
+    double ConsumptionValueSum = 0;
+    int ConsumptionCallCounter = 0;
+    int ConsumptionSkipCount = 5;
+
+
     internal void SessionValueExecuted(string p_Name, string p_Units, double p_Value)
     {
       if (!string.IsNullOrEmpty(p_Name) && p_Name == "Amp")
@@ -71,7 +77,15 @@
         var Consumption = 100 * EnergykWh / DistanceKm;
 
         if (Consumption < 100 & Consumption > -100)
-          PlotterConsumptionAddValue(Consumption);
+        {
+          ConsumptionCallCounter++;
+          if (ConsumptionCallCounter % ConsumptionSkipCount == 0)
+          {
+            PlotterConsumptionAddValue(ConsumptionValueSum / ConsumptionSkipCount);
+            ConsumptionValueSum = 0;
+          }
+          ConsumptionValueSum += Consumption;
+        }
 
         if (!double.IsNaN(m_LastVoltageValue))
         {
