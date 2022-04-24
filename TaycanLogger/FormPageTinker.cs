@@ -27,9 +27,9 @@ namespace TaycanLogger
       Controls.Add(this.tbResultValue, 0, 2);
       Name = "tableLayoutPanel1";
       RowCount = 3;
-      RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 56F));
-      RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 22F));
-      RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 22F));
+      RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+      RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 30F));
+      RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
       tbXML.BackColor = System.Drawing.Color.Black;
       tbXML.BorderStyle = System.Windows.Forms.BorderStyle.None;
       tbXML.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -175,9 +175,22 @@ namespace TaycanLogger
     public override void ShowResultRaw(byte[] p_ResultRaw, byte[] p_ResultProcessed)
     {
       string v_ResultProcessed = Convert.ToHexString(p_ResultProcessed);
-      Func<string, string> v_AddSpace = s => string.Join(" ", Enumerable.Range(0, s.Length / 2).Select(i => s.Substring(i * 2, 2)).ToList());
-      Func<string, string> v_AddBIndex = s => string.Join(" ", Enumerable.Range(0, s.Length / 2).Select(i => $"B{i % 10}").ToList());
-      tbResultRaw.Text = $"{v_AddSpace(v_ResultProcessed)}{Environment.NewLine}{v_AddBIndex(v_ResultProcessed)}{Environment.NewLine}{v_AddSpace(Convert.ToHexString(p_ResultRaw))}";
+      Func<string, string> v_AddSpace = s => string.Join(null, Enumerable.Range(0, s.Length / 2).Select(i => s.Substring(i * 2, 2).PadLeft(3, ' ')).ToList());
+      Func<string, string> v_AddBIndex = s => string.Join(null, Enumerable.Range(0, s.Length / 2).Select(i => $"B{i % 100}".PadLeft(3, ' ')).ToList());
+      Func<byte[], string> v_ToDecimals = b => string.Join(null, Enumerable.Range(0, b.Length).Select(i => b[i].ToString().PadLeft(3, ' ')).ToList());
+      Func<string, string> v_ToASCIIEscaped = s => string.Join(null, Enumerable.Range(0, s.Length).Select(i => s.Substring(i, 1) switch
+      {
+        "\0" => " \\0",  // - Unicode character 0
+        "\a" => " \\a",  // - Alert(character 7)
+        "\b" => " \\b",  // - Backspace(character 8)
+        "\t" => " \\t",  // - Horizontal tab(character 9)
+        "\n" => " \\n",  // - New line(character 10)
+        "\v" => " \\v",  // - Vertical quote(character 11)
+        "\f" => " \\f",  // - Form feed(character 12)
+        "\r" => " \\r",  // - Carriage return (character 13)
+        _ => s.Substring(i, 1).PadLeft(3, ' ')
+      }).ToList());
+      tbResultRaw.Text = $"{v_AddSpace(Convert.ToHexString(p_ResultRaw))}{Environment.NewLine}{v_ToDecimals(p_ResultRaw)}{Environment.NewLine}{v_ToASCIIEscaped(System.Text.Encoding.ASCII.GetString(p_ResultRaw))}{ Environment.NewLine}{ Environment.NewLine}{ v_AddSpace(v_ResultProcessed)}{Environment.NewLine}{v_AddBIndex(v_ResultProcessed)}";
     }
   }
 }
