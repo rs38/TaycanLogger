@@ -46,9 +46,9 @@ namespace OBDEngine
         return null;
 
       char[] charsToTrim = { '\r', ' ', '>', '\0' };
-      if (v_Result.Contains(":"))
+      return OBDSession.ExceptionCheck<byte[]?>(() =>
       {
-        try
+        if (v_Result.Contains(":"))
         {
           var sb = new System.Text.StringBuilder();
 
@@ -60,12 +60,11 @@ namespace OBDEngine
           }
           v_Result = sb.ToString();
         }
-        catch
-        {
-          return null;
-        }
-      }
-      return Convert.FromHexString(v_Result.Replace(" ", "").Trim(charsToTrim));
+        v_Result = v_Result.Replace(" ", "").Trim(charsToTrim);
+        if (v_Result.All("0123456789abcdefABCDEF".Contains))
+          return Convert.FromHexString(v_Result);
+        return null;
+      });
     }
   }
 
