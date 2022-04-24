@@ -3,6 +3,8 @@
   internal class FormPagePowerCalc
   {
     private Action<double> DisplaySpeedValue;
+    private Action<string, string> DataListDisplayLeft;
+    private Action<string, string> DataListDisplayRight;
     private Action<double> PlotterAmpereAddValue;
     private Action<double> PlotterConsumptionAddValue;
     private Action<double> PlotterPowerAddValue;
@@ -10,9 +12,11 @@
     private Action<double> PlotterSpeedSoCAddValueSpeed;
     private Action<double> PlotterSpeedSoCAddValueSoC;
 
-    public FormPagePowerCalc(Action<double> p_DisplaySpeedValue, Action<double> p_PlotterAmpereAddValue, Action<double> p_PlotterConsumptionAddValue, Action<double> p_PlotterPowerAddValue, Action<double> p_PlotterVoltAddValue, Action<double> p_PlotterSpeedSoCAddValueSpeed, Action<double> p_PlotterSpeedSoCAddValueSoC)
+    public FormPagePowerCalc(Action<double> p_DisplaySpeedValue, Action<string, string> p_DataListDisplayLeft, Action<string, string> p_DataListDisplayRight, Action<double> p_PlotterAmpereAddValue, Action<double> p_PlotterConsumptionAddValue, Action<double> p_PlotterPowerAddValue, Action<double> p_PlotterVoltAddValue, Action<double> p_PlotterSpeedSoCAddValueSpeed, Action<double> p_PlotterSpeedSoCAddValueSoC)
     {
       DisplaySpeedValue = p_DisplaySpeedValue;
+      DataListDisplayLeft = p_DataListDisplayLeft;
+      DataListDisplayRight = p_DataListDisplayRight;
       PlotterAmpereAddValue = p_PlotterAmpereAddValue;
       PlotterConsumptionAddValue = p_PlotterConsumptionAddValue;
       PlotterPowerAddValue = p_PlotterPowerAddValue;
@@ -41,7 +45,10 @@
 
     internal void SessionValueExecuted(string p_Name, string p_Units, double p_Value)
     {
-      if (!string.IsNullOrEmpty(p_Name) && p_Name == "Amp")
+      if (string.IsNullOrEmpty(p_Name))
+        return;
+
+      if (p_Name == "Amp")
       {
         PlotterAmpereAddValue(p_Value);
 
@@ -94,14 +101,14 @@
         }
       }
 
-      if (!string.IsNullOrEmpty(p_Name) && p_Name == "BatV")
+      if (p_Name == "BatV")
       {
         PlotterVoltAddValue(p_Value);
         m_LastVoltageValue = p_Value;
         m_LastVoltageTime = DateTime.Now;
       }
 
-      if (!string.IsNullOrEmpty(p_Name) && p_Name == "Speed")
+      if (p_Name == "Speed")
       {
         DisplaySpeedValue(p_Value);
         PlotterSpeedSoCAddValueSpeed(p_Value);
@@ -109,11 +116,40 @@
         m_LastSpeedTime = DateTime.Now;
 
       }
-      if (!string.IsNullOrEmpty(p_Name) && p_Name == "SoCDiplay")
+      if (p_Name == "SoCDiplay")
       {
         PlotterSpeedSoCAddValueSoC(p_Value);
       }
 
+      if (p_Name == "SoCDiplay")
+      {
+        PlotterSpeedSoCAddValueSoC(p_Value);
+      }
+
+      if (p_Name == "Speed")
+        DataListDisplayLeft("Speed", $"{Math.Round(p_Value, 1)} {p_Units}");
+      if (p_Name == "SoCDiplay")
+        DataListDisplayLeft("SoCDiplay", $"{Math.Round(p_Value, 1)} {p_Units}");
+      if (p_Name == "AirT")
+        DataListDisplayLeft("AirT", $"{Math.Round(p_Value, 1)} {p_Units}");
+      if (p_Name == "InsideT")
+        DataListDisplayLeft("InsideT", $"{Math.Round(p_Value, 1)} {p_Units}");
+      if (p_Name == "CompW")
+        DataListDisplayLeft("CompW", $"{Math.Round(p_Value, 1)} {p_Units}");
+      if (p_Name == "HeatA")
+        DataListDisplayLeft("HeatA", $"{Math.Round(p_Value, 1)} {p_Units}");
+      if (p_Name == "BatTOut")
+        DataListDisplayRight("BatTOut", $"{Math.Round(p_Value, 1)} {p_Units}");
+      if (p_Name == "BatTIn")
+        DataListDisplayRight("BatTIn", $"{Math.Round(p_Value, 1)} {p_Units}");
+      if (p_Name == "BatTemp")
+        DataListDisplayRight("BatTemp", $"{Math.Round(p_Value, 1)} {p_Units}");
+      if (p_Name == "CelSum")
+        DataListDisplayRight("CelSum", $"{Math.Round(p_Value, 1)} {p_Units}");
+      if (p_Name == "BatLimC")
+        DataListDisplayRight("BatLimC", $"{Math.Round(p_Value, 1)} {p_Units}");
+      if (p_Name == "BatLimD")
+        DataListDisplayRight("BatLimD", $"{Math.Round(p_Value, 1)} {p_Units}");
 
     }
 

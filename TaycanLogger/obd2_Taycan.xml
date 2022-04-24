@@ -48,9 +48,9 @@
       </values>
     </command>
   
-    <command send="22181D" header="atsh7e5" skipCount="9" name="BatTOut" conversion="B3-40" units="C"/>
-    <command send="22181C" header="atsh7e5" skipCount="10" name="BatTIn" conversion="B3-40" units="C"/>
-    <command send="221E10" header="atsh7e5" skipCount="11" name="BatTemp" conversion="B3-100" units="C"/>
+    <command send="22181D" header="atsh7e5" skipCount="9" name="BatTOut" conversion="B3-40" units="°C"/>
+    <command send="22181C" header="atsh7e5" skipCount="10" name="BatTIn" conversion="B3-40" units="°C"/>
+    <command send="221E10" header="atsh7e5" skipCount="11" name="BatTemp" conversion="B3-100" units="°C"/>
 
     <command send="22028C" header="atsh7e5" skipCount="12" name="SoC" conversion="B3" units="%"/>
     <command send="221E3B" header="atsh7e5" skipCount="7" name="CelSum" conversion="((B3*256)+B4)/10" units="V"/>
@@ -110,8 +110,8 @@
 
     <!--	  <command send="atcra7B0" header="atsh746" skipCount="10"></command> -->
     
-    <command send="222609" header="atsh746" skipCount="10" conversion="((B3*256)+B4)/8.0" name="AirT" units="C"/>
-    <command send="222613" header="atsh746" skipCount="10" conversion="((B3*256)+B4)/8.0" name="InsideT" units="C"/>
+    <command send="222609" header="atsh746" skipCount="10" conversion="((B3*256)+B4)/8.0" name="AirT" units="°C"/>
+    <command send="222613" header="atsh746" skipCount="10" conversion="((B3*256)+B4)/8.0" name="InsideT" units="°C"/>
 
     <!-- 0x8D BMS 
   
@@ -129,7 +129,7 @@
     
     <command send="221E0E"  header="atsh7e5" skipCount="10">
       <values>
-        <value name="CelTMax" conversion="B3-100" units="C"/>
+        <value name="CelTMax" conversion="B3-100" units="°C"/>
         <value name="CelT#Max" conversion="B4" units="#"/>
       </values>
     </command>

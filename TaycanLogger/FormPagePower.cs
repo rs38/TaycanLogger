@@ -15,8 +15,8 @@
 
     public FormPagePower(int p_ColumnSpan) : base(p_ColumnSpan)
     {
-      m_DataListDisplayLeft = new DisplayDataList();
-      m_DataListDisplayRight = new DisplayDataList();
+      m_DataListDisplayLeft = new DisplayDataList(3, 2);
+      m_DataListDisplayRight = new DisplayDataList(3, 2);
       m_DisplaySpeedMeter = new DisplaySpeedMeter();
       m_PlotterAmpere = new PlotterAmpere();
       m_PlotterPower = new PlotterPower();
@@ -44,7 +44,7 @@
       ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12F));
       ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 28F));
       RowCount = 3;
-      RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15F));
+      RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 156F));
       RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 75F));
       RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
       SetColumnSpan(m_DataListDisplayLeft, 2);
@@ -62,19 +62,20 @@
       SetColumnSpan(m_PlotterConsumption, 3);
       Controls.Add(m_PlotterConsumption, 3, 2);
 
+      m_DataListDisplayLeft.AddItem("Speed", "Title Speed");// units = "km/h" />
+      m_DataListDisplayLeft.AddItem("SoCDiplay", "Title SoCDiplay");// units = "%" />
+      m_DataListDisplayLeft.AddItem("AirT", "Title AirT");// units = "C" />
+      m_DataListDisplayLeft.AddItem("InsideT", "Title InsideT");// units = "C" />
+      m_DataListDisplayLeft.AddItem("CompW", "Title CompW");// units = "W" />
+      m_DataListDisplayLeft.AddItem("HeatA", "Title HeatA");// units = "A" />
 
-
-
-
-      //test data, delete...
-      m_DataListDisplayLeft.AddItem("i1", "Drive time", "10:34 h");
-      m_DataListDisplayLeft.AddItem("i2", "Distance", "932.2 km");
-      //m_DataListDisplayLeft.AddItem("i3", "Average consumption", "18.1 kWh/100 km");
-      //m_DataListDisplayLeft.AddItem("i4", "Average speed", "10 km/h");
-      m_DataListDisplayRight.AddItem("i1", "Drive time", "10:34 h");
-      m_DataListDisplayRight.AddItem("i2", "Distance", "932.2 km");
-      //m_DataListDisplayRight.AddItem("i3", "Average consumption", "18.1 kWh/100 km");
-      //m_DataListDisplayRight.AddItem("i4", "Average speed", "10 km/h");
+      //need to set title and place it properly...
+      m_DataListDisplayRight.AddItem("BatTOut", "Title BatTOut"); //units = "C" />
+      m_DataListDisplayRight.AddItem("BatTIn", "Title BatTIn");   //units = "C" />
+      m_DataListDisplayRight.AddItem("BatTemp", "Title BatTemp"); //units = "C" />
+      m_DataListDisplayRight.AddItem("CelSum", "Title CelSum");   //units = "V" />
+      m_DataListDisplayRight.AddItem("BatLimC", "Title BatLimC"); //units = "A" />
+      m_DataListDisplayRight.AddItem("BatLimD", "Title BatLimD"); //units = "A" />
 
     }
 
@@ -107,6 +108,8 @@
       {
         m_FormPagePowerCalc = new FormPagePowerCalc(
           p_Value => m_DisplaySpeedMeter.SetSpeed(p_Value),
+          (p_Name, p_Text) => m_DataListDisplayLeft.SetItemText(p_Name, p_Text),
+          (p_Name, p_Text) => m_DataListDisplayRight.SetItemText(p_Name, p_Text),
           p_Value => m_PlotterAmpere.AddValue(p_Value),
           p_Value => m_PlotterConsumption.AddValue(p_Value),
           p_Value => m_PlotterPower.AddValue(p_Value),

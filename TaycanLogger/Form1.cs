@@ -44,6 +44,7 @@ namespace TaycanLogger
         m_OBDSession.CommandExecuted += M_OBDSession_CommandExecuted;
         m_OBDSession.SessionExecuted += M_OBDSession_SessionExecuted;
         m_OBDSession.SessionInitExecuted += M_OBDSession_SessionInitExecuted;
+        m_OBDSession.SessionInitCompleted += M_OBDSession_SessionInitCompleted;
         m_OBDSession.SessionValueExecuted += M_OBDSession_SessionValueExecuted;
         m_OBDSession.TinkerRawExecuted += M_OBDSession_TinkerRawExecuted;
         m_OBDSession.TinkerValueExecuted += M_OBDSession_TinkerValueExecuted;
@@ -52,6 +53,7 @@ namespace TaycanLogger
       });
     }
 
+    
     private void V_FormPageSettings_RefreshDevices()
     {
       string[]? v_Devices = m_OBDSession.GetPairedDevices().ToArray();
@@ -103,7 +105,6 @@ namespace TaycanLogger
               m_OBDSession.Initialise(v_DeviceName, true);
 #endif
               ControlExtensions.WriteAppSetting("LastUsedDevice", v_DeviceName);
-              m_PageManager.ActivateFormPage(typeof(FormPagePower));
               btStart.Text = "Stop";
               m_Running = true;
               m_OBDSession.Execute(m_CancellationTokenSource.Token);
@@ -164,17 +165,17 @@ namespace TaycanLogger
 
     private void btSettings_Click(object sender, EventArgs e)
     {
-      ExceptionCheck(() => m_PageManager.ActivateFormPage(typeof(FormPageSettings)));
+      ExceptionCheck(() => m_PageManager.ActivateFormPage<FormPageSettings>());
     }
 
     private void btTinker_Click(object sender, EventArgs e)
     {
-      ExceptionCheck(() => m_PageManager.ActivateFormPage(typeof(FormPageTinker)));
+      ExceptionCheck(() => m_PageManager.ActivateFormPage<FormPageTinker>());
     }
 
     private void btPower_Click(object sender, EventArgs e)
     {
-      ExceptionCheck(() => m_PageManager.ActivateFormPage(typeof(FormPagePower)));
+      ExceptionCheck(() => m_PageManager.ActivateFormPage<FormPagePower>());
     }
 
     private void btLogger_Click(object sender, EventArgs e)
@@ -187,6 +188,11 @@ namespace TaycanLogger
     private void M_OBDSession_SessionInitExecuted(string p_InitResult)
     {
       this.InvokeIfRequired(() => m_PageManager.GetFormPage<FormPageSettings>().AddInitResult(p_InitResult));
+    }
+
+    private void M_OBDSession_SessionInitCompleted()
+    {
+      this.InvokeIfRequired(() => m_PageManager.ActivateFormPage<FormPagePower>());
     }
 
     private void M_OBDSession_SessionValueExecuted(string p_Name, string p_Units, double p_Value)

@@ -65,12 +65,12 @@
       });
     }
 
-    public FormPage? ActivateFormPage(Type p_FormPageType)
+    public T ActivateFormPage<T>() where T : class
     {
       FormPage? v_FormPage = null;
       Pages.ForEach(l_FormPage =>
       {
-        if (p_FormPageType == l_FormPage.Type)
+        if (l_FormPage is T)
         {
           l_FormPage.Activate();
           v_FormPage = l_FormPage;
@@ -78,7 +78,14 @@
         else if (l_FormPage.Activated)
           l_FormPage.Deactivate();
       });
-      return v_FormPage;
+      // this null coding stuff drives me nuts. Need to check out how this works properly...
+      if (v_FormPage is not null)
+      {
+        T? v_FormPageT = v_FormPage as T;
+        if (v_FormPageT is not null)
+          return v_FormPageT;
+      }
+      throw new InvalidOperationException($"GetFormPage of type {typeof(T)} does not exist!");
     }
 
     public T GetFormPage<T>() where T : class

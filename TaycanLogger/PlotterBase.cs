@@ -24,14 +24,14 @@
 
     protected virtual void PaintText(Graphics p_Graphics, string p_Text, Font p_Font, TextFormatFlags p_TextFormatFlags, bool p_Bottom, bool p_Second = false)
     {
-      Rectangle v_LayoutRectangle;
+      RectangleF v_LayoutRectangle;
       if (p_Bottom)
-        v_LayoutRectangle = new Rectangle((int)FormControlGlobals.TextMarginWidth, (int)(ClientSize.Height - m_TextHeight - FormControlGlobals.TextMarginHeight * 2), (int)(ClientSize.Width - FormControlGlobals.TextMarginWidth * 2), (int)m_TextHeight);
+        v_LayoutRectangle = new RectangleF(FormControlGlobals.TextMarginWidth, ClientSize.Height - m_TextHeight - FormControlGlobals.TextMarginHeight * 2, ClientSize.Width - FormControlGlobals.TextMarginWidth * 2, m_TextHeight);
       else
-        v_LayoutRectangle = new Rectangle((int)FormControlGlobals.TextMarginWidth, (int)FormControlGlobals.TextMarginHeight, (int)(ClientSize.Width - FormControlGlobals.TextMarginWidth * 2), (int)m_TextHeight);
+        v_LayoutRectangle = new RectangleF(FormControlGlobals.TextMarginWidth, FormControlGlobals.TextMarginHeight, ClientSize.Width - FormControlGlobals.TextMarginWidth * 2, m_TextHeight);
       if (p_Second)
         v_LayoutRectangle.Offset(0, (int)(m_TextHeight + FormControlGlobals.TextMarginHeight) * (p_Bottom ? -1 : 1));
-      TextRenderer.DrawText(p_Graphics, p_Text, p_Font, v_LayoutRectangle, ForeColor, Color.Transparent, FormControlGlobals.DefaultTextFormatFlags | TextFormatFlags.VerticalCenter | p_TextFormatFlags);
+      TextRenderer.DrawText(p_Graphics, p_Text, p_Font, v_LayoutRectangle.ToRectangle(), ForeColor, Color.Transparent, FormControlGlobals.DefaultTextFormatFlags | TextFormatFlags.VerticalCenter | p_TextFormatFlags);
     }
 
     internal class Buffer<T> : LinkedList<T>

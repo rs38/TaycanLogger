@@ -31,5 +31,10 @@ namespace TaycanLogger
       FontDisplayTitle = new Font(FontFamily, 15F, FontStyle.Regular);
       FontDisplayText = new Font(FontFamily, 19F, FontStyle.Regular);
     }
+
+    public static Rectangle ToRectangle(this RectangleF p_RectangleF)
+    {
+      return new Rectangle((int)p_RectangleF.X, (int)p_RectangleF.Y, (int)p_RectangleF.Width, (int)p_RectangleF.Height);
+    }
   }
 }

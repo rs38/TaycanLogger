@@ -76,41 +76,13 @@ namespace OBDEngine
     }
 
 
-    //public void Execute(CancellationToken p_CancellationToken)
-    //{
-    //  if (m_Stream is not null)
-    //    Task.Run(() =>
-    //    {
-    //      try
-    //      {
-    //        byte[] v_Buffer = new byte[4096];
-    //        foreach (var l_OBDCommand in m_InitOBDCommands)
-    //        {
-    //          l_OBDCommand.Execute(m_Stream, v_Buffer, false);
-    //          if (p_CancellationToken.IsCancellationRequested)
-    //            break;
-    //        }
-    //        ulong lineNr = 0;
-    //        string v_Header = "7E5";
-    //        OBDCommand? v_TinkerOBDCommand = null;
-    //        while (!p_CancellationToken.IsCancellationRequested)
-    //        {
-    //          lineNr++;
-    //        }
-    //      }
-    //      catch (Exception p_Exception)
-    //      {
-    //        GlobalErrorDisplay?.Invoke(p_Exception);
-    //      }
-    //      finally
-    //      {
-    //        SessionExecuted?.Invoke();
-    //      }
-    //    });
-    //  else
-    //    SessionExecuted?.Invoke();
-    //}
-
+    public event Action<bool>? CommandExecuted;
+    public event Action? SessionExecuted;
+    public event Action<string>? SessionInitExecuted;
+    public event Action? SessionInitCompleted;
+    public event Action<string, string, double>? SessionValueExecuted;
+    public event Action<byte[], byte[]>? TinkerRawExecuted;
+    public event Action<string, string, double>? TinkerValueExecuted;
 
     public void Execute(CancellationToken p_CancellationToken)
     {
@@ -126,6 +98,7 @@ namespace OBDEngine
               if (p_CancellationToken.IsCancellationRequested)
                 break;
             }
+            SessionInitCompleted?.Invoke();
             ulong v_CommandLoopIndex = 0;
             string v_Header = "7E5";
             OBDCommand? v_TinkerOBDCommand = null;
@@ -140,7 +113,7 @@ namespace OBDEngine
 
               foreach (var l_OBDCommand in m_LoopOBDCommands)
               {
-                if (lineNr % (ulong)l_OBDCommand.SkipCount == 0)
+                if (v_CommandLoopIndex % (ulong)l_OBDCommand.SkipCount == 0)
                 {
                   v_TinkerOBDCommand = SetTinkerCommand(v_TinkerOBDCommand);
 
@@ -244,14 +217,6 @@ namespace OBDEngine
         }
       return v_TinkerOBDCommand;
     }
-
-    public event Action<bool>? CommandExecuted;
-    public event Action? SessionExecuted;
-    public event Action<string>? SessionInitExecuted;
-    public event Action<string, string, double>? SessionValueExecuted;
-    public event Action<byte[], byte[]>? TinkerRawExecuted;
-    public event Action<string, string, double>? TinkerValueExecuted;
-
 
     private void ProcessInitRaw(byte[] p_ResultRaw, int p_BytesRead)
     {

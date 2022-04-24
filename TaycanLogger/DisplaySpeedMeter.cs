@@ -39,10 +39,10 @@
       m_Resized = false;
       e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
       e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-      Rectangle v_Rectangle = ClientRectangle;
+      RectangleF v_Rectangle = ClientRectangle;
       //this TT font requires some offset! Yikes...
-      v_Rectangle.Offset(0, (int)(v_Rectangle.Height * 0.05f));
-      TextRenderer.DrawText(e.Graphics, Text, m_Font, v_Rectangle, ForeColor, Color.Transparent, FormControlGlobals.DefaultTextFormatFlags | TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter );
+      v_Rectangle.Offset(0, v_Rectangle.Height * 0.05f);
+      TextRenderer.DrawText(e.Graphics, Text, m_Font, v_Rectangle.ToRectangle(), ForeColor, Color.Transparent, FormControlGlobals.DefaultTextFormatFlags | TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
     }
   }
 

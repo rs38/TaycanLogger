@@ -4,13 +4,13 @@
   {
     protected DataListDraw m_DataListDraw;
 
-    public DisplayDataList()
+    public DisplayDataList(int p_ColumnCount, int p_ItemsPerColumn)
     {
-      m_DataListDraw = new DataListDraw();
+      m_DataListDraw = new DataListDraw(p_ColumnCount, p_ItemsPerColumn);
       m_DataListDraw.Width = ClientSize.Width;
     }
 
-    public void AddItem(string p_Name, string p_Title, string p_Text)
+    public void AddItem(string p_Name, string p_Title, string? p_Text=null)
     {
       m_DataListDraw.AddItem(p_Name, p_Title, p_Text);
       Invalidate();
