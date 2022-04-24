@@ -59,6 +59,7 @@
       tbError.Name = "tbError";
       tbError.TabIndex = 9;
       tbError.WordWrap = false;
+      //tbError.ScrollBars = System.Windows.Forms.ScrollBars.Both;
       ColumnCount = 3;
       ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 180F));
       ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 140F));
@@ -101,6 +102,8 @@
           tbError.Text = v_Message;
         else
           tbError.AppendText($"{Environment.NewLine}{v_Message}");
+        tbError.SelectionStart = tbError.TextLength;
+        tbError.ScrollToCaret();
       }
     }
 
