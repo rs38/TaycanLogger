@@ -27,7 +27,7 @@ namespace OBDEngine
       }
     }
 
-    public static T ExceptionCheck<T>(Func<T> p_SafeCall) 
+    public static T ExceptionCheck<T>(Func<T> p_SafeCall)
     {
       try
       {
@@ -115,64 +115,38 @@ namespace OBDEngine
             ulong v_CommandLoopIndex = 0;
             string v_Header = "7E5";
             OBDCommand? v_TinkerOBDCommand = null;
+            bool v_IsReadRawStream = m_Stream is ReadRawStream;
             while (!p_CancellationToken.IsCancellationRequested)
             {
               v_CommandLoopIndex++;
-
-#if DEVELOPTINKERWITHRAW
-              #region DEVELOPTINKERWITHRAW
-
-//only use this code to test tinker with recorded data...
-
               foreach (var l_OBDCommand in m_LoopOBDCommands)
               {
+                v_TinkerOBDCommand = SetTinkerCommand(v_TinkerOBDCommand);
+                // not a RAW stream but have a tinker command, so just execute it.
+                if (!v_IsReadRawStream && v_TinkerOBDCommand is not null)
+                {
+                  bool v_Error = !v_TinkerOBDCommand.Execute(m_Stream, v_Buffer, v_Header != v_TinkerOBDCommand.Header, (p_OBDValue, p_Value) => ProcessTinkerValue(p_OBDValue, p_Value), (p_ResultRaw, p_ResultProcessed) => ProcessTinkerRaw(p_ResultRaw, p_ResultProcessed));
+                  v_Header = v_TinkerOBDCommand.Header;
+                  CommandExecuted?.Invoke(v_Error);
+                  v_TinkerOBDCommand = null;
+                }
                 if (v_CommandLoopIndex % (ulong)l_OBDCommand.SkipCount == 0)
                 {
-                  v_TinkerOBDCommand = SetTinkerCommand(v_TinkerOBDCommand);
-
-                  //just for testing on the raw stream, to fire the tinker result and ignoring the regular command...
-                  if (v_TinkerOBDCommand is not null && l_OBDCommand == v_TinkerOBDCommand)
+                  bool v_Error = false;
+                  // running a RAW stream, have a tinker command, and matching to current command, so execute it instead of the current command.
+                  if (v_IsReadRawStream && v_TinkerOBDCommand is not null && l_OBDCommand == v_TinkerOBDCommand)
                   {
-                    v_TinkerOBDCommand.Execute(m_Stream, v_Buffer, v_Header != v_TinkerOBDCommand.Header, (p_OBDValue, p_Value) => ProcessTinkerValue(p_OBDValue, p_Value), (p_ResultRaw, p_ResultProcessed) => ProcessTinkerRaw(p_ResultRaw, p_ResultProcessed));
+                    v_Error = !v_TinkerOBDCommand.Execute(m_Stream, v_Buffer, v_Header != v_TinkerOBDCommand.Header, (p_OBDValue, p_Value) => ProcessTinkerValue(p_OBDValue, p_Value), (p_ResultRaw, p_ResultProcessed) => ProcessTinkerRaw(p_ResultRaw, p_ResultProcessed));
                     v_TinkerOBDCommand = null;
                   }
                   else
-                  {
-                    bool v_Error = !l_OBDCommand.Execute(m_Stream, v_Buffer, v_Header != l_OBDCommand.Header, (p_OBDValue, p_Value) => ProcessSessionValue(p_OBDValue, p_Value));
-                    CommandExecuted?.Invoke(v_Error);
-                  }
-
-                  v_Header = l_OBDCommand.Header;
-                  if (p_CancellationToken.IsCancellationRequested)
-                    break;
-                }
-              }
-
-              #endregion
-#else
-
-              foreach (var l_OBDCommand in m_LoopOBDCommands)
-              {
-                if (v_CommandLoopIndex % (ulong)l_OBDCommand.SkipCount == 0)
-                {
-                  bool v_Error = !l_OBDCommand.Execute(m_Stream, v_Buffer, v_Header != l_OBDCommand.Header, (p_OBDValue, p_Value) => ProcessSessionValue(p_OBDValue, p_Value));
+                    v_Error = !l_OBDCommand.Execute(m_Stream, v_Buffer, v_Header != l_OBDCommand.Header, (p_OBDValue, p_Value) => ProcessSessionValue(p_OBDValue, p_Value));
                   v_Header = l_OBDCommand.Header;
                   CommandExecuted?.Invoke(v_Error);
                   if (p_CancellationToken.IsCancellationRequested)
                     break;
                 }
               }
-
-              v_TinkerOBDCommand = SetTinkerCommand();
-              if (v_TinkerOBDCommand is not null)
-              {
-                v_TinkerOBDCommand.Execute(m_Stream, v_Buffer, v_Header != v_TinkerOBDCommand.Header, (p_OBDValue, p_Value) => ProcessTinkerValue(p_OBDValue, p_Value), (p_ResultRaw, p_ResultProcessed) => ProcessTinkerRaw(p_ResultRaw, p_ResultProcessed));
-                v_Header = v_TinkerOBDCommand.Header;
-                v_TinkerOBDCommand = null;
-              }
-
-#endif
-
             }
           }
           catch (Exception p_Exception)
