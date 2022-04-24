@@ -75,7 +75,7 @@
       m_DataListDisplayRight.AddItem("BatTemp", "Title BatTemp"); //units = "C" />
       m_DataListDisplayRight.AddItem("CelSum", "Title CelSum");   //units = "V" />
       m_DataListDisplayRight.AddItem("BatLimC", "Title BatLimC"); //units = "A" />
-      m_DataListDisplayRight.AddItem("BatLimD", "Title BatLimD"); //units = "A" />
+      m_DataListDisplayRight.AddItem("ErrorCount", "Errors/Total");
 
     }
 
@@ -95,9 +95,9 @@
       if (p_Error)
       {
         m_CommandErrorCount++;
-
       }
       m_CommandExecutedCount++;
+      m_DataListDisplayRight.SetItemText("ErrorCount", $"{m_CommandErrorCount}/{m_CommandExecutedCount}");
     }
 
     private FormPagePowerCalc? m_FormPagePowerCalc;

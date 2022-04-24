@@ -13,15 +13,9 @@ namespace OBDEngine
     private SemaphoreSlim m_SemaphoreSlimTinker;
     private OBDCommand? m_TinkerOBDCommand;
 
-    public OBDSession(Func<string?> p_RawFilename)
-    {
-      m_RawFilename = p_RawFilename;
-      m_SemaphoreSlimTinker = new SemaphoreSlim(1);
-    }
-
     public static Action<Exception>? GlobalErrorDisplay;
 
-    public void ExceptionCheck(Action p_SafeCall)
+    public static void ExceptionCheck(Action p_SafeCall)
     {
       try
       {
@@ -31,6 +25,25 @@ namespace OBDEngine
       {
         GlobalErrorDisplay?.Invoke(p_Exception);
       }
+    }
+
+    public static T ExceptionCheck<T>(Func<T> p_SafeCall) 
+    {
+      try
+      {
+        return p_SafeCall();
+      }
+      catch (Exception p_Exception)
+      {
+        GlobalErrorDisplay?.Invoke(p_Exception);
+      }
+      return default(T);
+    }
+
+    public OBDSession(Func<string?> p_RawFilename)
+    {
+      m_RawFilename = p_RawFilename;
+      m_SemaphoreSlimTinker = new SemaphoreSlim(1);
     }
 
     public List<string> GetPairedDevices() => new BluetoothClient().PairedDevices.Select<BluetoothDeviceInfo, string>(bdi => bdi.DeviceName).Append("RawDevice").ToList();

@@ -48,6 +48,9 @@
       if (string.IsNullOrEmpty(p_Name))
         return;
 
+      if (double.IsNaN( p_Value))
+        return;
+
       if (p_Name == "Amp")
       {
         PlotterAmpereAddValue(p_Value);
@@ -148,8 +151,8 @@
         DataListDisplayRight("CelSum", $"{Math.Round(p_Value, 1)} {p_Units}");
       if (p_Name == "BatLimC")
         DataListDisplayRight("BatLimC", $"{Math.Round(p_Value, 1)} {p_Units}");
-      if (p_Name == "BatLimD")
-        DataListDisplayRight("BatLimD", $"{Math.Round(p_Value, 1)} {p_Units}");
+      //if (p_Name == "BatLimD")
+      //  DataListDisplayRight("BatLimD", $"{Math.Round(p_Value, 1)} {p_Units}");
 
     }
 
