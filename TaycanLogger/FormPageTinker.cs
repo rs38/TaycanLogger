@@ -103,13 +103,10 @@ namespace TaycanLogger
         {
           if (!CheckElement(v_XCommand, "values"))
             return false;
-          var v_CommandValues = v_XCommand.Element("values")?.Elements("value").ToList();
-          if (v_CommandValues?.Count == 0)
-          {
-            AddErrorMessage($"XML node 'values' does not contain 'value' nodes.");
+          var v_CommandValues = v_XCommand.Element("values");
+          if (!CheckElement(v_CommandValues, "value"))
             return false;
-          }
-          v_CommandValues?.ForEach(l_XValue => v_Result &= CheckCommandValue(l_XValue));
+          v_CommandValues.Elements("value")?.ForEach(l_XValue => v_Result &= CheckCommandValue(l_XValue));
         }
         else
           v_Result &= CheckCommandValue(v_XCommand);
