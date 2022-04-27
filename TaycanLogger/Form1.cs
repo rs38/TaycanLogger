@@ -94,7 +94,7 @@ namespace TaycanLogger
             if (v_DeviceName is not null)
             {
               m_CancellationTokenSource = new CancellationTokenSource();
-#if DEBUGx
+#if DEBUG
               m_OBDSession.LoadConfig(Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "obd2_Taycan.xml"));
               if (Control.ModifierKeys == Keys.Control)
                 v_DeviceName = "RawDevice";
