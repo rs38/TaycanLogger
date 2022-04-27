@@ -55,6 +55,8 @@ namespace OBDEngine
 
     public void Initialise(string p_DeviceName, bool p_WriteToRaw)
     {
+      //clean up this mess! Remove RAW from the project, can get it back via GIT in some crazy emergency...
+
       if (p_DeviceName == "CTL Play")
       {
         string? v_CtlFilename = m_GetFilename(".ctl", "Taycan Logger data file (.ctl)|*.ctl");
@@ -63,9 +65,6 @@ namespace OBDEngine
       }
       else
         m_CtlBinaryReader = null;
-
-
-
 
       //this code is only used for RAW or ODB Dongle, not CTL playback
       //get the master and set it up to run.
@@ -124,7 +123,7 @@ namespace OBDEngine
           m_OBDDevice = new OBDDevice();
           m_OBDDevice.Open(p_DeviceName);
           m_Stream = m_OBDDevice.Stream;
-          if (p_WriteToRaw)
+          if (m_CtlBinaryWriter is null)
             m_Stream = new WriteRawStream(p_DeviceName, m_Stream);
         }
       }
@@ -137,8 +136,8 @@ namespace OBDEngine
       if (m_Stream is ReadRawStream)
         m_Stream.Close();
       m_OBDDevice?.Close();
-
       m_CtlBinaryWriter?.Dispose();
+      m_CtlBinaryWriter = null;
     }
 
 
