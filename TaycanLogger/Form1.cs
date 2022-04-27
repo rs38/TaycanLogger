@@ -16,7 +16,7 @@ namespace TaycanLogger
         OBDSession.GlobalErrorDisplay = p_Exception => GlobalErrorDisplay?.Invoke(p_Exception);
       InitializeComponent();
       m_PageManager = new FormPages(this, this.tableLayoutPanel1);
-      m_OBDSession = new OBDSession(() => PickFileOpen(".raw", "RawDevice data (.raw)|*.raw"));
+      m_OBDSession = new OBDSession((p_DefaultExt, p_Filter) => PickFileOpen(p_DefaultExt, p_Filter));
     }
 
     public static Action<Exception>? GlobalErrorDisplay;
@@ -53,7 +53,7 @@ namespace TaycanLogger
       });
     }
 
-    
+
     private void V_FormPageSettings_RefreshDevices()
     {
       string[]? v_Devices = m_OBDSession.GetPairedDevices().ToArray();
@@ -94,13 +94,13 @@ namespace TaycanLogger
             if (v_DeviceName is not null)
             {
               m_CancellationTokenSource = new CancellationTokenSource();
-#if DEBUGx
-              m_OBDSession.LoadConfig(Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "obd2_Taycan.xml"));
-              if (Control.ModifierKeys == Keys.Control)
-                v_DeviceName = "RawDevice";
-              m_OBDSession.Initialise(v_DeviceName, false);
+#if DEBUG
+              //if (Control.ModifierKeys == Keys.Control)
+              //  v_DeviceName = "RawDevice";
+              //m_OBDSession.Initialise(v_DeviceName, Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "obd2_Taycan.xml"), false);
+              //use null to test only running the master xml
+              m_OBDSession.Initialise(v_DeviceName, true);
 #else
-              m_OBDSession.LoadConfig(PickFileOpen(".xml", "Engine File (.xml)|*.xml"));
               //always write to raw, unless specified in config file...
               m_OBDSession.Initialise(v_DeviceName, true);
 #endif

@@ -94,6 +94,8 @@ namespace TaycanLogger
           tbResultValue.Text = "XML node 'command' not found.";
           return false;
         }
+        if (!CheckAttribute(v_XCommand, "send"))
+          return false;
         if (!CheckAttribute(v_XCommand, "header"))
           return false;
         if (!CheckAttribute(v_XCommand, "skipCount"))

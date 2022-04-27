@@ -7,10 +7,15 @@ namespace OBDEngine
   {
     protected byte[] m_Command;
 
+    public int ID { get; init; }
+
     public OBDCommandInit(XElement p_XElement)
     {
-      m_Command = Encoding.ASCII.GetBytes((string)p_XElement.Attribute("send") + '\r');
+      m_Command = Encoding.ASCII.GetBytes(p_XElement.Attribute("send").Value + '\r');
+      //read master command ID from XML. If not available, then not a master command, so we create new ID for the CTL file
+      ID = (int)p_XElement.Attribute("mcid4ctl");
     }
+
 
     public void Execute(Stream p_Stream, byte[] p_Buffer, bool p_Tinker, Action<int>? p_BufferRead = null, byte[]? p_Command = null)
     {
@@ -35,6 +40,13 @@ namespace OBDEngine
       if (p_BufferRead is not null)
         p_BufferRead(v_BytesRead);
       Array.Clear(p_Buffer, 0, v_BytesRead);
+    }
+
+    public void Execute(byte[] p_Buffer, int p_Count, Action<int>? p_BufferRead = null)
+    {
+      if (p_BufferRead is not null)
+        p_BufferRead(p_Count);
+      Array.Clear(p_Buffer, 0, p_Count);
     }
 
     protected byte[]? ProcessResult(byte[] p_Buffer)
@@ -90,27 +102,42 @@ namespace OBDEngine
       }
     }
 
-    public bool Execute(Stream p_Stream, byte[] p_Buffer, bool p_SendHeader, Action<OBDValue, double> p_ResultValue, Action<byte[], byte[]>? p_ResultRaw = null)
+    public bool Execute(Stream p_Stream, byte[] p_Buffer, bool p_SendHeader, Action<OBDValue, double> p_ResultValue, Action<int>? p_BufferRead = null, Action<byte[], byte[]>? p_ResultRaw = null)
     {
       bool v_Result = false;
       if (p_SendHeader)
         base.Execute(p_Stream, p_Buffer, p_ResultRaw is not null, null, Encoding.ASCII.GetBytes(m_Header + '\r'));
       base.Execute(p_Stream, p_Buffer, p_ResultRaw is not null, p_BytesRead =>
-      {
-        var v_Buffer = ProcessResult(p_Buffer);
-        if (v_Buffer != null)
-        {
-          if (p_ResultRaw != null)
-          {
-            byte[] v_BufferRaw = new byte[p_BytesRead];
-            Array.Copy(p_Buffer, v_BufferRaw, v_BufferRaw.Length);
-            p_ResultRaw(v_BufferRaw, v_Buffer);
-          }
-          m_OBDValues?.ForEach(l_OBDValue => p_ResultValue(l_OBDValue, l_OBDValue.Execute(v_Buffer)));
-          v_Result = true;
-        }
-      });
+        v_Result = ExecuteValue(p_Buffer, p_BytesRead, p_ResultValue, p_BufferRead, p_ResultRaw));
       m_ExecuteCount++;
+      return v_Result;
+    }
+
+    public bool Execute(byte[] p_Buffer, int p_Count, Action<OBDValue, double> p_ResultValue, Action<int>? p_BufferRead = null, Action<byte[], byte[]>? p_ResultRaw = null)
+    {
+      bool v_Result = false;
+      base.Execute(p_Buffer, p_Count, p_BytesRead =>
+        v_Result = ExecuteValue(p_Buffer, p_BytesRead, p_ResultValue, p_BufferRead, p_ResultRaw));
+      m_ExecuteCount++;
+      return v_Result;
+    }
+
+    private bool ExecuteValue(byte[] p_Buffer, int p_BytesRead, Action<OBDValue, double> p_ResultValue, Action<int>? p_BufferRead, Action<byte[], byte[]>? p_ResultRaw)
+    {
+      bool v_Result = false;
+      p_BufferRead?.Invoke(p_BytesRead);
+      var v_Buffer = ProcessResult(p_Buffer);
+      if (v_Buffer != null)
+      {
+        if (p_ResultRaw != null)
+        {
+          byte[] v_BufferRaw = new byte[p_BytesRead];
+          Array.Copy(p_Buffer, v_BufferRaw, v_BufferRaw.Length);
+          p_ResultRaw(v_BufferRaw, v_Buffer);
+        }
+        m_OBDValues?.ForEach(l_OBDValue => p_ResultValue(l_OBDValue, l_OBDValue.Execute(v_Buffer)));
+        v_Result = true;
+      }
       return v_Result;
     }
 

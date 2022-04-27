@@ -9,7 +9,7 @@ namespace OBDEngine
     private List<OBDCommand>? m_LoopOBDCommands;
     private OBDDevice? m_OBDDevice;
     private Stream? m_Stream;
-    private Func<string?> m_RawFilename;
+    private Func<string, string, string?> m_GetFilename;
     private SemaphoreSlim m_SemaphoreSlimTinker;
     private OBDCommand? m_TinkerOBDCommand;
 
@@ -40,42 +40,93 @@ namespace OBDEngine
       return default(T);
     }
 
-    public OBDSession(Func<string?> p_RawFilename)
+    public OBDSession(Func<string, string, string?> p_GetFilename)
     {
-      m_RawFilename = p_RawFilename;
+      m_GetFilename = p_GetFilename;
       m_SemaphoreSlimTinker = new SemaphoreSlim(1);
     }
 
-    public List<string> GetPairedDevices() => new BluetoothClient().PairedDevices.Select<BluetoothDeviceInfo, string>(bdi => bdi.DeviceName).Append("RawDevice").ToList();
+    public List<string> GetPairedDevices() => new BluetoothClient().PairedDevices.Select<BluetoothDeviceInfo, string>(bdi => bdi.DeviceName).Append("RawDevice").Append("CTL Play").ToList();
 
-    public void LoadConfig(string p_Filename)
-    {
-      if (!string.IsNullOrEmpty(p_Filename) && File.Exists(p_Filename))
-      {
-        XDocument v_XDocument = XDocument.Load(p_Filename);
-        m_InitOBDCommands = (from p_XElement in v_XDocument.Root.Elements("init").Elements("command") select new OBDCommandInit(p_XElement)).ToList();
-        m_LoopOBDCommands = (from p_XElement in v_XDocument.Root.Elements("rotation").Elements("command") select new OBDCommand(p_XElement)).ToList();
-      }
-    }
+
+
+    private CtlBinaryWriter? m_CtlBinaryWriter;
+    private CtlBinaryReader? m_CtlBinaryReader;
 
     public void Initialise(string p_DeviceName, bool p_WriteToRaw)
     {
-      if (p_DeviceName == "RawDevice")
+      if (p_DeviceName == "CTL Play")
       {
-        string? v_Filename = m_RawFilename();
-        if (!string.IsNullOrEmpty(v_Filename))
-          m_Stream = new ReadRawStream(v_Filename);
-        //this creates a copy of the raw stream. Used for debugging and can be deleted...
-        //if (p_WriteToRaw)
-        //  m_Stream = new WriteRawStream(p_DeviceName, m_Stream);
+        string? v_CtlFilename = m_GetFilename(".ctl", "Taycan Logger data file (.ctl)|*.ctl");
+        if (!string.IsNullOrEmpty(v_CtlFilename))
+          m_CtlBinaryReader = new CtlBinaryReader(v_CtlFilename);
+      }
+      else
+        m_CtlBinaryReader = null;
+
+
+
+
+      //this code is only used for RAW or ODB Dongle, not CTL playback
+      //get the master and set it up to run.
+      XDocument v_XDocument;
+      if (m_CtlBinaryReader is not null)
+        v_XDocument = OBDMasterInfo.GetMasterXDocument(m_CtlBinaryReader.Version);
+      else
+        v_XDocument = OBDMasterInfo.GetMasterXDocument(OBDMasterInfo.GetLatestVersion());
+      m_InitOBDCommands = (from p_XElement in v_XDocument.Root.Elements("init").Elements("command") select new OBDCommandInit(p_XElement)).ToList();
+      m_LoopOBDCommands = (from p_XElement in v_XDocument.Root.Elements("rotation").Elements("command") select new OBDCommand(p_XElement)).ToList();
+
+      if (m_CtlBinaryReader is not null)
+      {
+        v_XDocument = m_CtlBinaryReader.LoadUserXml();
+        if (v_XDocument is not null)
+        {
+          m_InitOBDCommands.AddRange((from p_XElement in v_XDocument.Root.Elements("init").Elements("command") select new OBDCommandInit(p_XElement)).ToList());
+          m_LoopOBDCommands.AddRange((from p_XElement in v_XDocument.Root.Elements("rotation").Elements("command") select new OBDCommand(p_XElement)).ToList());
+        }
       }
       else
       {
-        m_OBDDevice = new OBDDevice();
-        m_OBDDevice.Open(p_DeviceName);
-        m_Stream = m_OBDDevice.Stream;
-        if (p_WriteToRaw)
-          m_Stream = new WriteRawStream(p_DeviceName, m_Stream);
+        string? v_UserFilename = m_GetFilename(".xml", "OBD Engine File (.xml)|*.xml");
+        if (!string.IsNullOrEmpty(v_UserFilename))
+        {
+          //load user xml, but filter out duplicates on init
+          v_XDocument = XDocument.Load(v_UserFilename);
+          CtlFileSetup v_CtlFileSetup = new CtlFileSetup();
+          string? v_Error = v_CtlFileSetup.CheckValidityAndEnrichWithmcid4ctl(v_XDocument);
+          if (!string.IsNullOrEmpty(v_Error))
+            throw new Exception("User OBD XML config file is not valid: " + v_Error);
+          m_InitOBDCommands.AddRange((from p_XElement in v_XDocument.Root.Elements("init").Elements("command") select new OBDCommandInit(p_XElement)).ToList());
+          m_LoopOBDCommands.AddRange((from p_XElement in v_XDocument.Root.Elements("rotation").Elements("command") select new OBDCommand(p_XElement)).ToList());
+
+          //if we want to record, we create a binary writer...
+          m_CtlBinaryWriter = new CtlBinaryWriter(p_DeviceName, v_XDocument);
+        }
+        else
+          m_CtlBinaryWriter = new CtlBinaryWriter(p_DeviceName);
+      }
+
+      if (m_CtlBinaryReader is null)
+      {
+        if (p_DeviceName == "RawDevice")
+        {
+          string? v_RawFilename = m_GetFilename(".raw", "RawDevice data (.raw)|*.raw");
+          if (!string.IsNullOrEmpty(v_RawFilename))
+            m_Stream = new ReadRawStream(v_RawFilename);
+          //we never do this, delete this comment code later...
+          //this creates a copy of the raw stream. Used for debugging and can be deleted...
+          //if (p_WriteToRaw)
+          //  m_Stream = new WriteRawStream(p_DeviceName, m_Stream);
+        }
+        else
+        {
+          m_OBDDevice = new OBDDevice();
+          m_OBDDevice.Open(p_DeviceName);
+          m_Stream = m_OBDDevice.Stream;
+          if (p_WriteToRaw)
+            m_Stream = new WriteRawStream(p_DeviceName, m_Stream);
+        }
       }
     }
 
@@ -86,6 +137,8 @@ namespace OBDEngine
       if (m_Stream is ReadRawStream)
         m_Stream.Close();
       m_OBDDevice?.Close();
+
+      m_CtlBinaryWriter?.Dispose();
     }
 
 
@@ -99,65 +152,107 @@ namespace OBDEngine
 
     public void Execute(CancellationToken p_CancellationToken)
     {
-      if (m_Stream is not null)
-        Task.Run(() =>
+      Task.Run(() =>
+      {
+        try
         {
-          try
+          if (m_CtlBinaryReader is null)
+            ExecuteDevice(p_CancellationToken);
+          else
+            ExecuteCtlPlayback(p_CancellationToken);
+        }
+        catch (Exception p_Exception)
+        {
+          GlobalErrorDisplay?.Invoke(p_Exception);
+        }
+        finally
+        {
+          SessionExecuted?.Invoke();
+        }
+      });
+    }
+
+    private void ExecuteDevice(CancellationToken p_CancellationToken)
+    {
+      if (m_Stream is null)
+        return;
+      byte[] v_Buffer = new byte[4096];
+      foreach (var l_OBDCommand in m_InitOBDCommands)
+      {
+        l_OBDCommand.Execute(m_Stream, v_Buffer, false, p_BytesRead => ProcessInitRaw(l_OBDCommand, v_Buffer, p_BytesRead));
+        if (p_CancellationToken.IsCancellationRequested)
+          break;
+      }
+      SessionInitCompleted?.Invoke();
+      ulong v_CommandLoopIndex = 0;
+      string v_Header = "7E5";
+      OBDCommand? v_TinkerOBDCommand = null;
+      bool v_IsReadRawStream = m_Stream is ReadRawStream;
+      while (!p_CancellationToken.IsCancellationRequested)
+      {
+        v_CommandLoopIndex++;
+        foreach (var l_OBDCommand in m_LoopOBDCommands)
+        {
+          v_TinkerOBDCommand = SetTinkerCommand(v_TinkerOBDCommand);
+          // not a RAW stream but have a tinker command, so just execute it.
+          if (!v_IsReadRawStream && v_TinkerOBDCommand is not null)
           {
-            byte[] v_Buffer = new byte[4096];
-            foreach (var l_OBDCommand in m_InitOBDCommands)
+            bool v_Error = !v_TinkerOBDCommand.Execute(m_Stream, v_Buffer, v_Header != v_TinkerOBDCommand.Header, (p_OBDValue, p_Value) => ProcessTinkerValue(p_OBDValue, p_Value), null, (p_ResultRaw, p_ResultProcessed) => ProcessTinkerRaw(p_ResultRaw, p_ResultProcessed));
+            v_Header = v_TinkerOBDCommand.Header;
+            CommandExecuted?.Invoke(v_Error);
+            v_TinkerOBDCommand = null;
+          }
+          if (v_CommandLoopIndex % (ulong)l_OBDCommand.SkipCount == 0)
+          {
+            bool v_Error = false;
+            // running a RAW stream, have a tinker command, and matching to current command, so execute it instead of the current command.
+            if (v_IsReadRawStream && v_TinkerOBDCommand is not null && l_OBDCommand == v_TinkerOBDCommand)
             {
-              l_OBDCommand.Execute(m_Stream, v_Buffer, false, p_BytesRead => ProcessInitRaw(v_Buffer, p_BytesRead));
-              if (p_CancellationToken.IsCancellationRequested)
-                break;
+              v_Error = !v_TinkerOBDCommand.Execute(m_Stream, v_Buffer, v_Header != v_TinkerOBDCommand.Header, (p_OBDValue, p_Value) => ProcessTinkerValue(p_OBDValue, p_Value), null, (p_ResultRaw, p_ResultProcessed) => ProcessTinkerRaw(p_ResultRaw, p_ResultProcessed));
+              v_TinkerOBDCommand = null;
             }
+            else
+              v_Error = !l_OBDCommand.Execute(m_Stream, v_Buffer, v_Header != l_OBDCommand.Header, (p_OBDValue, p_Value) => ProcessSessionValue(p_OBDValue, p_Value), p_BytesRead => ProcessRaw(l_OBDCommand, v_Buffer, p_BytesRead));
+            v_Header = l_OBDCommand.Header;
+            CommandExecuted?.Invoke(v_Error);
+            if (p_CancellationToken.IsCancellationRequested)
+              break;
+          }
+        }
+      }
+    }
+
+
+    private void ExecuteCtlPlayback(CancellationToken p_CancellationToken)
+    {
+      Dictionary<int, OBDCommandInit> v_OBDInitCommands = new Dictionary<int, OBDCommandInit>();
+      m_InitOBDCommands?.ForEach(p => v_OBDInitCommands.Add(p.ID, p));
+      Dictionary<int, OBDCommand> v_OBDLoopCommands = new Dictionary<int, OBDCommand>();
+      m_LoopOBDCommands?.ForEach(p => v_OBDLoopCommands.Add(p.ID, p));
+      bool v_InitCompleted=false;
+      while (!p_CancellationToken.IsCancellationRequested)
+      {
+        byte[] v_Buffer = new byte[4096];
+        var v_Result = m_CtlBinaryReader.Read(v_Buffer, v_Buffer.Length);
+        if (v_Result.Mcid4ctl == 0)
+          break;
+        if (!v_OBDLoopCommands.ContainsKey(v_Result.Mcid4ctl))
+        {
+          OBDCommandInit v_OBDCommandInit = v_OBDInitCommands[v_Result.Mcid4ctl];
+          v_OBDCommandInit.Execute(v_Buffer, v_Result.Count, p_BytesRead => ProcessInitRaw(v_OBDCommandInit, v_Buffer, p_BytesRead));
+        }
+        else
+        {
+          if (!v_InitCompleted)
+          {
+            v_InitCompleted = true;
             SessionInitCompleted?.Invoke();
-            ulong v_CommandLoopIndex = 0;
-            string v_Header = "7E5";
-            OBDCommand? v_TinkerOBDCommand = null;
-            bool v_IsReadRawStream = m_Stream is ReadRawStream;
-            while (!p_CancellationToken.IsCancellationRequested)
-            {
-              v_CommandLoopIndex++;
-              foreach (var l_OBDCommand in m_LoopOBDCommands)
-              {
-                v_TinkerOBDCommand = SetTinkerCommand(v_TinkerOBDCommand);
-                // not a RAW stream but have a tinker command, so just execute it.
-                if (!v_IsReadRawStream && v_TinkerOBDCommand is not null)
-                {
-                  bool v_Error = !v_TinkerOBDCommand.Execute(m_Stream, v_Buffer, v_Header != v_TinkerOBDCommand.Header, (p_OBDValue, p_Value) => ProcessTinkerValue(p_OBDValue, p_Value), (p_ResultRaw, p_ResultProcessed) => ProcessTinkerRaw(p_ResultRaw, p_ResultProcessed));
-                  v_Header = v_TinkerOBDCommand.Header;
-                  CommandExecuted?.Invoke(v_Error);
-                  v_TinkerOBDCommand = null;
-                }
-                if (v_CommandLoopIndex % (ulong)l_OBDCommand.SkipCount == 0)
-                {
-                  bool v_Error = false;
-                  // running a RAW stream, have a tinker command, and matching to current command, so execute it instead of the current command.
-                  if (v_IsReadRawStream && v_TinkerOBDCommand is not null && l_OBDCommand == v_TinkerOBDCommand)
-                  {
-                    v_Error = !v_TinkerOBDCommand.Execute(m_Stream, v_Buffer, v_Header != v_TinkerOBDCommand.Header, (p_OBDValue, p_Value) => ProcessTinkerValue(p_OBDValue, p_Value), (p_ResultRaw, p_ResultProcessed) => ProcessTinkerRaw(p_ResultRaw, p_ResultProcessed));
-                    v_TinkerOBDCommand = null;
-                  }
-                  else
-                    v_Error = !l_OBDCommand.Execute(m_Stream, v_Buffer, v_Header != l_OBDCommand.Header, (p_OBDValue, p_Value) => ProcessSessionValue(p_OBDValue, p_Value));
-                  v_Header = l_OBDCommand.Header;
-                  CommandExecuted?.Invoke(v_Error);
-                  if (p_CancellationToken.IsCancellationRequested)
-                    break;
-                }
-              }
-            }
           }
-          catch (Exception p_Exception)
-          {
-            GlobalErrorDisplay?.Invoke(p_Exception);
-          }
-          finally
-          {
-            SessionExecuted?.Invoke();
-          }
-        });
+          OBDCommand v_OBDCommand = v_OBDLoopCommands[v_Result.Mcid4ctl];
+          bool v_Error = !v_OBDCommand.Execute(v_Buffer, v_Result.Count, (p_OBDValue, p_Value) => ProcessSessionValue(p_OBDValue, p_Value), p_BytesRead => ProcessRaw(v_OBDCommand, v_Buffer, p_BytesRead));
+          CommandExecuted?.Invoke(v_Error);
+        }
+      }
     }
 
     public string? LoadTinkerCommand(string p_XmlCommand)
@@ -205,9 +300,15 @@ namespace OBDEngine
       return v_TinkerOBDCommand;
     }
 
-    private void ProcessInitRaw(byte[] p_ResultRaw, int p_BytesRead)
+    private void ProcessInitRaw(OBDCommandInit p_OBDCommand, byte[] p_ResultRaw, int p_BytesRead)
     {
+      m_CtlBinaryWriter?.Write(p_OBDCommand.ID, p_ResultRaw, 0, p_BytesRead);
       SessionInitExecuted?.Invoke(System.Text.Encoding.UTF8.GetString(p_ResultRaw, 0, p_BytesRead));
+    }
+
+    private void ProcessRaw(OBDCommand p_OBDCommand, byte[] p_ResultRaw, int p_BytesRead)
+    {
+      m_CtlBinaryWriter?.Write(p_OBDCommand.ID, p_ResultRaw, 0, p_BytesRead);
     }
 
     private void ProcessSessionValue(OBDValue p_OBDValue, double p_Value)
