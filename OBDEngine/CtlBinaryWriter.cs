@@ -7,6 +7,7 @@ namespace OBDEngine
   {
     private BinaryWriter m_BinaryWriterFile;
     private BinaryWriter m_BinaryWriter;
+    private bool m_Open;
     private long m_TotalCount = 0;
 
     internal CtlBinaryWriter(string p_DeviceName, XDocument? p_XUserXML = null)
@@ -20,7 +21,8 @@ namespace OBDEngine
         v_Version *= -1;
       m_BinaryWriterFile.Write(v_Version);
       m_BinaryWriterFile.Write((long)m_TotalCount);
-      m_BinaryWriter = new BinaryWriter(new BrotliStream(m_BinaryWriterFile.BaseStream, CompressionMode.Compress));
+      m_BinaryWriter = new BinaryWriter(new BrotliStream(m_BinaryWriterFile.BaseStream, CompressionMode.Compress, true));
+      m_Open = true;
       if (p_XUserXML is not null)
       {
         using (MemoryStream v_MemoryStream = new MemoryStream())
@@ -43,33 +45,29 @@ namespace OBDEngine
       m_TotalCount++;
     }
 
-    private bool disposedValue;
-
-    protected virtual void Dispose(bool disposing)
+    public void Close()
     {
-      if (!disposedValue)
+      if (m_Open)
       {
-        if (disposing)
-        {
-          m_BinaryWriter.Flush();
-          long v_CurrentPosition = m_BinaryWriterFile.BaseStream.Position;
-          m_BinaryWriterFile.BaseStream.Position = 2;
-          m_BinaryWriterFile.Write(m_TotalCount);
-          m_BinaryWriterFile.BaseStream.Position = v_CurrentPosition;
-          m_BinaryWriter.Close();
-          m_BinaryWriterFile.Close();
-        }
-        // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-        // TODO: set large fields to null
-        disposedValue = true;
+        m_BinaryWriter.Flush();
+        m_BinaryWriter.Close();
+        m_BinaryWriterFile.BaseStream.Position = 2;
+        m_BinaryWriterFile.Write(m_TotalCount);
+        m_BinaryWriterFile.Close();
+        m_Open = false;
       }
     }
 
     public void Dispose()
     {
-      // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-      Dispose(disposing: true);
+      Close();
       GC.SuppressFinalize(this);
+    }
+
+    ~CtlBinaryWriter()
+    {
+      //if neither Close or Dispose is called, we close on class destruction
+      Close();
     }
   }
 }

@@ -56,7 +56,8 @@ namespace OBDEngine
     public void Initialise(string p_DeviceName, bool p_WriteToRaw)
     {
       //clean up this mess! Remove RAW from the project, can get it back via GIT in some crazy emergency...
-
+      
+      m_CtlBinaryWriter = null;
       if (p_DeviceName == "CTL Play")
       {
         string? v_CtlFilename = m_GetFilename(".ctl", "Taycan Logger data file (.ctl)|*.ctl");

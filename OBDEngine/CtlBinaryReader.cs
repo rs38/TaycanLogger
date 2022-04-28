@@ -3,14 +3,17 @@ using System.Xml.Linq;
 
 namespace OBDEngine
 {
-  internal class CtlBinaryReader
+  internal class CtlBinaryReader : IDisposable
   {
-    public short Version { get; init; }
-    public long TotalCount { get; init; }
+    private bool m_Open;
     private long m_TotalCount = 0;
     private bool m_HasUserConfig;
     private BinaryReader m_BinaryReader;
     private long m_TickWrite = long.MaxValue;
+
+    public short Version { get; init; }
+
+    public long TotalCount { get; init; }
 
     public CtlBinaryReader(string p_Filename)
     {
@@ -18,6 +21,7 @@ namespace OBDEngine
       short v_Version = m_BinaryReader.ReadInt16();
       m_TotalCount = m_BinaryReader.ReadInt64();
       m_BinaryReader = new BinaryReader(new BrotliStream(m_BinaryReader.BaseStream, CompressionMode.Decompress));
+      m_Open = true;
       m_HasUserConfig = v_Version < 0;
       Version = Math.Abs(v_Version);
       TotalCount = m_TotalCount;
@@ -44,7 +48,7 @@ namespace OBDEngine
         int v_Mcid4ctl = m_BinaryReader.ReadInt32();
         long v_TickRead = m_BinaryReader.ReadInt64();
         if (m_TickWrite < v_TickRead)
-          Task.Delay((int)((v_TickRead - m_TickWrite) / 200000)).Wait(); //should be 10000, but increase speed for dev work. This needs to be a settings value from UI...
+          Task.Delay((int)((v_TickRead - m_TickWrite) / 10000)).Wait(); //should be 10000, but increase speed for dev work. This needs to be a settings value from UI...
         m_TickWrite = v_TickRead;
         int v_Count = m_BinaryReader.ReadInt32();
         m_BinaryReader.Read(buffer, 0, v_Count);
@@ -55,7 +59,23 @@ namespace OBDEngine
 
     public void Close()
     {
-      m_BinaryReader.Close();
+      if (m_Open)
+      {
+        m_BinaryReader.Close();
+        m_Open = false;
+      }
+    }
+
+    public void Dispose()
+    {
+      Close();
+      GC.SuppressFinalize(this);
+    }
+
+    ~CtlBinaryReader()
+    {
+      //if neither Close or Dispose is called, we close on class destruction
+      Close();
     }
   }
 }
