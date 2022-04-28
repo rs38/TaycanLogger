@@ -96,12 +96,12 @@
                 DataListDisplayRight("BatTIn", $"{Math.Round(p_Value, 1)} {p_Units}");
             if (p_Name == "BatTemp")
                 DataListDisplayRight("BatTemp", $"{Math.Round(p_Value, 1)} {p_Units}");
-            if (p_Name == "CelSum")
-                DataListDisplayRight("CelSum", $"{Math.Round(p_Value, 1)} {p_Units}");
+           // if (p_Name == "CelSum")
+              //  DataListDisplayRight("CelSum", $"{Math.Round(p_Value, 1)} {p_Units}");
             if (p_Name == "BatLimC")
                 DataListDisplayRight("BatLimC", $"{Math.Round(p_Value, 1)} {p_Units}");
-            //if (p_Name == "BatLimD")
-            //  DataListDisplayRight("BatLimD", $"{Math.Round(p_Value, 1)} {p_Units}");
+            if (p_Name == "BatLimD")
+              DataListDisplayRight("BatLimD", $"{Math.Round(p_Value, 1)} {p_Units}");  //---> does not work?!!!
 
         }
 
@@ -163,7 +163,7 @@
 
         public void Add(double value)
         {
-            consumptions.Add(value);
+            consumptions.Add( double.IsInfinity(value)? 100: value);
             sampleCount++;
 
             //ProcessPlotterValues();
