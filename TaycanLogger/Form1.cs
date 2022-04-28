@@ -64,6 +64,7 @@ namespace TaycanLogger
     {
       try
       {
+        m_OBDSession.Close();
         this.SaveFormSizeState();
         base.OnClosed(e);
       }
