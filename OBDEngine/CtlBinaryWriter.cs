@@ -9,6 +9,7 @@ namespace OBDEngine
     private BinaryWriter m_BinaryWriter;
     private bool m_Open;
     private long m_TotalCount = 0;
+    private bool disposedValue;
 
     internal CtlBinaryWriter(string p_DeviceName, XDocument? p_XUserXML = null)
     {
@@ -45,29 +46,45 @@ namespace OBDEngine
       m_TotalCount++;
     }
 
-    public void Close()
+    protected virtual void Dispose(bool disposing)
     {
-      if (m_Open)
+      if (!disposedValue)
       {
-        m_BinaryWriter.Flush();
-        m_BinaryWriter.Close();
-        m_BinaryWriterFile.BaseStream.Position = 2;
-        m_BinaryWriterFile.Write(m_TotalCount);
-        m_BinaryWriterFile.Close();
-        m_Open = false;
+        if (disposing)
+        {
+          // TODO: dispose managed state (managed objects)
+        }
+
+        // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+        // TODO: set large fields to null
+
+        //still not sure how to implement this, that the streams are closed and length is written to
+        //prevent total data loss. I cannot debug this, just run and test and guess what's happening.
+        try
+        {
+          //m_BinaryWriter.Flush();
+          //m_BinaryWriter.Dispose();
+          //m_BinaryWriterFile.BaseStream.Position = 2;
+          //m_BinaryWriterFile.Write(m_TotalCount);
+          //m_BinaryWriterFile.Dispose();
+        }
+        catch (ObjectDisposedException) { }
+        disposedValue = true;
       }
     }
 
+    // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+    //~CtlBinaryWriter()
+    //{
+    //  // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+    //  Dispose(disposing: false);
+    //}
+
     public void Dispose()
     {
-      Close();
+      // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+      Dispose(disposing: true);
       GC.SuppressFinalize(this);
-    }
-
-    ~CtlBinaryWriter()
-    {
-      //if neither Close or Dispose is called, we close on class destruction
-      Close();
     }
   }
 }

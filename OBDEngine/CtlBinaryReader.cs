@@ -5,11 +5,11 @@ namespace OBDEngine
 {
   internal class CtlBinaryReader : IDisposable
   {
-    private bool m_Open;
     private long m_TotalCount = 0;
     private bool m_HasUserConfig;
     private BinaryReader m_BinaryReader;
     private long m_TickWrite = long.MaxValue;
+    private bool disposedValue;
 
     public short Version { get; init; }
 
@@ -21,7 +21,6 @@ namespace OBDEngine
       short v_Version = m_BinaryReader.ReadInt16();
       m_TotalCount = m_BinaryReader.ReadInt64();
       m_BinaryReader = new BinaryReader(new BrotliStream(m_BinaryReader.BaseStream, CompressionMode.Decompress));
-      m_Open = true;
       m_HasUserConfig = v_Version < 0;
       Version = Math.Abs(v_Version);
       TotalCount = m_TotalCount;
@@ -57,25 +56,38 @@ namespace OBDEngine
       return (0, 0);
     }
 
-    public void Close()
+    protected virtual void Dispose(bool disposing)
     {
-      if (m_Open)
+      if (!disposedValue)
       {
-        m_BinaryReader.Close();
-        m_Open = false;
+        if (disposing)
+        {
+          // TODO: dispose managed state (managed objects)
+        }
+
+        // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+        // TODO: set large fields to null
+        try
+        {
+          m_BinaryReader.Dispose();
+        }
+        catch (ObjectDisposedException) { }
+        disposedValue = true;
       }
+    }
+
+    // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+    ~CtlBinaryReader()
+    {
+      // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+      Dispose(disposing: false);
     }
 
     public void Dispose()
     {
-      Close();
+      // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+      Dispose(disposing: true);
       GC.SuppressFinalize(this);
-    }
-
-    ~CtlBinaryReader()
-    {
-      //if neither Close or Dispose is called, we close on class destruction
-      Close();
     }
   }
 }
