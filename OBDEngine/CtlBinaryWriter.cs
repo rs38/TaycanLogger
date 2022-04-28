@@ -62,11 +62,11 @@ namespace OBDEngine
         //prevent total data loss. I cannot debug this, just run and test and guess what's happening.
         try
         {
-          //m_BinaryWriter.Flush();
-          //m_BinaryWriter.Dispose();
-          //m_BinaryWriterFile.BaseStream.Position = 2;
-          //m_BinaryWriterFile.Write(m_TotalCount);
-          //m_BinaryWriterFile.Dispose();
+          m_BinaryWriter.Flush();
+          m_BinaryWriter.Dispose();
+          m_BinaryWriterFile.BaseStream.Position = 2;
+          m_BinaryWriterFile.Write(m_TotalCount);
+          m_BinaryWriterFile.Dispose();
         }
         catch (ObjectDisposedException) { }
         disposedValue = true;
@@ -74,11 +74,11 @@ namespace OBDEngine
     }
 
     // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-    //~CtlBinaryWriter()
-    //{
-    //  // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-    //  Dispose(disposing: false);
-    //}
+    ~CtlBinaryWriter()
+    {
+      // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+      Dispose(disposing: false);
+    }
 
     public void Dispose()
     {
