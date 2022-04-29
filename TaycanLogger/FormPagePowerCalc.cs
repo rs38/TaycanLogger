@@ -79,29 +79,29 @@
             }
 
             if (p_Name == "Speed")
-                DataListDisplayLeft("Speed", $"{Math.Round(p_Value, 1)} {p_Units}");
+                DataListDisplayLeft("LeftCol1Row1", $"{Math.Round(p_Value, 1)} {p_Units}");
             if (p_Name == "SoCDiplay")
-                DataListDisplayLeft("SoCDiplay", $"{Math.Round(p_Value, 1)} {p_Units}");
+                DataListDisplayLeft("LeftCol1Row2", $"{Math.Round(p_Value, 1)} {p_Units}");
             if (p_Name == "AirT")
-                DataListDisplayLeft("AirT", $"{Math.Round(p_Value, 1)} {p_Units}");
+                DataListDisplayLeft("LeftCol2Row1", $"{Math.Round(p_Value, 1)} {p_Units}");
             if (p_Name == "InsideT")
-                DataListDisplayLeft("InsideT", $"{Math.Round(p_Value, 1)} {p_Units}");
+                DataListDisplayLeft("LeftCol2Row2", $"{Math.Round(p_Value, 1)} {p_Units}");
             if (p_Name == "CompW")
-                DataListDisplayLeft("CompW", $"{Math.Round(p_Value, 1)} {p_Units}");
+                DataListDisplayLeft("LeftCol3Row1", $"{Math.Round(p_Value, 1)} {p_Units}");
             if (p_Name == "HeatA")
-                DataListDisplayLeft("HeatA", $"{Math.Round(p_Value, 1)} {p_Units}");
+                DataListDisplayLeft("LeftCol3Row2", $"{Math.Round(p_Value, 1)} {p_Units}");
             if (p_Name == "BatTOut")
-                DataListDisplayRight("BatTOut", $"{Math.Round(p_Value, 1)} {p_Units}");
+                DataListDisplayRight("RightCol1Row1", $"{Math.Round(p_Value, 1)} {p_Units}");
             if (p_Name == "BatTIn")
-                DataListDisplayRight("BatTIn", $"{Math.Round(p_Value, 1)} {p_Units}");
+                DataListDisplayRight("RightCol1Row2", $"{Math.Round(p_Value, 1)} {p_Units}");
             if (p_Name == "BatTemp")
-                DataListDisplayRight("BatTemp", $"{Math.Round(p_Value, 1)} {p_Units}");
-           // if (p_Name == "CelSum")
-              //  DataListDisplayRight("CelSum", $"{Math.Round(p_Value, 1)} {p_Units}");
+                DataListDisplayRight("RightCol2Row1", $"{Math.Round(p_Value, 1)} {p_Units}");
+            //if (p_Name == "CelSum")
+            //    DataListDisplayRight("RightCol2Row2", $"{Math.Round(p_Value, 1)} {p_Units}");
             if (p_Name == "BatLimC")
-                DataListDisplayRight("BatLimC", $"{Math.Round(p_Value, 1)} {p_Units}");
+                DataListDisplayRight("RightCol3Row1", $"{Math.Round(p_Value, 1)} {p_Units}");
             if (p_Name == "BatLimD")
-              DataListDisplayRight("BatLimD", $"{Math.Round(p_Value, 1)} {p_Units}");  //---> does not work?!!!
+              DataListDisplayRight("RightCol2Row2", $"{Math.Round(p_Value, 1)} {p_Units}");  //---> does not work?!!!
 
         }
 

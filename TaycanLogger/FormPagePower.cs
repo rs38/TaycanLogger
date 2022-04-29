@@ -62,19 +62,19 @@
       SetColumnSpan(m_PlotterConsumption, 3);
       Controls.Add(m_PlotterConsumption, 3, 2);
 
-      m_DataListDisplayLeft.AddItem("Speed", "Title Speed");// units = "km/h" />
-      m_DataListDisplayLeft.AddItem("SoCDiplay", "Title SoCDiplay");// units = "%" />
-      m_DataListDisplayLeft.AddItem("AirT", "Title AirT");// units = "C" />
-      m_DataListDisplayLeft.AddItem("InsideT", "Title InsideT");// units = "C" />
-      m_DataListDisplayLeft.AddItem("CompW", "Title CompW");// units = "W" />
-      m_DataListDisplayLeft.AddItem("HeatA", "Title HeatA");// units = "A" />
+      m_DataListDisplayLeft.AddItem("LeftCol1Row1", "Title Speed");// units = "km/h" />
+      m_DataListDisplayLeft.AddItem("LeftCol1Row2", "Title SoCDiplay");// units = "%" />
+      m_DataListDisplayLeft.AddItem("LeftCol2Row1", "Title AirT");// units = "C" />
+      m_DataListDisplayLeft.AddItem("LeftCol2Row2", "Title InsideT");// units = "C" />
+      m_DataListDisplayLeft.AddItem("LeftCol3Row1", "Title CompW");// units = "W" />
+      m_DataListDisplayLeft.AddItem("LeftCol3Row2", "Title HeatA");// units = "A" />
 
       //need to set title and place it properly...
-      m_DataListDisplayRight.AddItem("BatTOut", "Title BatTOut"); //units = "C" />
-      m_DataListDisplayRight.AddItem("BatTIn", "Title BatTIn");   //units = "C" />
-      m_DataListDisplayRight.AddItem("BatTemp", "Title BatTemp"); //units = "C" />
-      m_DataListDisplayRight.AddItem("CelSum", "Title CelSum");   //units = "V" />
-      m_DataListDisplayRight.AddItem("BatLimC", "Title BatLimC"); //units = "A" />
+      m_DataListDisplayRight.AddItem("RightCol1Row1", "Title BatTOut"); //units = "C" />
+      m_DataListDisplayRight.AddItem("RightCol1Row2", "Title BatTIn");   //units = "C" />
+      m_DataListDisplayRight.AddItem("RightCol2Row1", "Title BatTemp"); //units = "C" />
+      m_DataListDisplayRight.AddItem("RightCol2Row2", "Title CelSum");   //units = "V" />
+      m_DataListDisplayRight.AddItem("RightCol3Row1", "Title BatLimC"); //units = "A" />
       m_DataListDisplayRight.AddItem("ErrorCount", "Errors/Total");
 
     }
