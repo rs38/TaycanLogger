@@ -5,23 +5,24 @@ namespace OBDEngine
 {
   internal class OBDCommandInit
   {
-    protected byte[] m_Command;
+    public string Send { get; init; }
 
     public int ID { get; init; }
 
     public OBDCommandInit(XElement p_XElement)
     {
-      m_Command = Encoding.ASCII.GetBytes(p_XElement.Attribute("send").Value + '\r');
+      Send = p_XElement.Attribute("send").Value.ToUpper();
       //read master command ID from XML. If not available, then not a master command, so we create new ID for the CTL file
       ID = (int)p_XElement.Attribute("mcid4ctl");
     }
 
-
     public void Execute(Stream p_Stream, byte[] p_Buffer, bool p_Tinker, Action<int>? p_BufferRead = null, byte[]? p_Command = null)
     {
-      byte[] v_Command = m_Command;
+      byte[] v_Command;
       if (p_Command != null)
         v_Command = p_Command;
+      else
+        v_Command = Encoding.ASCII.GetBytes(Send + '\r');
 
       // we do not want to record tinker commands...
       if (p_Tinker && p_Stream is WriteRawStream)
@@ -145,7 +146,7 @@ namespace OBDEngine
 
     public override string ToString()
     {
-      return $"{m_Header} {Convert.ToHexString(m_Command)} {m_ExecuteCount} executed";
+      return $"{m_Header} {Send} {m_ExecuteCount} executed";
     }
 
     public static bool operator ==(OBDCommand p_OBDCommand1, OBDCommand p_OBDCommand2)
@@ -160,7 +161,7 @@ namespace OBDEngine
 
     public bool Equals(OBDCommand? p_OBDCommand)
     {
-      return m_Command.SequenceEqual(p_OBDCommand?.m_Command) && Header == p_OBDCommand.Header;
+      return Send.Equals(p_OBDCommand?.Send) && Header == p_OBDCommand.Header;
     }
 
   }

@@ -177,15 +177,16 @@ namespace OBDEngine
       if (m_Stream is null)
         return;
       byte[] v_Buffer = new byte[4096];
+      string v_Header = string.Empty;
       foreach (var l_OBDCommand in m_InitOBDCommands)
       {
         l_OBDCommand.Execute(m_Stream, v_Buffer, false, p_BytesRead => ProcessInitRaw(l_OBDCommand, v_Buffer, p_BytesRead));
+        v_Header = l_OBDCommand.Send;
         if (p_CancellationToken.IsCancellationRequested)
           break;
       }
       SessionInitCompleted?.Invoke();
       ulong v_CommandLoopIndex = 0;
-      string v_Header = "7E5";
       OBDCommand? v_TinkerOBDCommand = null;
       bool v_IsReadRawStream = m_Stream is ReadRawStream;
       while (!p_CancellationToken.IsCancellationRequested)
