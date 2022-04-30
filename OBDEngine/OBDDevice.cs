@@ -9,10 +9,10 @@ namespace OBDEngine
     private Stream? m_Stream;
     public Stream Stream { get => m_Stream; }
 
-    public void Open(string p_DeviceName)
+    public void Open(ulong p_DeviceAddress)
     {
       m_BluetoothClient = new();
-      BluetoothDeviceInfo v_BluetoothDeviceInfo = m_BluetoothClient.PairedDevices.Where(x => x.DeviceName == p_DeviceName).FirstOrDefault();
+      BluetoothDeviceInfo v_BluetoothDeviceInfo = m_BluetoothClient.PairedDevices.Where(x => x.DeviceAddress.ToUInt64() == p_DeviceAddress).FirstOrDefault();
       if (!v_BluetoothDeviceInfo.Authenticated)
         BluetoothSecurity.PairRequest(v_BluetoothDeviceInfo.DeviceAddress, "1234");
       if (!m_BluetoothClient.Connected)

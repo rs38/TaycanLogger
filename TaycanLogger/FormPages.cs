@@ -2,7 +2,7 @@
 {
   internal class FormPages
   {
-    private FormPage[] m_FormPages = new FormPage[3];
+    private FormPage[] m_FormPages = new FormPage[5];
     private int m_FormPageIndex = 0;
     private Form1 m_FormMain;
     private TableLayoutPanel m_TableLayoutPanel;
@@ -15,13 +15,19 @@
       m_TableLayoutPanel = p_TableLayoutPanel;
       m_FormPages[0] = new FormPageSettings(m_TableLayoutPanel.ColumnCount);
       m_FormPages[1] = new FormPagePower(m_TableLayoutPanel.ColumnCount);
-      m_FormPages[2] = new FormPageTinker(m_TableLayoutPanel.ColumnCount);
+      m_FormPages[2] = new FormPageBattery(m_TableLayoutPanel.ColumnCount);
+      m_FormPages[3] = new FormPageTinker(m_TableLayoutPanel.ColumnCount);
+      m_FormPages[4] = new FormPageLogger(m_TableLayoutPanel.ColumnCount);
       m_FormPages[0].ActivateRequested += FormPage_ActivateRequested;
       m_FormPages[1].ActivateRequested += FormPage_ActivateRequested;
       m_FormPages[2].ActivateRequested += FormPage_ActivateRequested;
+      m_FormPages[3].ActivateRequested += FormPage_ActivateRequested;
+      m_FormPages[4].ActivateRequested += FormPage_ActivateRequested;
       m_TableLayoutPanel.Controls.Add(m_FormPages[0], 0, 0);
       m_TableLayoutPanel.Controls.Add(m_FormPages[1], 0, 0);
       m_TableLayoutPanel.Controls.Add(m_FormPages[2], 0, 0);
+      m_TableLayoutPanel.Controls.Add(m_FormPages[3], 0, 0);
+      m_TableLayoutPanel.Controls.Add(m_FormPages[4], 0, 0);
     }
 
     public void Load()

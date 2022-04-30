@@ -2,8 +2,6 @@
 {
   public class FormPagePower : FormPage
   {
-    public override Type Type { get => this.GetType(); }
-
     private DisplaySpeedMeter m_DisplaySpeedMeter;
     private PlotterPower m_PlotterPower;
     private PlotterAmpere m_PlotterAmpere;

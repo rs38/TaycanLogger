@@ -9,9 +9,11 @@ namespace TaycanLogger
 
     public static Color ColorPower = Color.FromArgb(0, 176, 244);
     public static Color ColorRecup = Color.FromArgb(16, 185, 0);
+    public static Color ColorHot = Color.FromArgb(250, 15, 5);
+    public static Color ColorButtonHover = Color.FromArgb(33, 33, 33);
     public static float TextMarginWidth = 6f;
     public static float TextMarginHeight = 2f;
-    public static TextFormatFlags DefaultTextFormatFlags = TextFormatFlags.PreserveGraphicsClipping | TextFormatFlags.SingleLine | TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix;
+    public static TextFormatFlags DefaultTextFormatFlags = TextFormatFlags.PreserveGraphicsClipping | TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix;
     private static PrivateFontCollection m_PrivateFontCollection;
     public static FontFamily FontFamily;
     public static Font FontDisplayTitle;

@@ -1,5 +1,6 @@
 using OBDEngine;
 using System.Configuration;
+using System.Runtime.InteropServices;
 
 namespace TaycanLogger
 {
@@ -17,6 +18,16 @@ namespace TaycanLogger
       InitializeComponent();
       m_PageManager = new FormPages(this, this.tableLayoutPanel1);
       m_OBDSession = new OBDSession((p_DefaultExt, p_Filter) => PickFileOpen(p_DefaultExt, p_Filter));
+    }
+
+    [DllImport("DwmApi")] //System.Runtime.InteropServices
+    private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, int[] attrValue, int attrSize);
+
+    protected override void OnHandleCreated(EventArgs e)
+    {
+      if (Environment.OSVersion.Version.Major >= 10 && Environment.OSVersion.Version.Build >= 17763)
+        if (DwmSetWindowAttribute(Handle, 19, new[] { 1 }, 4) != 0)
+          DwmSetWindowAttribute(Handle, 20, new[] { 1 }, 4);
     }
 
     public static Action<Exception>? GlobalErrorDisplay;
@@ -39,7 +50,9 @@ namespace TaycanLogger
       ExceptionCheck(() =>
       {
         this.LoadFormSizeState();
-        m_PageManager.GetFormPage<FormPageSettings>().RefreshDevices += V_FormPageSettings_RefreshDevices;
+        FormPageSettings v_FormPageSettings = m_PageManager.GetFormPage<FormPageSettings>();
+        v_FormPageSettings.RefreshDevices += V_FormPageSettings_RefreshDevices;
+        v_FormPageSettings.StartLogging += V_FormPageSettings_StartLogging;
         m_PageManager.GetFormPage<FormPageTinker>().XMLCommandChanged += M_FormPageTinker_XMLCommandChanged;
         m_OBDSession.CommandExecuted += M_OBDSession_CommandExecuted;
         m_OBDSession.SessionExecuted += M_OBDSession_SessionExecuted;
@@ -53,11 +66,45 @@ namespace TaycanLogger
       });
     }
 
-
     private void V_FormPageSettings_RefreshDevices()
     {
-      string[]? v_Devices = m_OBDSession.GetPairedDevices().ToArray();
-      m_PageManager.Pages.ForEach(l_FormPage => l_FormPage.UpdateDevices(v_Devices));
+      List<(string Name, ulong Addess, DateTime LastSeen)> v_Devices = m_OBDSession.GetPairedDevices();
+      m_PageManager.GetFormPage<FormPageSettings>().UpdateDevices(v_Devices);
+    }
+
+    private bool m_Running = false;
+
+    private void V_FormPageSettings_StartLogging()
+    {
+      ExceptionCheck(() =>
+      {
+        if (m_Running)
+        {
+          m_CancellationTokenSource?.Cancel();
+        }
+        else
+        {
+          if (m_CancellationTokenSource == null)
+            m_CancellationTokenSource?.Cancel();
+          FormPageSettings v_FormPageSettings = m_PageManager.GetFormPage<FormPageSettings>();
+          var v_CurrentDevice = v_FormPageSettings.GetCurrentDevice();
+          m_CancellationTokenSource = new CancellationTokenSource();
+#if DEBUG
+          //if (Control.ModifierKeys == Keys.Control)
+          //  v_DeviceName = "RawDevice";
+          //m_OBDSession.Initialise(v_DeviceName, Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "obd2_Taycan.xml"), false);
+          //use null to test only running the master xml
+          m_OBDSession.Initialise(v_CurrentDevice.Name, v_CurrentDevice.Addess, true);
+#else
+              //always write to raw, unless specified in config file...
+              m_OBDSession.Initialise(v_CurrentDevice.Name, v_CurrentDevice.Addess, true);
+#endif
+          ControlExtensions.WriteAppSetting("LastUsedDevice", v_CurrentDevice.Addess.ToString());
+          v_FormPageSettings.SetStartStop(true);
+          m_Running = true;
+          m_OBDSession.Execute(m_CancellationTokenSource.Token);
+        }
+      });
     }
 
     protected override void OnClosed(EventArgs e)
@@ -72,47 +119,6 @@ namespace TaycanLogger
       {
         GlobalErrorDisplay?.Invoke(p_Exception);
       }
-    }
-
-    private bool m_Running = false;
-
-    private void btStart_Click(object sender, EventArgs e)
-    {
-      ExceptionCheck(() =>
-      {
-        if (m_Running)
-        {
-          m_CancellationTokenSource?.Cancel();
-        }
-        else
-        {
-          if (m_CancellationTokenSource == null)
-            m_CancellationTokenSource?.Cancel();
-          FormPageSettings? v_FormPageSettings = m_PageManager.GetFormPage<FormPageSettings>();
-          if (v_FormPageSettings is not null)
-          {
-            string? v_DeviceName = v_FormPageSettings.CurrentDevice;
-            if (v_DeviceName is not null)
-            {
-              m_CancellationTokenSource = new CancellationTokenSource();
-#if DEBUG
-              //if (Control.ModifierKeys == Keys.Control)
-              //  v_DeviceName = "RawDevice";
-              //m_OBDSession.Initialise(v_DeviceName, Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "obd2_Taycan.xml"), false);
-              //use null to test only running the master xml
-              m_OBDSession.Initialise(v_DeviceName, true);
-#else
-              //always write to raw, unless specified in config file...
-              m_OBDSession.Initialise(v_DeviceName, true);
-#endif
-              ControlExtensions.WriteAppSetting("LastUsedDevice", v_DeviceName);
-              btStart.Text = "Stop";
-              m_Running = true;
-              m_OBDSession.Execute(m_CancellationTokenSource.Token);
-            }
-          }
-        }
-      });
     }
 
     private void M_OBDSession_CommandExecuted(bool p_Error)
@@ -135,7 +141,8 @@ namespace TaycanLogger
         finally
         {
           m_CancellationTokenSource = null;
-          btStart.Text = "Start";
+          FormPageSettings v_FormPageSettings = m_PageManager.GetFormPage<FormPageSettings>();
+          v_FormPageSettings.SetStartStop(false);
           m_Running = false;
         }
       });
@@ -179,11 +186,16 @@ namespace TaycanLogger
       ExceptionCheck(() => m_PageManager.ActivateFormPage<FormPagePower>());
     }
 
+    private void btBattery_Click(object sender, EventArgs e)
+    {
+      ExceptionCheck(() => m_PageManager.ActivateFormPage<FormPageBattery>());
+    }
+
     private void btLogger_Click(object sender, EventArgs e)
     {
       //testing .... ExceptionCheck(() => throw new Exception("dddd"));
 
-      //ExceptionCheck(() =>  m_PageManager.ActivateFormPage(typeof(FormPageLogger)));
+      ExceptionCheck(() => m_PageManager.ActivateFormPage<FormPageLogger>());
     }
 
     private void M_OBDSession_SessionInitExecuted(string p_InitResult)

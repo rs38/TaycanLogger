@@ -46,19 +46,17 @@ namespace OBDEngine
       m_SemaphoreSlimTinker = new SemaphoreSlim(1);
     }
 
-    public List<string> GetPairedDevices() => new BluetoothClient().PairedDevices.Select<BluetoothDeviceInfo, string>(bdi => bdi.DeviceName).Append("RawDevice").Append("CTL Play").ToList();
-
-
-
+    public List<(string Name, ulong Addess, DateTime LastSeen)> GetPairedDevices() => new BluetoothClient().PairedDevices.Select<BluetoothDeviceInfo, (string Name, ulong Addess, DateTime LastSeen)>(bdi => (bdi.DeviceName, bdi.DeviceAddress.ToUInt64(), DateTime.Now)).ToList();
+    
     private CtlBinaryWriter? m_CtlBinaryWriter;
     private CtlBinaryReader? m_CtlBinaryReader;
 
-    public void Initialise(string p_DeviceName, bool p_WriteToRaw)
+    public void Initialise(string p_DeviceName, ulong p_DeviceAddress, bool p_WriteToRaw)
     {
       //clean up this mess! Remove RAW from the project, can get it back via GIT in some crazy emergency...
       
       m_CtlBinaryWriter = null;
-      if (p_DeviceName == "CTL Play")
+      if (p_DeviceAddress == ulong.MaxValue)
       {
         string? v_CtlFilename = m_GetFilename(".ctl", "Taycan Logger data file (.ctl)|*.ctl");
         if (!string.IsNullOrEmpty(v_CtlFilename))
@@ -122,7 +120,7 @@ namespace OBDEngine
         else
         {
           m_OBDDevice = new OBDDevice();
-          m_OBDDevice.Open(p_DeviceName);
+          m_OBDDevice.Open(p_DeviceAddress);
           m_Stream = m_OBDDevice.Stream;
           if (m_CtlBinaryWriter is null)
             m_Stream = new WriteRawStream(p_DeviceName, m_Stream);

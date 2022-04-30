@@ -28,7 +28,7 @@
     /// </summary>
     private void InitializeComponent()
     {
-      this.btStart = new System.Windows.Forms.Button();
+      this.btBattery = new System.Windows.Forms.Button();
       this.btSettings = new System.Windows.Forms.Button();
       this.btTinker = new System.Windows.Forms.Button();
       this.btPower = new System.Windows.Forms.Button();
@@ -39,24 +39,24 @@
       this.tableLayoutPanel1.SuspendLayout();
       this.SuspendLayout();
       // 
-      // btStart
+      // btBattery
       // 
-      this.btStart.BackColor = System.Drawing.Color.Black;
-      this.btStart.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.btStart.FlatAppearance.BorderSize = 0;
-      this.btStart.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(53)))), ((int)(((byte)(53)))), ((int)(((byte)(53)))));
-      this.btStart.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
-      this.btStart.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btStart.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-      this.btStart.ForeColor = System.Drawing.Color.White;
-      this.btStart.Location = new System.Drawing.Point(252, 659);
-      this.btStart.Margin = new System.Windows.Forms.Padding(0);
-      this.btStart.Name = "btStart";
-      this.btStart.Size = new System.Drawing.Size(207, 47);
-      this.btStart.TabIndex = 0;
-      this.btStart.Text = "Start";
-      this.btStart.UseVisualStyleBackColor = false;
-      this.btStart.Click += new System.EventHandler(this.btStart_Click);
+      this.btBattery.BackColor = System.Drawing.Color.Black;
+      this.btBattery.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.btBattery.FlatAppearance.BorderSize = 0;
+      this.btBattery.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(53)))), ((int)(((byte)(53)))), ((int)(((byte)(53)))));
+      this.btBattery.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
+      this.btBattery.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+      this.btBattery.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+      this.btBattery.ForeColor = System.Drawing.Color.White;
+      this.btBattery.Location = new System.Drawing.Point(459, 659);
+      this.btBattery.Margin = new System.Windows.Forms.Padding(0);
+      this.btBattery.Name = "btBattery";
+      this.btBattery.Size = new System.Drawing.Size(207, 47);
+      this.btBattery.TabIndex = 0;
+      this.btBattery.Text = "Battery";
+      this.btBattery.UseVisualStyleBackColor = false;
+      this.btBattery.Click += new System.EventHandler(this.btBattery_Click);
       // 
       // btSettings
       // 
@@ -73,7 +73,7 @@
       this.btSettings.Name = "btSettings";
       this.btSettings.Size = new System.Drawing.Size(207, 47);
       this.btSettings.TabIndex = 1;
-      this.btSettings.Text = "Settings";
+      this.btSettings.Text = "Setup";
       this.btSettings.UseVisualStyleBackColor = false;
       this.btSettings.Click += new System.EventHandler(this.btSettings_Click);
       // 
@@ -106,7 +106,7 @@
       this.btPower.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.btPower.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
       this.btPower.ForeColor = System.Drawing.Color.White;
-      this.btPower.Location = new System.Drawing.Point(459, 659);
+      this.btPower.Location = new System.Drawing.Point(252, 659);
       this.btPower.Margin = new System.Windows.Forms.Padding(0);
       this.btPower.Name = "btPower";
       this.btPower.Size = new System.Drawing.Size(207, 47);
@@ -146,8 +146,8 @@
       this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 45F));
       this.tableLayoutPanel1.Controls.Add(this.btLeft, 0, 1);
       this.tableLayoutPanel1.Controls.Add(this.btSettings, 1, 1);
-      this.tableLayoutPanel1.Controls.Add(this.btStart, 2, 1);
-      this.tableLayoutPanel1.Controls.Add(this.btPower, 3, 1);
+      this.tableLayoutPanel1.Controls.Add(this.btPower, 2, 1);
+      this.tableLayoutPanel1.Controls.Add(this.btBattery, 3, 1);
       this.tableLayoutPanel1.Controls.Add(this.btTinker, 4, 1);
       this.tableLayoutPanel1.Controls.Add(this.btLogger, 5, 1);
       this.tableLayoutPanel1.Controls.Add(this.btRight, 6, 1);
@@ -202,16 +202,16 @@
       // 
       // Form1
       // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+      this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 25F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
       this.ClientSize = new System.Drawing.Size(1126, 706);
       this.Controls.Add(this.tableLayoutPanel1);
-      this.Font = Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+      this.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
       this.ForeColor = System.Drawing.SystemColors.ControlText;
       this.Margin = new System.Windows.Forms.Padding(0);
       this.Name = "Form1";
-      this.Text = "Taycan Logger";
+      this.Text = "Taycan Logger 1.0";
       this.tableLayoutPanel1.ResumeLayout(false);
       this.ResumeLayout(false);
 
@@ -219,7 +219,7 @@
 
     #endregion
 
-    private Button btStart;
+    private Button btBattery;
     private Button btSettings;
     private Button btTinker;
     private Button btPower;

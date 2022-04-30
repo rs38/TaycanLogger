@@ -31,7 +31,7 @@
         v_LayoutRectangle = new RectangleF(FormControlGlobals.TextMarginWidth, FormControlGlobals.TextMarginHeight, ClientSize.Width - FormControlGlobals.TextMarginWidth * 2, m_TextHeight);
       if (p_Second)
         v_LayoutRectangle.Offset(0, (int)(m_TextHeight + FormControlGlobals.TextMarginHeight) * (p_Bottom ? -1 : 1));
-      TextRenderer.DrawText(p_Graphics, p_Text, p_Font, v_LayoutRectangle.ToRectangle(), ForeColor, Color.Transparent, FormControlGlobals.DefaultTextFormatFlags | TextFormatFlags.VerticalCenter | p_TextFormatFlags);
+      TextRenderer.DrawText(p_Graphics, p_Text, p_Font, v_LayoutRectangle.ToRectangle(), ForeColor, Color.Transparent, FormControlGlobals.DefaultTextFormatFlags | TextFormatFlags.SingleLine | TextFormatFlags.VerticalCenter | p_TextFormatFlags);
     }
 
     internal class Buffer<T> : LinkedList<T>

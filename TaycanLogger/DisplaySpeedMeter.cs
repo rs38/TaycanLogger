@@ -42,7 +42,7 @@
       RectangleF v_Rectangle = ClientRectangle;
       //this TT font requires some offset! Yikes...
       v_Rectangle.Offset(0, v_Rectangle.Height * 0.05f);
-      TextRenderer.DrawText(e.Graphics, Text, m_Font, v_Rectangle.ToRectangle(), ForeColor, Color.Transparent, FormControlGlobals.DefaultTextFormatFlags | TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+      TextRenderer.DrawText(e.Graphics, Text, m_Font, v_Rectangle.ToRectangle(), ForeColor, Color.Transparent, FormControlGlobals.DefaultTextFormatFlags | TextFormatFlags.SingleLine | TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
     }
   }
 
