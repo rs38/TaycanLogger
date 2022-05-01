@@ -4,7 +4,7 @@
   {
     public string Text { get; private set; }
 
-    internal DisplayTextBoxMultiLine(Rectangle p_CanvasBounds) : base(p_CanvasBounds)
+    internal DisplayTextBoxMultiLine(Rectangle p_CanvasBounds, Action<Rectangle> p_Invalidate) : base(p_CanvasBounds, p_Invalidate)
     {
       Text = string.Empty;
       m_TextChanged = true;
@@ -47,7 +47,7 @@
       }
       p_Graphics.SetClip(CanvasBounds);
       if (m_ShowLastLine)
-        MoveContent(new Size(0, int.MinValue));
+        MoveContent(new Size(0, int.MinValue / 2));
       m_ShowLastLine = false;
       TextRenderer.DrawText(p_Graphics, Text, FormControlGlobals.FontDisplayText, new Point((int)(ContentLocation.X + FormControlGlobals.TextMarginWidth), (int)(ContentLocation.Y + FormControlGlobals.TextMarginHeight)), p_Color, Color.Transparent, FormControlGlobals.DefaultTextFormatFlags | TextFormatFlags.Left | TextFormatFlags.Top);
       p_Graphics.ResetClip();
