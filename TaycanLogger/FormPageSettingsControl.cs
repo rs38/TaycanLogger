@@ -132,6 +132,8 @@
         if (!ulong.TryParse(p_LastUsedDevice, out v_LastUsedAddress))
           v_LastUsedAddress = ulong.MaxValue;
         m_DrawListRadio.Clear();
+        //obsolete, please delete the following line...
+        m_DrawListRadio.AddItem(ulong.MaxValue - 1, "Playback RAW", "RawDevice", ulong.MaxValue - 1 == v_LastUsedAddress);
         foreach (var l_Device in p_Devices)
           m_DrawListRadio.AddItem(l_Device.Addess, l_Device.LastSeen.ToString(), l_Device.Name, l_Device.Addess == v_LastUsedAddress);
         m_DrawListRadio.AddItem(ulong.MaxValue, "Playback recordings", "CTL Player", ulong.MaxValue == v_LastUsedAddress);

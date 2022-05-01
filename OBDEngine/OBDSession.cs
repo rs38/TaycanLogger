@@ -47,14 +47,36 @@ namespace OBDEngine
     }
 
     public List<(string Name, ulong Addess, DateTime LastSeen)> GetPairedDevices() => new BluetoothClient().PairedDevices.Select<BluetoothDeviceInfo, (string Name, ulong Addess, DateTime LastSeen)>(bdi => (bdi.DeviceName, bdi.DeviceAddress.ToUInt64(), DateTime.Now)).ToList();
-    
+
     private CtlBinaryWriter? m_CtlBinaryWriter;
     private CtlBinaryReader? m_CtlBinaryReader;
 
     public void Initialise(string p_DeviceName, ulong p_DeviceAddress, bool p_WriteToRaw)
     {
       //clean up this mess! Remove RAW from the project, can get it back via GIT in some crazy emergency...
-      
+      if (p_DeviceName == "RawDevice")
+      {
+        string? v_UserFilename = m_GetFilename(".xml", "OBD Engine File (.xml)|*.xml");
+        XDocument v_XDocumentRaw = XDocument.Load(v_UserFilename);
+        CtlFileSetup v_CtlFileSetup = new CtlFileSetup();
+        string? v_Error = v_CtlFileSetup.CheckValidityAndEnrichWithmcid4ctl(v_XDocumentRaw);
+        if (!string.IsNullOrEmpty(v_Error))
+          throw new Exception("User OBD XML config file is not valid: " + v_Error);
+        m_InitOBDCommands = (from p_XElement in v_XDocumentRaw.Root.Elements("init").Elements("command") select new OBDCommandInit(p_XElement)).ToList();
+        m_LoopOBDCommands = (from p_XElement in v_XDocumentRaw.Root.Elements("rotation").Elements("command") select new OBDCommand(p_XElement)).ToList();
+
+        string? v_RawFilename = m_GetFilename(".raw", "RawDevice data (.raw)|*.raw");
+        if (!string.IsNullOrEmpty(v_RawFilename))
+          m_Stream = new ReadRawStream(v_RawFilename);
+        //we never do this, delete this comment code later...
+        //this creates a copy of the raw stream. Used for debugging and can be deleted...
+        //if (p_WriteToRaw)
+        //  m_Stream = new WriteRawStream(p_DeviceName, m_Stream);
+        return;
+      }
+
+
+
       m_CtlBinaryWriter = null;
       if (p_DeviceAddress == ulong.MaxValue)
       {
@@ -107,24 +129,11 @@ namespace OBDEngine
 
       if (m_CtlBinaryReader is null)
       {
-        if (p_DeviceName == "RawDevice")
-        {
-          string? v_RawFilename = m_GetFilename(".raw", "RawDevice data (.raw)|*.raw");
-          if (!string.IsNullOrEmpty(v_RawFilename))
-            m_Stream = new ReadRawStream(v_RawFilename);
-          //we never do this, delete this comment code later...
-          //this creates a copy of the raw stream. Used for debugging and can be deleted...
-          //if (p_WriteToRaw)
-          //  m_Stream = new WriteRawStream(p_DeviceName, m_Stream);
-        }
-        else
-        {
-          m_OBDDevice = new OBDDevice();
-          m_OBDDevice.Open(p_DeviceAddress);
-          m_Stream = m_OBDDevice.Stream;
-          if (m_CtlBinaryWriter is null)
-            m_Stream = new WriteRawStream(p_DeviceName, m_Stream);
-        }
+        m_OBDDevice = new OBDDevice();
+        m_OBDDevice.Open(p_DeviceAddress);
+        m_Stream = m_OBDDevice.Stream;
+        if (m_CtlBinaryWriter is null)
+          m_Stream = new WriteRawStream(p_DeviceName, m_Stream);
       }
     }
 
@@ -228,7 +237,7 @@ namespace OBDEngine
       m_InitOBDCommands?.ForEach(p => v_OBDInitCommands.Add(p.ID, p));
       Dictionary<int, OBDCommand> v_OBDLoopCommands = new Dictionary<int, OBDCommand>();
       m_LoopOBDCommands?.ForEach(p => v_OBDLoopCommands.Add(p.ID, p));
-      bool v_InitCompleted=false;
+      bool v_InitCompleted = false;
       while (!p_CancellationToken.IsCancellationRequested)
       {
         byte[] v_Buffer = new byte[4096];
