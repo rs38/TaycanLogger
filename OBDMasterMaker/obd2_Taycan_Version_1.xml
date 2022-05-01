@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<OBD2>
+  <init>
+    <command send="atz"></command>
+    <command send="atat1"></command>
+    <command send="atsp6"></command>
+    <command send="atl0"></command>
+    <command send="ats0"></command>
+    <command send="ath0"></command>
+    <command send="ate0"></command>
+    <command send="atst25"></command>
+    <command send="atsh7e5"></command>
+    <command send="atcm000"></command>
+    <command send="atcf000"></command>
+    <command send="atfcsd300000"></command>
+    <command send="atfcsh7e5"></command>
+    <command send="atfcsm1"></command>
+  </init>
+  <rotation>
+    <command send="2218021801" header="atsh7e5" skipCount="0">
+      <values>
+        <value name="Amp" conversion="((B3*65536.0)+B4*256+B5)/100-1500" units="A"/>
+        <value name="BatV" conversion="((B8*256)+B9)/10" units="V"/>
+      </values>
+    </command>
+    <command send="22181D" header="atsh7e5" skipCount="9" name="BatTOut" conversion="B3-40" units="°C"/>
+    <command send="22181C" header="atsh7e5" skipCount="10" name="BatTIn" conversion="B3-40" units="°C"/>
+    <command send="221E10" header="atsh7e5" skipCount="11" name="BatTemp" conversion="B3-100" units="°C"/>
+    <command send="22028C" header="atsh7e5" skipCount="12" name="SoC" conversion="B3" units="%"/>
+    <command send="221E3B" header="atsh7e5" skipCount="7" name="CelSum" conversion="((B3*256)+B4)/10" units="V"/>
+    <command send="221E1B" header="atsh7e5" skipCount="13" name="BatLimC" conversion="B3*256+B4" units="A"/>
+    <command send="221E1C" header="atsh7e5" skipCount="14" name="BatLimD" conversion="B3*256+B4" units="A"/>
+    <command send="221E33" header="atsh7e5" skipCount="15" >
+      <values>
+        <value name="CellVoltMax" conversion="((B3*256)+B4)/10000" units="V"/>
+        <value name="Cell#Max" conversion="B5" units="#"/>
+      </values>
+    </command>
+    <command send="22F40D" header="atsh7e5" skipCount="5" name="Speed" conversion="B3" units="km/h"/>
+    <command send="2208D2" header="atsh7E0" skipCount="20" name="SoCDiplay" conversion="((B3*256)+B4)*0.01" units="%"/>
+    <command send="222609" header="atsh746" skipCount="10" conversion="((B3*256)+B4)/8.0" name="AirT" units="°C"/>
+    <command send="222613" header="atsh746" skipCount="10" conversion="((B3*256)+B4)/8.0" name="InsideT" units="°C"/>
+    <command send="2227D6" header="atsh742" skipCount="10" conversion="((B3*65536.0)+B4*256+B5)/500.0" name="CompW" units="W"/>
+    <command send="22475F" header="atsh742" skipCount="10" conversion="B3*0.25" name="HeatA" units="A"/>
+    <command send="221E0E"  header="atsh7e5" skipCount="10">
+      <values>
+        <value name="CelTMax" conversion="B3-100" units="°C"/>
+        <value name="CelT#Max" conversion="B4" units="#"/>
+      </values>
+    </command>
+  </rotation>
+</OBD2>

@@ -5,18 +5,24 @@ namespace OBDEngine
 {
   internal class OBDCommandInit
   {
-    protected byte[] m_Command;
+    public string Send { get; init; }
+
+    public int ID { get; init; }
 
     public OBDCommandInit(XElement p_XElement)
     {
-      m_Command = Encoding.ASCII.GetBytes((string)p_XElement.Attribute("send") + '\r');
+      Send = p_XElement.Attribute("send").Value.ToUpper();
+      //read master command ID from XML. If not available, then not a master command, so we create new ID for the CTL file
+      ID = (int)p_XElement.Attribute("mcid4ctl");
     }
 
     public void Execute(Stream p_Stream, byte[] p_Buffer, bool p_Tinker, Action<int>? p_BufferRead = null, byte[]? p_Command = null)
     {
-      byte[] v_Command = m_Command;
+      byte[] v_Command;
       if (p_Command != null)
         v_Command = p_Command;
+      else
+        v_Command = Encoding.ASCII.GetBytes(Send + '\r');
 
       // we do not want to record tinker commands...
       if (p_Tinker && p_Stream is WriteRawStream)
@@ -35,6 +41,13 @@ namespace OBDEngine
       if (p_BufferRead is not null)
         p_BufferRead(v_BytesRead);
       Array.Clear(p_Buffer, 0, v_BytesRead);
+    }
+
+    public void Execute(byte[] p_Buffer, int p_Count, Action<int>? p_BufferRead = null)
+    {
+      if (p_BufferRead is not null)
+        p_BufferRead(p_Count);
+      Array.Clear(p_Buffer, 0, p_Count);
     }
 
     protected byte[]? ProcessResult(byte[] p_Buffer)
@@ -90,27 +103,42 @@ namespace OBDEngine
       }
     }
 
-    public bool Execute(Stream p_Stream, byte[] p_Buffer, bool p_SendHeader, Action<OBDValue, double> p_ResultValue, Action<byte[], byte[]>? p_ResultRaw = null)
+    public bool Execute(Stream p_Stream, byte[] p_Buffer, bool p_SendHeader, Action<OBDValue, double> p_ResultValue, Action<int>? p_BufferRead = null, Action<byte[], byte[]>? p_ResultRaw = null)
     {
       bool v_Result = false;
       if (p_SendHeader)
         base.Execute(p_Stream, p_Buffer, p_ResultRaw is not null, null, Encoding.ASCII.GetBytes(m_Header + '\r'));
       base.Execute(p_Stream, p_Buffer, p_ResultRaw is not null, p_BytesRead =>
-      {
-        var v_Buffer = ProcessResult(p_Buffer);
-        if (v_Buffer != null)
-        {
-          if (p_ResultRaw != null)
-          {
-            byte[] v_BufferRaw = new byte[p_BytesRead];
-            Array.Copy(p_Buffer, v_BufferRaw, v_BufferRaw.Length);
-            p_ResultRaw(v_BufferRaw, v_Buffer);
-          }
-          m_OBDValues?.ForEach(l_OBDValue => p_ResultValue(l_OBDValue, l_OBDValue.Execute(v_Buffer)));
-          v_Result = true;
-        }
-      });
+        v_Result = ExecuteValue(p_Buffer, p_BytesRead, p_ResultValue, p_BufferRead, p_ResultRaw));
       m_ExecuteCount++;
+      return v_Result;
+    }
+
+    public bool Execute(byte[] p_Buffer, int p_Count, Action<OBDValue, double> p_ResultValue, Action<int>? p_BufferRead = null, Action<byte[], byte[]>? p_ResultRaw = null)
+    {
+      bool v_Result = false;
+      base.Execute(p_Buffer, p_Count, p_BytesRead =>
+        v_Result = ExecuteValue(p_Buffer, p_BytesRead, p_ResultValue, p_BufferRead, p_ResultRaw));
+      m_ExecuteCount++;
+      return v_Result;
+    }
+
+    private bool ExecuteValue(byte[] p_Buffer, int p_BytesRead, Action<OBDValue, double> p_ResultValue, Action<int>? p_BufferRead, Action<byte[], byte[]>? p_ResultRaw)
+    {
+      bool v_Result = false;
+      p_BufferRead?.Invoke(p_BytesRead);
+      var v_Buffer = ProcessResult(p_Buffer);
+      if (v_Buffer != null)
+      {
+        if (p_ResultRaw != null)
+        {
+          byte[] v_BufferRaw = new byte[p_BytesRead];
+          Array.Copy(p_Buffer, v_BufferRaw, v_BufferRaw.Length);
+          p_ResultRaw(v_BufferRaw, v_Buffer);
+        }
+        m_OBDValues?.ForEach(l_OBDValue => p_ResultValue(l_OBDValue, l_OBDValue.Execute(v_Buffer)));
+        v_Result = true;
+      }
       return v_Result;
     }
 
@@ -118,7 +146,7 @@ namespace OBDEngine
 
     public override string ToString()
     {
-      return $"{m_Header} {Convert.ToHexString(m_Command)} {m_ExecuteCount} executed";
+      return $"{m_Header} {Send} {m_ExecuteCount} executed";
     }
 
     public static bool operator ==(OBDCommand p_OBDCommand1, OBDCommand p_OBDCommand2)
@@ -133,7 +161,7 @@ namespace OBDEngine
 
     public bool Equals(OBDCommand? p_OBDCommand)
     {
-      return m_Command.SequenceEqual(p_OBDCommand?.m_Command) && Header == p_OBDCommand.Header;
+      return Send.Equals(p_OBDCommand?.Send) && Header == p_OBDCommand.Header;
     }
 
   }

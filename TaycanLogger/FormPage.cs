@@ -3,7 +3,6 @@
   public class FormPage : TableLayoutPanel
   {
     public bool Activated { get => this.Visible; }
-    public virtual Type Type { get => this.GetType(); }
 
     public event Action<FormPage>? ActivateRequested;
 
@@ -25,7 +24,6 @@
     public virtual void Deactivate() { this.Visible = false; }
 
 
-    public virtual void UpdateDevices(string[]? p_Devices) { }
     public virtual void CommandExecuted(bool p_Error) { }
     public virtual void SessionValueExecuted(string p_Name, string p_Units, double p_Value) { }
 

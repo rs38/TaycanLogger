@@ -31,8 +31,8 @@
 
     public void Paint(Graphics p_Graphics, Font p_FontText, Font p_FontTitle, Color p_Color, RectangleF p_LayoutRectangle, TextFormatFlags p_TextFormatFlags)
     {
-      TextRenderer.DrawText(p_Graphics, Text, p_FontText, p_LayoutRectangle.ToRectangle(), p_Color, Color.Transparent, p_TextFormatFlags | TextFormatFlags.Left | TextFormatFlags.Top);
-      TextRenderer.DrawText(p_Graphics, Title, p_FontTitle, p_LayoutRectangle.ToRectangle(), p_Color, Color.Transparent, p_TextFormatFlags | TextFormatFlags.Left | TextFormatFlags.Bottom);
+      TextRenderer.DrawText(p_Graphics, Text, p_FontText, p_LayoutRectangle.ToRectangle(), p_Color, Color.Transparent, p_TextFormatFlags | TextFormatFlags.Top);
+      TextRenderer.DrawText(p_Graphics, Title, p_FontTitle, p_LayoutRectangle.ToRectangle(), p_Color, Color.Transparent, p_TextFormatFlags | TextFormatFlags.Bottom);
     }
   }
 
@@ -77,7 +77,7 @@
       int v_Index = 1;
       foreach (DataListDrawItem l_DataListItem in m_Items.Values)
       {
-        l_DataListItem.Paint(p_Graphics, FormControlGlobals.FontDisplayText, FormControlGlobals.FontDisplayTitle, p_Color, v_LayoutRectangle, FormControlGlobals.DefaultTextFormatFlags);
+        l_DataListItem.Paint(p_Graphics, FormControlGlobals.FontDisplayText, FormControlGlobals.FontDisplayTitle, p_Color, v_LayoutRectangle, FormControlGlobals.DefaultTextFormatFlags | TextFormatFlags.SingleLine);
         v_LayoutRectangle.Offset(0, v_LayoutRectangle.Height + ItemVerticalSpace);
         if (v_Index++ % v_ItemsPerColumn != 0)
         {

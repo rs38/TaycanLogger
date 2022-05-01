@@ -8,8 +8,6 @@ namespace TaycanLogger
     private TextBox tbResultRaw;
     private TextBox tbResultValue;
 
-    public override Type Type { get => this.GetType(); }
-
     public FormPageTinker(int p_ColumnSpan) : base(p_ColumnSpan)
     {
       tbXML = new System.Windows.Forms.TextBox();
@@ -94,6 +92,8 @@ namespace TaycanLogger
           tbResultValue.Text = "XML node 'command' not found.";
           return false;
         }
+        if (!CheckAttribute(v_XCommand, "send"))
+          return false;
         if (!CheckAttribute(v_XCommand, "header"))
           return false;
         if (!CheckAttribute(v_XCommand, "skipCount"))
