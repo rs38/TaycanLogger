@@ -5,59 +5,50 @@
     public string Text { get; set; }
     public Rectangle CanvasBounds { get; set; }
 
-    public DisplayButton(string p_Text)
+    protected Action<Rectangle> Invalidate;
+
+    public DisplayButton(string p_Text, Action<Rectangle> p_Invalidate)
     {
       Text = p_Text;
+      Invalidate = p_Invalidate;
     }
 
-    public virtual void SizeChanged(Rectangle p_CanvasBounds, Action<Rectangle> p_Invalidate)
+    public virtual void SizeChanged(Rectangle p_CanvasBounds)
     {
       CanvasBounds = p_CanvasBounds;
-      p_Invalidate(CanvasBounds);
-    }
-
-    public virtual void MouseDown(Point p_Point, Action<Rectangle> p_Invalidate)
-    {
-      //if (CanvasBounds.Contains(p_Point))
-      //{
-      //  p_Invalidate(CanvasBounds);
-      //}
+      Invalidate(CanvasBounds);
     }
 
     internal event Action Pressed;
 
-    public virtual void MouseUp(Point p_Point, Action<Rectangle> p_Invalidate)
+    public virtual void MouseUp(Point p_Point)
     {
       if (CanvasBounds.Contains(p_Point))
       {
         Pressed();
-        //p_Invalidate(CanvasBounds);
       }
     }
 
-    //System.Diagnostics.Debug.WriteLine($"{ p_Point} { CanvasBounds.Contains(p_Point)}" );  
-
-
-    internal virtual void MouseMove(Point p_Point, Action<Rectangle> p_Invalidate)
+    internal virtual void MouseMove(Point p_Point)
     {
       if (!m_Hot && CanvasBounds.Contains(p_Point))
       {
         m_Hot = true;
-        p_Invalidate(CanvasBounds);
+        Invalidate(CanvasBounds);
       }
       if (m_Hot && !CanvasBounds.Contains(p_Point))
       {
         m_Hot = false;
-        p_Invalidate(CanvasBounds);
+        Invalidate(CanvasBounds);
       }
     }
 
-    internal virtual void MouseLeave(Action<Rectangle> p_Invalidate)
+    internal virtual void MouseLeave()
     {
       if (m_Hot)
       {
         m_Hot = false;
-        p_Invalidate(CanvasBounds);
+        Invalidate(CanvasBounds);
       }
     }
 

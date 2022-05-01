@@ -23,11 +23,14 @@
 
     public Size ContentSize { get; set; }
 
-    public DisplayContentCanvas(Rectangle p_CanvasBounds)
+    protected Action<Rectangle> Invalidate;
+
+    public DisplayContentCanvas(Rectangle p_CanvasBounds, Action<Rectangle> p_Invalidate)
     {
       CanvasBounds = p_CanvasBounds;
       m_ContentLocation = new Point(0, 0);
       ContentSize = Size.Empty;
+      Invalidate = p_Invalidate;  
     }
 
     protected bool MoveContent(Size p_Size)
@@ -81,7 +84,7 @@
       return m_MouseMoved;
     }
 
-    public virtual void MouseMove(Point p_Point, Action<Rectangle> p_Invalidate)
+    public virtual void MouseMove(Point p_Point)
     {
       if (!m_MouseMove.IsEmpty)
       {
@@ -89,11 +92,11 @@
         bool v_Redraw = MoveContent(new Size(p_Point.X - m_MouseMove.X, p_Point.Y - m_MouseMove.Y));
         m_MouseMove = p_Point;
         if (v_Redraw)
-          p_Invalidate(CanvasBounds);
+          Invalidate(CanvasBounds);
       }
     }
 
-    public virtual void MouseWheel(Point p_Point, int p_Delta, bool p_Horizontal, Action<Rectangle> p_Invalidate)
+    public virtual void MouseWheel(Point p_Point, int p_Delta, bool p_Horizontal)
     {
       if (CanvasBounds.Contains(p_Point))
       {
@@ -103,15 +106,15 @@
         else
           v_Redraw = MoveContent(new Size(0, p_Delta));
         if (v_Redraw)
-          p_Invalidate(CanvasBounds);
+          Invalidate(CanvasBounds);
       }
     }
 
-    public virtual void SizeChanged(Rectangle p_CanvasBounds, Action<Rectangle> p_Invalidate)
+    public virtual void SizeChanged(Rectangle p_CanvasBounds)
     {
       CanvasBounds = p_CanvasBounds;
       if (MoveContent(new Size(0, 0)))
-        p_Invalidate(CanvasBounds);
+        Invalidate(CanvasBounds);
     }
   }
 

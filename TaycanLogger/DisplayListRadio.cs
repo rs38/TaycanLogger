@@ -33,7 +33,7 @@
 
     public float ItemVerticalSpace { get; set; }
 
-    internal DisplayListRadio(Rectangle p_CanvasBounds) : base(p_CanvasBounds)
+    internal DisplayListRadio(Rectangle p_CanvasBounds, Action<Rectangle> p_Invalidate) : base(p_CanvasBounds, p_Invalidate)
     {
       ItemVerticalSpace = 7f;
       m_Items = new Dictionary<T, DrawListRadioItem>();
@@ -72,16 +72,16 @@
       return null;
     }
 
-    public override void SizeChanged(Rectangle p_CanvasBounds, Action<Rectangle> p_Invalidate)
+    public override void SizeChanged(Rectangle p_CanvasBounds)
     {
       if (ContentSize.Width != p_CanvasBounds.Width)
         ContentSize = new Size(p_CanvasBounds.Width, ContentSize.Height);
-      base.SizeChanged(p_CanvasBounds, p_Invalidate);
+      base.SizeChanged(p_CanvasBounds);
     }
 
     public event Action<T>? ItemSelected;
 
-    internal void MouseUp(Point p_Point, Action<Rectangle> p_Invalidate)
+    internal void MouseUp(Point p_Point)
     {
       if (!base.MouseUp(p_Point) && CanvasBounds.Contains(p_Point))
       {
@@ -96,7 +96,7 @@
               v_SelectedName = l_Item.Key;
             l_Item.Value.Selected = l_Index++ == v_Index;
           }
-          p_Invalidate(CanvasBounds);
+          Invalidate(CanvasBounds);
           //selected a new item, so we fire event...
           if (v_SelectedName is not null)
             ItemSelected?.Invoke(v_SelectedName);

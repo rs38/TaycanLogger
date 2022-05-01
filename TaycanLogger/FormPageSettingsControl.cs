@@ -11,13 +11,13 @@
     {
       DoubleBuffered = true;
       ResizeRedraw = true;
-      m_DrawListRadio = new DisplayListRadio<ulong>(Rectangle.Empty);
-      m_DisplayButtonRefresh = new DisplayButton("Refresh");
+      m_DrawListRadio = new DisplayListRadio<ulong>(Rectangle.Empty, p_Rectangle => Invalidate(p_Rectangle));
+      m_DisplayButtonRefresh = new DisplayButton("Refresh", p_Rectangle => Invalidate(p_Rectangle));
       m_DisplayButtonRefresh.Pressed += M_DisplayButtonRefresh_Pressed;
-      m_DisplayButtonStart = new DisplayButton("Start");
+      m_DisplayButtonStart = new DisplayButton("Start", p_Rectangle => Invalidate(p_Rectangle));
       m_DisplayButtonStart.Pressed += M_DisplayButtonStart_Pressed;
       //m_DrawListRadio.ItemSelected += M_DrawListRadio_ItemSelected;
-      m_TextBoxMultiLine = new DisplayTextBoxMultiLine(Rectangle.Empty);
+      m_TextBoxMultiLine = new DisplayTextBoxMultiLine(Rectangle.Empty, p_Rectangle => Invalidate(p_Rectangle));
     }
 
     internal event Action RefreshPressed;
@@ -36,64 +36,85 @@
 
     protected override void OnSizeChanged(EventArgs e)
     {
-      Rectangle v_Rectangle = new Rectangle(4, 4, 300, ClientSize.Height - 8 - 70 - 8 - 70 - 4);
-      m_DrawListRadio.SizeChanged(v_Rectangle, p_Rectangle => Invalidate(p_Rectangle));
-      v_Rectangle = new Rectangle(v_Rectangle.X, v_Rectangle.Height + 8, v_Rectangle.Width, 70);
-      m_DisplayButtonRefresh.SizeChanged(v_Rectangle, p_Rectangle => Invalidate(p_Rectangle));
-      v_Rectangle.Offset(0, v_Rectangle.Height + 4);
-      m_DisplayButtonStart.SizeChanged(v_Rectangle, p_Rectangle => Invalidate(p_Rectangle));
-      m_TextBoxMultiLine.SizeChanged(new Rectangle(v_Rectangle.Width + 32, 8, ClientSize.Width - v_Rectangle.Width - 16 - 32, ClientSize.Height - 16), p_Rectangle => Invalidate(p_Rectangle));
+      Form1.ExceptionCheck(() =>
+      {
+        Rectangle v_Rectangle = new Rectangle(4, 4, 300, ClientSize.Height - 8 - 70 - 8 - 70 - 4);
+        m_DrawListRadio.SizeChanged(v_Rectangle);
+        v_Rectangle = new Rectangle(v_Rectangle.X, v_Rectangle.Height + 8, v_Rectangle.Width, 70);
+        m_DisplayButtonRefresh.SizeChanged(v_Rectangle);
+        v_Rectangle.Offset(0, v_Rectangle.Height + 4);
+        m_DisplayButtonStart.SizeChanged(v_Rectangle);
+        m_TextBoxMultiLine.SizeChanged(new Rectangle(v_Rectangle.Width + 32, 8, ClientSize.Width - v_Rectangle.Width - 16 - 32, ClientSize.Height - 16));
+      });
       base.OnSizeChanged(e);
     }
 
     protected override void OnMouseDown(MouseEventArgs e)
     {
-      m_DrawListRadio.MouseDown(e.Location);
-      m_DisplayButtonRefresh.MouseDown(e.Location, p_Rectangle => Invalidate(p_Rectangle));
-      m_DisplayButtonStart.MouseDown(e.Location, p_Rectangle => Invalidate(p_Rectangle));
-      m_TextBoxMultiLine.MouseDown(e.Location);
+      Form1.ExceptionCheck(() =>
+      {
+        m_DrawListRadio.MouseDown(e.Location);
+        //m_DisplayButtonRefresh.MouseDown(e.Location);
+        //m_DisplayButtonStart.MouseDown(e.Location);
+        m_TextBoxMultiLine.MouseDown(e.Location);
+      });
       base.OnMouseDown(e);
     }
 
     protected override void OnMouseUp(MouseEventArgs e)
     {
-      m_DrawListRadio.MouseUp(e.Location, p_Rectangle => Invalidate(p_Rectangle));
-      m_DisplayButtonRefresh.MouseUp(e.Location, p_Rectangle => Invalidate(p_Rectangle));
-      m_DisplayButtonStart.MouseUp(e.Location, p_Rectangle => Invalidate(p_Rectangle));
-      m_TextBoxMultiLine.MouseUp(e.Location);
-      base.OnMouseUp(e);
+      Form1.ExceptionCheck(() =>
+      {
+        m_DrawListRadio.MouseUp(e.Location);
+        m_DisplayButtonRefresh.MouseUp(e.Location);
+        m_DisplayButtonStart.MouseUp(e.Location);
+        m_TextBoxMultiLine.MouseUp(e.Location);
+        base.OnMouseUp(e);
+      });
     }
 
     protected override void OnMouseMove(MouseEventArgs e)
     {
-      m_DrawListRadio.MouseMove(e.Location, p_Rectangle => Invalidate(p_Rectangle));
-      m_DisplayButtonRefresh.MouseMove(e.Location, p_Rectangle => Invalidate(p_Rectangle));
-      m_DisplayButtonStart.MouseMove(e.Location, p_Rectangle => Invalidate(p_Rectangle));
-      m_TextBoxMultiLine.MouseMove(e.Location, p_Rectangle => Invalidate(p_Rectangle));
-      base.OnMouseMove(e);
+      Form1.ExceptionCheck(() =>
+      {
+        m_DrawListRadio.MouseMove(e.Location);
+        m_DisplayButtonRefresh.MouseMove(e.Location);
+        m_DisplayButtonStart.MouseMove(e.Location);
+        m_TextBoxMultiLine.MouseMove(e.Location);
+        base.OnMouseMove(e);
+      });
     }
 
     protected override void OnMouseWheel(MouseEventArgs e)
     {
-      m_DrawListRadio.MouseWheel(e.Location, e.Delta, ModifierKeys == Keys.Control, p_Rectangle => Invalidate(p_Rectangle));
-      m_TextBoxMultiLine.MouseWheel(e.Location, e.Delta, ModifierKeys == Keys.Control, p_Rectangle => Invalidate(p_Rectangle));
-      base.OnMouseWheel(e);
+      Form1.ExceptionCheck(() =>
+      {
+        m_DrawListRadio.MouseWheel(e.Location, e.Delta, ModifierKeys == Keys.Control);
+        m_TextBoxMultiLine.MouseWheel(e.Location, e.Delta, ModifierKeys == Keys.Control);
+        base.OnMouseWheel(e);
+      });
     }
 
     protected override void OnMouseLeave(EventArgs e)
     {
-      m_DisplayButtonRefresh.MouseLeave(p_Rectangle => Invalidate(p_Rectangle));
-      m_DisplayButtonStart.MouseLeave(p_Rectangle => Invalidate(p_Rectangle));
-      base.OnMouseLeave(e);
+      Form1.ExceptionCheck(() =>
+      {
+        m_DisplayButtonRefresh.MouseLeave();
+        m_DisplayButtonStart.MouseLeave();
+        base.OnMouseLeave(e);
+      });
     }
 
     protected override void OnPaint(PaintEventArgs e)
     {
+      Form1.ExceptionCheck(() =>
+      {
+        m_DrawListRadio.Paint(e.Graphics, ForeColor, FormControlGlobals.ColorRecup);
+        m_DisplayButtonRefresh.Paint(e.Graphics, ForeColor);
+        m_DisplayButtonStart.Paint(e.Graphics, ForeColor);
+        m_TextBoxMultiLine.Paint(e.Graphics, ForeColor);
+      });
       base.OnPaint(e);
-      m_DrawListRadio.Paint(e.Graphics, ForeColor, FormControlGlobals.ColorRecup);
-      m_DisplayButtonRefresh.Paint(e.Graphics, ForeColor);
-      m_DisplayButtonStart.Paint(e.Graphics, ForeColor);
-      m_TextBoxMultiLine.Paint(e.Graphics, ForeColor);
     }
 
     internal (string Name, ulong Addess) GetCurrentDevice()
