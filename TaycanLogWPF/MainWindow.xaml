@@ -41,7 +41,7 @@
                             <RowDefinition Height="1*" />
                             <RowDefinition Height="1*" />
                         </Grid.RowDefinitions>
-                        <DataGrid x:Name="dataGrid1" Grid.RowSpan="2"  ScrollViewer.VerticalScrollBarVisibility="Visible" IsReadOnly="True" />
+                        <DataGrid x:Name="dataGrid1" Grid.RowSpan="2"  ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Visible" IsReadOnly="True" />
                         <local:OxyplotControl  x:Name="PlotAmp" Grid.Row="0" Grid.Column="1"/>
                         <local:OxyplotControl  x:Name="PlotV" Grid.Row="1" Grid.Column="1"/>
 

@@ -42,7 +42,7 @@ namespace TaycanLogger
 
       UIDeviceName = Properties.Settings.Default.DeviceName;
       var configFilename = Properties.Settings.Default.ConfigFilename;
-      var configContent = Properties.Resources.obd2_Taycan;
+      var configContent = Properties.Resources.obd2_TaycanSOH;
       configContent = File.ReadAllText(configFilename); //external file
 
       Trace.WriteLine($"start log at {DateTime.Now}!");
@@ -161,6 +161,8 @@ namespace TaycanLogger
         await myOBDSession.DoLogAsync(UIDeviceName, progressData, cancel.Token);
       }
     }
+        
+    
 
     private void StopButton_Click(object sender, RoutedEventArgs e)
     {

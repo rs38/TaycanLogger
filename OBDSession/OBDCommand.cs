@@ -79,7 +79,6 @@ namespace TaycanLogger
                 }
             }
         }
-
         private async Task checkCorrectECUHeader()
         {
             if (!String.IsNullOrEmpty(header) && runner.CurrentECUHeader != header)
@@ -88,7 +87,6 @@ namespace TaycanLogger
                 runner.CurrentECUHeader = header;
             }
         }
-
         public string encodeRawAnswer(string a)
         {
             if (a.Contains(":"))

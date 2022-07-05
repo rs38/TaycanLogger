@@ -19,7 +19,7 @@ namespace TaycanLogger.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -77,9 +77,9 @@ namespace TaycanLogger.Properties {
         ///    &lt;command send=&quot;atcf000&quot;&gt;&lt;/command&gt;
         ///    &lt;command send=&quot;atfcsd300000&quot;&gt;&lt;/ [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string obd2_Taycan {
+        internal static string obd2_TaycanSOH {
             get {
-                return ResourceManager.GetString("obd2_Taycan", resourceCulture);
+                return ResourceManager.GetString("obd2_TaycanSOH", resourceCulture);
             }
         }
     }

@@ -12,7 +12,6 @@ namespace TaycanLogger
    public class OBDCommandViewModel
     {
        public string logline;
-       public List<OBDValue> DataList; 
-
+        public List<OBDValue> DataList;
     }
 }

@@ -1,135 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
 <OBD2>
-  <init>
-    <command send="atz"></command>
-    <command send="atat1"></command>
-    <command send="atsp6"></command>
-    <command send="atl0"></command>
-    <command send="ats0"></command>
-    <command send="ath0"></command>
-    <command send="ate0"></command>
-    <command send="atst25"></command>
-    <command send="atsh7e5"></command>
-    <command send="atcm000"></command>
-    <command send="atcf000"></command>
-    <command send="atfcsd300000"></command>
-    <command send="atfcsh7e5"></command>
-    <command send="atfcsm1"></command>
-
-    <!--    
-               <command send="atz"></command>
-                <command send="atcfcs0"></command>   flowcontrol
-               <command send="atfcsm0"></command>
-         -->
-  </init>
+	<init>
+		<command send="atz"></command>
+		<command send="atat1"></command>
+		<command send="atsp6"></command>
+		<command send="atl0"></command>
+		<command send="ats0"></command>
+		<command send="ath0"></command>
+		<command send="ate0"></command>
+		<command send="atst25"></command>
+		<command send="atsh7e5"></command>
+		<command send="atcm000"></command>
+		<command send="atcf000"></command>
+		<command send="atfcsd300000"></command>
+		<command send="atfcsh7e5"></command>
+		<command send="atfcsm1"></command>
+	</init>
 
 
-  <rotation>
-    <!--    
-    <command send="221804" header="atsh7e5" headerresp="atcra7ED" skipCount="2" name="Amp2" conversion="((B3*65536.0)+B4*256+B5)/100-1500" units="A"/> 
+	<rotation>
+		<command send="2218021801f40d" header="atsh7e5" skipCount="0">
+			<!-- Units missing = Subcommands!  621802 334455 1801 6677 F40d 00 -->
+			<values>
+				<value name="Amp" conversion="((B3*65536.0)+B4*256+B5)/100-1500" units="A"/>
+				<value name="BatV" conversion="((B8*256)+B9)/10" units="V"/>
+				<value name="Speed"  conversion="B12*1.02" units="km/h"/>
+			</values>
+		</command>
 
-    <command send="221802" skipCount="0" name="Amp" conversion="((B3*65536.0)+B4*256+B5)/100-1500" units="A"/>
-        <command send="22F40D" skipCount="3" name="Velocity" conversion="B3" units="km/h"/>
-    <command send="221801" skipCount="0" name="BattVolt" conversion="((B3*256)+B4)/10" units="V"/> 
-        <value name="Speed"  conversion="B12" units="km/h"/>-->
+		<command send="22028C1" header="atsh7e5" skipCount="12" name="SoC1" conversion="B3" units="%"/>
 
-    <command send="2218021801" header="atsh7e5" skipCount="0">
-      <!-- Units missing = Subcommands!  621802 334455 1801 6677 F40d 00 -->
-      <values>
-        <value name="Amp" conversion="((B3*65536.0)+B4*256+B5)/100-1500" units="A"/>
-        <value name="BatV" conversion="((B8*256)+B9)/10" units="V"/>
-    
-      </values>
-    </command>
-  
-    <command send="22181D" header="atsh7e5" skipCount="9" name="BatTOut" conversion="B3-40" units="C"/>
-    <command send="22181C" header="atsh7e5" skipCount="10" name="BatTIn" conversion="B3-40" units="C"/>
-    <command send="221E10" header="atsh7e5" skipCount="11" name="BatTemp" conversion="B3-100" units="C"/>
 
-    <command send="22028C" header="atsh7e5" skipCount="12" name="SoC" conversion="B3" units="%"/>
-    <command send="221E3B" header="atsh7e5" skipCount="7" name="CelSum" conversion="((B3*256)+B4)/10" units="V"/>
-    <command send="221E1B" header="atsh7e5" skipCount="13" name="BatLimC" conversion="B3*256+B4" units="A"/>
-    <command send="221E1C" header="atsh7e5" skipCount="14" name="BatLimD" conversion="B3*256+B4" units="A"/>
+		<command send="221E3B" header="atsh7e5" skipCount="7" name="CelSum" conversion="((B3*256)+B4)/10" units="V"/>
 
-    
-    
-    <command send="221E33" header="atsh7e5" skipCount="15" >
-      <values>
-        <value name="CellVoltMax" conversion="((B3*256)+B4)/10000" units="V"/>
-        <value name="Cell#Max" conversion="B5" units="#"/>
-      </values>
-    </command>
-    <!--
-    <command send="221E34" header="atsh7e5" skipCount="15" >
-      <values>
-        <value name="CellVoltMin" conversion="((B4*256)+B4)/10000" units="V"/>
-        <value name="Cell#Min" conversion="B4" units="#"/>
-      </values>
-    </command>
+		<command send="221E1B1" header="atsh7e5" skipCount="13" name="BatLimC" conversion="B3*256+B4" units="A"/>
+		<command send="221E1C1" header="atsh7e5" skipCount="14" name="BatLimD" conversion="B3*256+B4" units="A"/>
 
-    <command send="221E0F" header="atsh7e5" skipCount="20">
-      <values>
-        <value name="CellTempMin" conversion="B3-100" units="C"/>
-        <value name="CellT#Min" conversion="B4" units="#"/>
-      </values>
-    </command>
-    
-    <command send="221E2C" header="atsh7e5" skipCount="21">
-      <values>
-        <value name="CellSOCMax" conversion="B3" units="%"/>
-        <value name="CellSoc#Max" conversion="B4" units="#"/>
-      </values>
-    </command>
-    
-      <command send="221E2D" header="atsh7e5" header="atsh7e5" skipCount="20" >
-      <values>
-        <value name="CelSOCMin" conversion="B3" units="%"/>
-        <value name="CelSoc#Min" conversion="B4" units="#"/>
-      </values>
-    </command>
-   
+		<command send="2222B8" header="atsh714" skipCount="1" name= "Wegstrecke" conversion="(B3*256*256*256+B3*256*256+B5*256+B6)/1000" units="m"/>
 
-   0x01 Motor -->
+		<command send="22f45b" header="atsh7e5" skipCount="15" name="SoC2" conversion="b3/256" units="%" />
+		
+		<command send="22181D1" header="atsh7e5" skipCount="15" name="BatTOut" conversion="B3-40" units="C"/>
+		<command send="22181C1" header="atsh7e5" skipCount="10" name="BatTIn" conversion="B3-40" units="C"/>
+		<command send="221E101" header="atsh7e5" skipCount="11" name="BatTemp" conversion="B3-100" units="C"/>
 
-    <command send="22F40D" header="atsh7e5" skipCount="5" name="Speed" conversion="B3" units="km/h"/>
-    
-    <command send="2208D2" header="atsh7E0" skipCount="20" name="SoCDiplay" conversion="((B3*256)+B4)*0.01" units="%"/>
 
-    <!--  
+		<command send="224965" header="atsh744" skipCount="15" >
+			<values>
+				<value name="Battkapa mom" conversion="((B3*256)+B4)/20" units="kWh"/>
+				<value name="SoC3" conversion="((B10*256)+B11)/20"  units="%"/>
+				<value name="Verbrauch mom" conversion="(32768-((B5*256)+B6))/10"  units="kW"/>
+				<value name="Temp" conversion="(b12/2)-40"   units="°C"/>
+				<value name="MaxAmp" conversion="((B8*256)+B9)/10"  units="A"/>
+				<value name="BattState" conversion="b7"  units="#"/>
+			</values>
+		</command>
+
+		<command send="222AB8" name="EnergyBatt" header="atsh710" skipCount="15"  conversion="((b5*256)+b6)*25/1000" units="kWh"/>
+
+		<command send="2208D21" header="atsh7E0" skipCount="20" name="SoCDiplay" conversion="((B3*256)+B4)*0.01" units="%"/>
+
+
+		<command send="222ab6"   name="Reichweite angezeigt" header="atsh710" skipCount="15" >
+			<values>
+				<value name="Reichweite 1" conversion="((b3*256)+b4)" units="km"/>
+				<value name="Reichweite 2" conversion="((b5*256)+b6)" units="km"/>
+				<value name="Reichweite 3" conversion="((b9*256)+b10)"  units="km"/>
+			</values>
+		</command>
+
+		<command send="2226091" header="atsh746" skipCount="10" conversion="((B3*256)+B4)/8.0" name="AirT" units="C"/>
+		<command send="2226131" header="atsh746" skipCount="10" conversion="((B3*256)+B4)/8.0" name="InsideT" units="C"/>
+
+		<command send="2227D61" skipCount="10" header="atsh742" name="A/C data">
+			<values>
+				<value name="WP energy" conversion="B5*40"  units="W"/>
+				<value name="WP demand" conversion="B4/200"  units="%"/>
+				<value name="WP compr" conversion="B3*300"   units="rpm"/>
+			</values>
+		</command>
+
+		<command send="22475F1" header="atsh742" skipCount="10" conversion="B3*0.25" name="HeatA" units="A"/>
+
+	</rotation>
+	<!--
+	
+	
     <command send="atcra7AC" header="atsh742" skipCount="10">
-    multiline?
      <command send="atfcsh7e5"></command>
-     
-    </command> -->
-
-    <!--	  <command send="atcra7B0" header="atsh746" skipCount="10"></command> -->
-    
-    <command send="222609" header="atsh746" skipCount="10" conversion="((B3*256)+B4)/8.0" name="AirT" units="C"/>
-    <command send="222613" header="atsh746" skipCount="10" conversion="((B3*256)+B4)/8.0" name="InsideT" units="C"/>
-
-    <!-- 0x8D BMS 
-  
-
-    <command send="2227D6475F" header="atsh742" skipCount="10">
-      <values>
-        <value conversion="B3*0.25" name="HeatAmp" units="A"/>
-        <value conversion="((B3*65536.0)+B4*256+B5)/500.0" name="Comp" units="W"/>
-      </values>
     </command>
-    
-    -->
-    <command send="2227D6" header="atsh742" skipCount="10" conversion="((B3*65536.0)+B4*256+B5)/500.0" name="CompW" units="W"/>
-   <command send="22475F" header="atsh742" skipCount="10" conversion="B3*0.25" name="HeatA" units="A"/>
-    
-    <command send="221E0E"  header="atsh7e5" skipCount="10">
-      <values>
-        <value name="CelTMax" conversion="B3-100" units="C"/>
-        <value name="CelT#Max" conversion="B4" units="#"/>
-      </values>
-    </command>
-
-  </rotation>
-    <!--
+	
+	<command send="atcra7B0" header="atsh746" skipCount="10"></command> 
+	
 		//climate control
 	  	writeCAN("222608"); // Outside Temp Calc 62 26 09 23 x/2-50 °C  35
 	 
@@ -137,20 +99,20 @@
       writeCAN("220530");
           
       atcra7AC"  //Thermomgmnt 0xC5
-      writeCAN("2227D6 //Compressor kw Probleme time outs?
                        
     //BMS
         { "192A","Reqrmt_BMS_CoolLvl"},
         { "192C","StateBattCoolPump"}, 
         { "192B","CoolPumpPwrSetPoint"}
 
-        cke Read Data By Identifier ;22 05 20;10547
-            RSP0002;19:37:08.822;LL_DashBoardUDS BV_DashBoardUDS EV_DashBoardLGEPO513_004;Strecke Read Data By Identifier ;62 05 20 00 37 b1 00 a6 4f 00;10547
+         Read Data By Identifier ;22 05 20;
+         RSP0002;19:37:08.822;LL_DashBoardUDS BV_DashBoardUDS EV_DashBoardLGEPO513_004;Strecke Read Data By Identifier ;
+		62 05 20 00 37 b1 00 a6 4f 00;10547
 
-            714 03 22 05 30 
-            77E 
-            RSP0002;19:35:18.655;LL_DashBoardUDS BV_DashBoardUDS EV_DashBoardLGEPO513_004;Berechnete, angezeigte Werte Read Data By Identifier ;22 05 30;9982
-            62 05 30 00 22 c1 24 ce 25 a1 80 00 01 dd d0 01 80 00 00 00 05 32 78 1b d8 80 00 46 00 18 00 00 00 00 01 60 23 82 7f 84 c9 a6 00 dc 00 00 00 00 3d b8 01 5d 4c 45 44 38 59 52 4c 45 00 00 00;9981
+            atsh714 22 05 30 
+            cra77E 
+            RSP0002;19:35:18.655;LL_DashBoardUDS BV_DashBoardUDS EV_DashBoardLGEPO513_004;Berechnete, angezeigte Werte Read Data By Identifier ;22 05 30
+            62 05 30 00 22 c1 24 ce 25 a1 80 00 01 dd d0 01 80 00 00 00 05 32 78 1b d8 80 00 46 00 18 00 00 00 00 01 60 23 82 7f 84 c9 a6 00 dc 00 00 00 00 3d b8 01 5d 4c 45 44 38 59 52 4c 45 00 00 00
    
            "222AB2", // HV battery max energy content Wh
         "222AB8", // HV battery energy content

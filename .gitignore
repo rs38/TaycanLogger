@@ -362,3 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /TaycanLogWPF/obd2_Taycan.xml
+/TaycanLogger/V-LINK-20220501-163441.ctl

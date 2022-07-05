@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<OBD2>
+	<init>
+		<command send="atz"></command>
+		<command send="atat1"></command>
+		<command send="atsp6"></command>
+		<command send="atl0"></command>
+		<command send="ats0"></command>
+		<command send="ath0"></command>
+		<command send="ate0"></command>
+		<command send="atst25"></command>
+		<command send="atsh7e5"></command>
+		<command send="atcm000"></command>
+		<command send="atcf000"></command>
+		<command send="atfcsd300000"></command>
+		<command send="atfcsh7e5"></command>
+		<command send="atfcsm1"></command>
+	</init>
+
+	<rotation>
+		<command send="22181D1" header="atsh7e5" skipCount="15" name="BatTOut" conversion="B3-40" unit="C"/>
+		<command send="22181C1" header="atsh7e5" skipCount="10" name="BatTIn" conversion="B3-40" unit="C"/>
+		<command send="221E101" header="atsh7e5" skipCount="11" name="BatTemp" conversion="B3-100" unit="C"/>
+
+		<command send="22028C1" header="atsh7e5" skipCount="12" name="SoC1" conversion="B3" unit="%"/>
+		<command send="2251E0" header="atsh7e5" skipCount="10" name="SoH fast" conversion="(B3*256)+B4-14162)*0.127" unit="%" />
+
+		<command send="2202bd" header="atsh7e5" skipCount="1" >
+			<value name="Betriebsstunden" conversion="(B4*256+b5)/10" unit="h"/>
+			<value name="Betriebsstunden2" conversion="(B7*256+b8)/10" unit="h"/>
+		</command>
+
+		<command send="220530" header="atsh714" skipCount="15" >
+			<values>
+				<value name="TripComputer1" conversion="(B4*256+b5)/10" units="h"/>
+				<value name="Trip2 und Co" conversion="(B7-B42)"  units="h"/>
+			</values>
+		</command>
+
+		<command send="2215ef" header="atsh744" skipCount="15" >
+			<value name="AC energy charged total" conversion="(B5*256+B6)/10" unit="kWh"/>
+		</command>
+
+		<command send="2219d2" name="Statistik Wegstrecke" header="atsh710" skipCount="15" >
+			<value name="profil 1 normal" conversion="(b4*256*256)+(b5*256)+b6" unit="km"/>
+			<value name="profil 2" conversion="(b8*256*256)+(b9*256)+b10" unit="km"/>
+			<value name="profil 3" conversion="(b12*256*256)+(b13*256)+b14" unit="km"/>
+			<value name="profil 4" conversion="(b16*256*256)+(b17*256)+b18" unit="km"/>
+			<value name="profil 5" conversion="(b20*256*256)+(b21*256)+b22" unit="km"/>
+			<value name="profil 8 range" conversion="(b32*256*256)+(b33*256)+b34"  unit="km"/>
+		</command>
+
+		<command send="221877" name="Statistik Zeit" header="atsh710" skipCount="15" >
+			<value name="profil 1" conversion="(b4*256*256)+(b5*256)+b6" unit="min"/>
+			<value name="profil 2" conversion="(b8*256*256)+(b9*256)+b10" unit="min"/>
+			<value name="profil 3" conversion="(b12*256*256)+(b13*256)+b14" unit="min"/>
+			<value name="profil 4" conversion="(b16*256*256)+(b17*256)+b18" unit="min"/>
+			<value name="profil 5" conversion="(b20*256*256)+(b21*256)+b22" unit="min"/>
+			<value name="profil 6" conversion="(b24*256*256)+(b25*256)+b26" unit="min"/>
+			<value name="profil 7" conversion="(b28*256*256)+(b29*256)+b30"  unit="min"/>
+			<value name="profil 8" conversion="(b32*256*256)+(b33*256)+b34"  unit="min"/>
+		</command>
+
+		<command send="222ab2" name="Statistik Energieninhalt" header="atsh710" skipCount="15" >
+			<value name="Energieninhalt" conversion="((b3*256)+b4)*50" unit="wh"/>
+		</command>
+
+		<command send="222ab3"  name="Verbrauch für RW" header="atsh710" skipCount="15" >
+			<value name="Verbrauch 1" conversion="((b3*256)+b4)/10" unit="kw/h 100km"/>
+			<value name="Prognosefehler" conversion="(((b11*256)+b12)*100)-15000" unit="W"/>
+			<value name="Verbrauch 3" conversion="((b7*256)+b8)/10" unit="kw/h 100km"/>
+			<value name="Durchschnittl. Geschw" conversion="((b9*256)+b10)/10" unit="kmh"/>
+			<value name="Leistung Bauteilklima" conversion="((b13*256)+b14)*10" unit="W"/>
+			<value name="Leistung 12V" conversion="((b15*256)+b16)*10" unit="W" />
+		</command>
+
+		<command send="2202bd" header="atsh7e5" skipCount="15" >
+			<values>
+				<value name="Tacho" conversion="B9*256*256+B10*256+b11" units="km"/>
+				<value name="Sek" conversion="B7" units="sek"/>
+				<value name="Min" conversion="B6" units="min"/>
+				<value name="Umgebungsbedingungen" conversion="B3" units="ASCII"/>
+			</values>
+		</command>
+
+		<command send="222AB7" name="learned consumptions" header="atsh710" skipCount="15" >
+			<value name="road type 1" conversion="((b3*256)+b4)/10" unit="kWh/100km"/>
+			<value name="road type 2" conversion="((b5*256)+b6)/10" unit="kWh/100km"/>
+			<value name="road type 3" conversion="((b7*256)+b8)/10" unit="kWh/100km"/>
+			<value name="road type 4" conversion="((b9*256)+b10)/10" unit="kWh/100km"/>
+			<value name="road type 5" conversion="((b11*256)+b12)/10" unit="kWh/100km"/>
+			<value name="road type 6" conversion="((b13*256)+b14)/10" unit="kWh/100km"/>
+		</command>
+
+		<command send="221860" header="atsh7e5" skipCount="1" >
+			<value name="Mod1" conversion="B3" unit="#"/>
+			<value name="CellVolt1" conversion="((B4*256)+B5)/10000" unit="V"/>
+			<value name="CellVolt2" conversion="((B11*256)+B12)/10000" unit="V"/>
+			<value name="CellVolt3" conversion="((B18*256)+B19)/10000" unit="V"/>
+			<value name="CellVolt4" conversion="((B25*256)+B26)/10000" unit="V"/>
+			<value name="CellVolt5" conversion="((B32*256)+B33)/10000" unit="V"/>
+			<value name="CellVolt6" conversion="((B39*256)+B40)/10000" unit="V"/>
+
+			<value name="SOC1" conversion="B6" unit="%"/>
+			<value name="SOC2" conversion="B13" unit="%"/>
+			<value name="SOC3" conversion="B20" unit="%"/>
+			<value name="SOC4" conversion="B27" unit="%"/>
+			<value name="SOC5" conversion="B34" unit="%"/>
+			<value name="SOC6" conversion="B41" unit="%"/>
+
+			<value name="B8" conversion="B8" unit="#"/>
+			<value name="B9" conversion="B9" unit="#"/>
+			<value name="Index" conversion="B7" unit="#"/>
+		</command>
+
+		<command send="221850" header="atsh7e5" skipCount="1" >
+			<values>
+				<value name="Mod1" conversion="B3" unit="#"/>
+				<value name="CellVolt1" conversion="((B4*256)+B5)/10000" unit="V"/>
+				<value name="CellVolt2" conversion="((B10*256)+B11)/10000" unit="V"/>
+				<value name="CellVolt3" conversion="((B16*256)+B17)/10000" unit="V"/>
+				<value name="CellVolt4" conversion="((B22*256)+B23)/10000" unit="V"/>
+				<value name="CellVolt5" conversion="((B28*256)+B29)/10000" unit="V"/>
+				<value name="CellVolt6" conversion="((B34*256)+B35)/10000" unit="V"/>
+
+				<value name="SOC1" conversion="B6" unit="%"/>
+				<value name="SOC2" conversion="B12" unit="%"/>
+				<value name="SOC3" conversion="B18" unit="%"/>
+				<value name="SOC4" conversion="B24" unit="%"/>
+				<value name="SOC5" conversion="B30" unit="%"/>
+				<value name="SOC6" conversion="B36" unit="%"/>
+
+				<value name="Cell#Max" conversion="B5" unit="#"/>
+			</values>
+		</command>
+
+
+		<command send="221E34" header="atsh7e5" skipCount="15" >
+			<values>
+				<value name="CellVoltMin" conversion="((B3*256)+B4)/10000" unit="V"/>
+				<value name="Cell#Min" conversion="B5" unit="#"/>
+			</values>
+		</command>
+
+		<command send="221E33" header="atsh7e5" skipCount="15" >
+			<values>
+				<value name="CellVoltMax" conversion="((B3*256)+B4)/10000" unit="V"/>
+				<value name="Cell#Max" conversion="B5" unit="#"/>
+			</values>
+		</command>
+
+
+		<command send="221E0E"  header="atsh7e5" skipCount="10">
+			<values>
+				<value name="CelTMax" conversion="B3-100" unit="C"/>
+				<value name="CelT#Max" conversion="B4" unit="#"/>
+			</values>
+		</command>
+
+
+		<command send="221E0F" header="atsh7e5" skipCount="20">
+			<values>
+				<value name="CellTMin" conversion="B3-100" unit="C"/>
+				<value name="CellT#Min" conversion="B4" unit="#"/>
+			</values>
+		</command>
+
+		<command send="221E2C" header="atsh7e5" skipCount="21">
+			<values>
+				<value name="CellSOCMax" conversion="B3" unit="%"/>
+				<value name="CellSoc#Max" conversion="B4" unit="#"/>
+			</values>
+		</command>
+
+		<command send="221E2D" header="atsh7e5"  skipCount="20" >
+			<values>
+				<value name="CelSOCMin" conversion="B3" unit="%"/>
+				<value name="CelSoc#Min" conversion="B4" unit="#"/>
+			</values>
+		</command>
+
+		<command send="2208D21" header="atsh7E0" skipCount="20" name="SoCDiplay" conversion="((B3*256)+B4)*0.01" unit="%"/>
+
+
+	</rotation>
+
+</OBD2>
