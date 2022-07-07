@@ -19,7 +19,7 @@
 
 
 	<rotation>
-		<command send="2218021801f40d" header="atsh7e5" skipCount="0">
+		<command send="2218021801f40d" header="atsh7e5" skipCount="2">
 			<!-- Units missing = Subcommands!  621802 334455 1801 6677 F40d 00 -->
 			<values>
 				<value name="Amp" conversion="((B3*65536.0)+B4*256+B5)/100-1500" units="A"/>
@@ -30,53 +30,56 @@
 
 		<command send="22028C1" header="atsh7e5" skipCount="12" name="SoC1" conversion="B3" units="%"/>
 
-
+<!--
 		<command send="221E3B" header="atsh7e5" skipCount="7" name="CelSum" conversion="((B3*256)+B4)/10" units="V"/>
+-->
 
 		<command send="221E1B1" header="atsh7e5" skipCount="13" name="BatLimC" conversion="B3*256+B4" units="A"/>
 		<command send="221E1C1" header="atsh7e5" skipCount="14" name="BatLimD" conversion="B3*256+B4" units="A"/>
 
-		<command send="2222B8" header="atsh714" skipCount="1" name= "Wegstrecke" conversion="(B3*256*256*256+B3*256*256+B5*256+B6)/1000" units="m"/>
-
-		<command send="22f45b" header="atsh7e5" skipCount="15" name="SoC2" conversion="b3/256" units="%" />
+		<command send="22f45b" header="atsh7e5" skipCount="15" name="SoC2" conversion="b3/256*100" units="%" />
 		
 		<command send="22181D1" header="atsh7e5" skipCount="15" name="BatTOut" conversion="B3-40" units="C"/>
 		<command send="22181C1" header="atsh7e5" skipCount="10" name="BatTIn" conversion="B3-40" units="C"/>
 		<command send="221E101" header="atsh7e5" skipCount="11" name="BatTemp" conversion="B3-100" units="C"/>
 
-
+		<command send="atfcsh744" name="z" skipCount="15"/>
 		<command send="224965" header="atsh744" skipCount="15" >
 			<values>
-				<value name="Battkapa mom" conversion="((B3*256)+B4)/20" units="kWh"/>
+				<value name="Battkapa" conversion="((B3*256)+B4)/20" units="kWh"/>
 				<value name="SoC3" conversion="((B10*256)+B11)/20"  units="%"/>
-				<value name="Verbrauch mom" conversion="(32768-((B5*256)+B6))/10"  units="kW"/>
+				<value name="Power" conversion="(32768-((B5*256)+B6))/10"  units="kW"/>
 				<value name="Temp" conversion="(b12/2)-40"   units="°C"/>
 				<value name="MaxAmp" conversion="((B8*256)+B9)/10"  units="A"/>
-				<value name="BattState" conversion="b7"  units="#"/>
+				<value name="BattSt" conversion="b7"  units="#"/>
 			</values>
 		</command>
-
-		<command send="222AB8" name="EnergyBatt" header="atsh710" skipCount="15"  conversion="((b5*256)+b6)*25/1000" units="kWh"/>
+		
+		<command send="atfcsh714" name="y" skipCount="16"/>
+		<command send="220520" header="atsh714" skipCount="16" >
+			<values>
+				<value name= "Weg1" conversion="(B3*256*256+B4*256+B5)" units="km"/>
+				<value name= "Weg2" conversion="(B6*256*256+B7*256+B8)/10" units="km"/>
+			</values>
+		</command>
 
 		<command send="2208D21" header="atsh7E0" skipCount="20" name="SoCDiplay" conversion="((B3*256)+B4)*0.01" units="%"/>
+		
+		<command send="atfcsh710" name="x" skipCount="11"/>
+		<command send="222AB8" name="BattE" header="atsh710" skipCount="11"  conversion="((b5*256)+b6)" units="kWh"/>
+		<command send="222ab6" name="Range" header="atsh710" skipCount="11" conversion="((b3*256)+b4)" units="km"/>
 
+		<command send="222ab4" header="atsh710" skipCount="15" name="AmpProfil" conversion="(((b11*256)+b12))" units="A"/>
 
-		<command send="222ab6"   name="Reichweite angezeigt" header="atsh710" skipCount="15" >
-			<values>
-				<value name="Reichweite 1" conversion="((b3*256)+b4)" units="km"/>
-				<value name="Reichweite 2" conversion="((b5*256)+b6)" units="km"/>
-				<value name="Reichweite 3" conversion="((b9*256)+b10)"  units="km"/>
-			</values>
-		</command>
-
-		<command send="2226091" header="atsh746" skipCount="10" conversion="((B3*256)+B4)/8.0" name="AirT" units="C"/>
-		<command send="2226131" header="atsh746" skipCount="10" conversion="((B3*256)+B4)/8.0" name="InsideT" units="C"/>
+		
+		<command send="222613" header="atsh746" skipCount="10" conversion="((B3*256)+B4)/10.0" name="InsideT" units="C"/>
+		<command send="222608" header="atsh746" skipCount="10" conversion="((B3*256)+B4)/10.0" name="AirT" units="C"/>
 
 		<command send="2227D61" skipCount="10" header="atsh742" name="A/C data">
 			<values>
-				<value name="WP energy" conversion="B5*40"  units="W"/>
-				<value name="WP demand" conversion="B4/200"  units="%"/>
-				<value name="WP compr" conversion="B3*300"   units="rpm"/>
+				<value name="WP_W" conversion="B5*40"  units="W"/>
+				<value name="WP%" conversion="B4/200"  units="%"/>
+				<value name="WP_rpm" conversion="B3*300"   units="rpm"/>
 			</values>
 		</command>
 

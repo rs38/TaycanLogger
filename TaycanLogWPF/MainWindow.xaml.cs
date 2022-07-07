@@ -23,6 +23,7 @@ namespace TaycanLogger
     OBDSession myOBDSession { get; set; }
     string UIDeviceName;
     //string ConfigFilename;
+
     Progress<OBDCommandViewModel> progressData;
     LineSeries lineSeriesA;
     LineSeries lineSeriesV;
@@ -41,8 +42,9 @@ namespace TaycanLogger
       this.DataContext = this; //???
 
       UIDeviceName = Properties.Settings.Default.DeviceName;
-      var configFilename = Properties.Settings.Default.ConfigFilename;
-      var configContent = Properties.Resources.obd2_TaycanSOH;
+      //var configFilename = Properties.Settings.Default.ConfigFilename;
+            var configFilename = "dash.xml";
+            var configContent = Properties.Resources.obd2_TaycanSOH;
       configContent = File.ReadAllText(configFilename); //external file
 
       Trace.WriteLine($"start log at {DateTime.Now}!");

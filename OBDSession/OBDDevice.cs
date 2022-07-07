@@ -83,7 +83,7 @@ namespace TaycanLogger
       //Trace.Write($"send:{str},");
       await writeAsync(str);
       var value = await readAsync();
-      //Trace.Write($"received raw:{value}");
+     // Trace.Write($"received raw:{value}");
       return value;
     }
 

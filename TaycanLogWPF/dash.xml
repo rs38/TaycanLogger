@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<OBD2>
+	<init>
+		<command send="atz"></command>
+		<command send="atat1"></command>
+		<command send="atsp6"></command>
+		<command send="atl0"></command>
+		<command send="ats0"></command>
+		<command send="ath0"></command>
+		<command send="ate0"></command>
+		<command send="atst25"></command>
+		<command send="atsh7e5"></command>
+		<command send="atcm000"></command>
+		<command send="atcf000"></command>
+		<command send="atfcsd300000"></command>
+		<command send="atfcsh714"></command>
+		<command send="atfcsm1"></command>
+	</init>
+
+
+	<rotation>
+		
+		<command send="220530" header="atsh714" skipCount="5" >
+			<value name="xx" conversion="(B24*256+b25)/1"  unit="kmh"/>
+			<value name="Trip1 min" conversion="(b26*256+B27)/2" unit="min"/>
+			<value name="xy" conversion="(b14*256+B14)/2" unit="min"/>
+			<value name="Trip1 z" conversion="(b30*256+B31)" unit="x"/>
+			<value name="Trip1 y" conversion="(B32*256+b33)/80 "  unit="kmh"/>
+			<value name="Trip1 consu" conversion="(b33*256+B34)/1600" unit="kwh" />
+			<value name="Trip1 a" conversion="(b31*256+B32)" unit="?"/>
+			<value name="Trip2 co" conversion="(B37*256+b38)/1600"  unit="km"/>
+			<value name="Trip2 km" conversion="(B35*256+b36)/1600"  unit="?"/>
+			<value name="Trip2 consu" conversion="(B40*256+b41)/1600"  unit="kwh"/>
+		</command>
+
+		<command send="2218021802" header="atsh7e5" skipCount="2"  name="Amp" conversion="((B3*65536.0)+B4*256+B5)/100-1500" units="A"/>
+		<command send="2218021801" header="atsh7e5" skipCount="2"  name="BatV" conversion="((B3*256)+B4)/10" units="V"/>
+		
+		<command send="220520" header="atsh714" skipCount="0" >
+			<values>
+				<value name= "Wegstrecke 1" conversion="(B3*256*256+B4*256+B5)" units="km"/>
+				<value name= "Wegstrecke 2" conversion="(B6*256*256+B7*256+B8)/10" units="km"/>
+			</values>
+		</command>
+	</rotation>
+
+</OBD2>

@@ -117,14 +117,10 @@ namespace OBDSession
                 if (all.Length < 14 * 6)
                     continue;
                 var rest = all.Substring(0 + (i * 14), 14);
-                mod.Zelle[i].raw = rest;
+               // mod.Zelle[i] = rest;
                 mod.Zelle[i].SoC = Convert.ToInt32(rest.Substring(4, 2), 16);
                 mod.Zelle[i].Spannung = Convert.ToInt32(rest.Substring(0, 4), 16) / 10000.0;
             }
-
-            
-         
-
         }
     }
     

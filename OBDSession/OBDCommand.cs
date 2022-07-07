@@ -68,6 +68,9 @@ namespace TaycanLogger
                 try
                 {
                     CommonResponseBytes = Convert.FromHexString(CommonResponseString);
+                    if (CommonResponseBytes.Length>50)
+                              Trace.WriteLine(DateTime.Now +"#"+ CommonResponseString);
+                    
                     foreach (var value in Values)
                     {
                         value.calcConversion();
