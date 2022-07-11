@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
+using FluentAssertions;
 using Moq;
 using System.Collections.Generic;
 using System.IO;
@@ -7,16 +8,11 @@ using System.Threading.Tasks;
 
 namespace TaycanLogger.Tests
 {
-    [TestClass()]
     public class OBDCommandTests
     {
-
         List<OBDCommand> cmds;
-
         OBDSession session;
-
         Mock<IOBDDevice> deviceMock = new Mock<IOBDDevice>();
-
 
         public OBDCommandTests()
         {
@@ -24,14 +20,11 @@ namespace TaycanLogger.Tests
             BuildCommands(query);
            var configContent = File.ReadAllText("obd2_Taycan.xml");
             session = new OBDSession(configContent, "fakedevice");
-
-
         }
-
+  
         private void BuildCommands(string query)
         {
             cmds = new List<OBDCommand>();
-
             var c = new OBDCommand(deviceMock.Object)
             {
                 send = query,
@@ -58,16 +51,14 @@ namespace TaycanLogger.Tests
             cmds.Add(c);
         }
 
-        [TestMethod()]
-
+        [Fact]
         public void LoadConfigShouldworkFine()
         {
-            Assert.IsTrue( session.hasValidConfig());
+            session.hasValidConfig().Should().BeTrue();
             var x = session.cmds.SelectMany(commands => commands.Values).ToList();
-
-            Assert.AreEqual(19, x.Count);
+            x.Count.Should().Be(19);
         }
-        [TestMethod()]
+        [Fact]
         public async Task processRawAnswerTestMultiframe5()
         {
             string query = "22 0286 2a07 f17c";
@@ -82,11 +73,12 @@ namespace TaycanLogger.Tests
 
             await cmds[0].DoExecAsync();
             var x =  cmds.SelectMany(values => values.Values).Select(v => v.Value);
-            Assert.AreEqual(x.First(), 160);
-            Assert.AreEqual(x.Skip(1).First(), 3283.95, 0.1);
+            x.First().Should().Be(160);
+            x.Skip(1).First().Should().BeApproximately(3283.95, 0.1);
+           
         }
-
-        [TestMethod()]
+        
+        [Fact]
         public async Task processRawAnswerTest4Lines()
         {
             string query = "22 0286 2a07 f17c";
@@ -103,10 +95,11 @@ namespace TaycanLogger.Tests
             var x = cmds.SelectMany(values => values.Values).Select(v => v.Value);
             var e = x.GetEnumerator();
             e.MoveNext();
-            Assert.AreEqual(e.Current, 160);
+            e.Current.Should().Be(160);
+            
             e.MoveNext();
-            Assert.AreEqual(e.Current, 3283.95, 0.1);
-
+            e.Current.Should().BeApproximately(3283.95, 0.1);
+            
             answer = @"00D
 0: 6218020249A4
 1: 18011F46F40D00
